@@ -79,7 +79,15 @@ for w1 in filtered_s1:
 
 
 
+# Hyponymy? red is hyponym of color (opposite is hypernym)
+# Meronymy? finger is meronym of hand (opposite is holonym)
 
+
+# wordnet: lexical database for the english language
+# 
+# hypernyms/hyponym
+# antonyms
+# 
 
 
 
