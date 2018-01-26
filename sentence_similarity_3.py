@@ -1,6 +1,4 @@
-# for python 2
-#!/usr/bin/python2.7
-
+# for python 3
 
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords as sw
@@ -71,50 +69,78 @@ s2 = "i was dissatisfied."
 # sentence comparison using SpaCy 101
 # spacy 101 uses n-gram language model,
 # based on wordvec uh
-print(s1, s2, nlp(unicode(s1)).similarity(nlp(unicode(s2))))
+#print(s1, s2, nlp(str(s1)).similarity(nlp(str(s2))))
 
 s1_words, s2_words = {}, {}
 s1_ants, s2_ants = {}, {}
 
 # for each word token in sentence 1
-for token in nlp(unicode(s1)):
+for token in nlp(str(s1)):
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
+    '''
     if token.pos_=='VERB':
       wordnet_token = wn.synsets(token.text, pos=wn.VERB)
     elif token.pos_=='ADJ':
       wordnet_token = wn.synsets(token.text, pos=wn.ADJ)
     elif token.pos_=='ADV':
       wordnet_token = wn.synsets(token.text, pos=wn.ADV)
-
+    '''
+    wordnet_token = wn.synsets(token.text)
     if wordnet_token: # if its in wornet db
-      s1_words[token.text] = wordnet_token # add to the list
+      s1_words[token.text] = wordnet_token # add to the dictionary
 
 # for each word token in sentence 2
-for token in nlp(unicode(s2)):
+for token in nlp(str(s2)):
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
+    '''
     if token.pos_=='VERB':
       wordnet_token = wn.synsets(token.text, pos=wn.VERB)
     elif token.pos_=='ADJ':
       wordnet_token = wn.synsets(token.text, pos=wn.ADJ)
     elif token.pos_=='ADV':
       wordnet_token = wn.synsets(token.text, pos=wn.ADV)
-
+    '''
+    wordnet_token = wn.synsets(token.text)
     if wordnet_token: # if its in wornet db
-      s2_words[token.text] = wordnet_token # add to the list
+      s2_words[token.text] = wordnet_token # add to the dictionary
 
 #nlp = spacy.load('en_vectors_web_lg')
 
-# PRE: two lists with word tokens
+# PRE: two dictionaries with word: word-synsets
 # POST: check whether there exists any antonyms in another sentence
-for w1 in s1_words.values():
-  for s1 in w1:
-    for l1 in s1.lemmas():
-      if l1.antonyms():
-        for ants1 in l1.antonyms():
+for w in s1_words.values(): # for each synset
+  for s in w: # for each synonym
+    for l in s.lemmas(): # find its lemma(s)
+      if l.antonyms(): # check if it has an antonym or not
+        for ants in l.antonyms(): # if there's antonym with this lemma
+          s1_ants[s] = ants # append into the ant dictionary
+
+for w in s2_words.values(): # for each synset
+  for s in w: # for each synonym
+    for l in s.lemmas(): # find its lemma(s)
+      if l.antonyms(): # check if it has an antonym or not
+        for ants in l.antonyms(): # if there's antonym with this lemma
+          s2_ants[s] = ants # append into the ant dictionary
+
+print(s2_ants)
+
+for w in s1_words.values():
+  for s in w:
+    print(s)
+    try:
+      print(s2_ants[s])
+    except:
+      pass
+
+
+
+
+
+'''          
           for w2 in s2_words.values():
             for s2 in w2:
               for l2 in s2.lemmas():
@@ -124,9 +150,11 @@ for w1 in s1_words.values():
                   print("leacock-chodorow score:{}".format(s1.lch_similarity(s2)))
                   print("wu-palmer score:{}".format(s1.wup_similarity(s2)))
                   print("vector score:{}\n".format(nlp(s1.name()).similarity(nlp(s2.name()))))
+'''
 
-print(wn.synsets('satisfied')[0].lemmas()[0].antonyms())
-print(wn.synsets('dissatisfied')[0].lemmas()[0].antonyms())
+
+#print(wn.synsets('satisfied')[0].lemmas()[0].antonyms())
+#print(wn.synsets('dissatisfied')[0].lemmas()[0].antonyms())
 
 
 
