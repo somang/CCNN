@@ -81,13 +81,15 @@ for token in nlp(unicode(s1)):
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
+    '''
     if token.pos_=='VERB':
       wordnet_token = wn.synsets(token.text, pos=wn.VERB)
     elif token.pos_=='ADJ':
       wordnet_token = wn.synsets(token.text, pos=wn.ADJ)
     elif token.pos_=='ADV':
       wordnet_token = wn.synsets(token.text, pos=wn.ADV)
-
+    '''
+    wordnet_token = wn.synsets(token.text)
     if wordnet_token: # if its in wornet db
       s1_words[token.text] = wordnet_token # add to the list
 
@@ -96,37 +98,49 @@ for token in nlp(unicode(s2)):
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
+    '''
     if token.pos_=='VERB':
       wordnet_token = wn.synsets(token.text, pos=wn.VERB)
     elif token.pos_=='ADJ':
       wordnet_token = wn.synsets(token.text, pos=wn.ADJ)
     elif token.pos_=='ADV':
       wordnet_token = wn.synsets(token.text, pos=wn.ADV)
-
+    '''
+    wordnet_token = wn.synsets(token.text)
     if wordnet_token: # if its in wornet db
       s2_words[token.text] = wordnet_token # add to the list
 
 #nlp = spacy.load('en_vectors_web_lg')
 
-# PRE: two lists with word tokens
+# PRE: two dictionaries with word: word-synsets
 # POST: check whether there exists any antonyms in another sentence
-for w1 in s1_words.values():
-  for s1 in w1:
-    for l1 in s1.lemmas():
-      if l1.antonyms():
-        for ants1 in l1.antonyms():
-          for w2 in s2_words.values():
-            for s2 in w2:
-              for l2 in s2.lemmas():
-                if l2.name() == ants1.name():
-                  print("s1:{}\ns2:{}\nAntonym:{}\nl1:{}\nl2:{}".format(s1,s2,ants1,l1.name(),l2.name()))
-                  print("path score:{}".format(s1.path_similarity(s2)))
-                  print("leacock-chodorow score:{}".format(s1.lch_similarity(s2)))
-                  print("wu-palmer score:{}".format(s1.wup_similarity(s2)))
-                  print("vector score:{}\n".format(nlp(s1.name()).similarity(nlp(s2.name()))))
+for w in s1_words.values(): # for each synset
+  for s in w: # for each synonym
+    for l in s.lemmas(): # find its lemma(s)
+      if l.antonyms(): # check if it has an antonym or not
+        for ants in l.antonyms(): # if there's antonym with this lemma
+          s1_ants[ants.name()] = s # append into the ant dictionary
 
-print(wn.synsets('satisfied')[0].lemmas()[0].antonyms())
-print(wn.synsets('dissatisfied')[0].lemmas()[0].antonyms())
+for w in s2_words.values(): # for each synset
+  for s in w: # for each synonym
+    for l in s.lemmas(): # find its lemma(s)
+      if l.antonyms(): # check if it has an antonym or not
+        for ants in l.antonyms(): # if there's antonym with this lemma
+          s2_ants[ants.name()] = s # append into the ant dictionary
+
+#print(s2_ants)
+
+for w in s1_words.values():
+  for s in w:
+    word = s.name().split(".")[0]
+    try:
+      print(s, s2_ants[word])
+      print(s.wup_similarity(s2_ants[word]))
+    except:
+      pass
+
+#print(wn.synsets('satisfied')[0].lemmas()[0].antonyms())
+#print(wn.synsets('dissatisfied')[0].lemmas()[0].antonyms())
 
 
 
