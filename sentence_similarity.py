@@ -3,6 +3,9 @@ from nltk.corpus import stopwords as sw
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
 import spacy
+from spacy.lemmatizer import Lemmatizer
+from spacy.lang.en import LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES
+
 import numpy
 
 from keras.preprocessing.text import text_to_word_sequence
@@ -12,13 +15,147 @@ from keras.preprocessing.text import Tokenizer
 nlp = spacy.load('en')
 #nlp = spacy.load('en_vectors_web_lg')
 
-s1 = "A Cat is satisfied by university."
-s2 = "A Cat is dissatisfied by university." #"Water is to feed the dog"
-s3 = "In order to feed a dog, you need water"
+# using apostrophe: should be handled separatly (hardcoded..?)..
+# it's, let's, don't, doesn't, can't, etc.
 
-filtered_s1 = []
-filtered_s2 = []
-filtered_s3 = []
+#s1 = "it was rejected by the senate."
+#s2 = "it was accepted by the senate."
+
+s1 = "i was satisfied."
+s2 = "i was dissatisfied."
+
+#s1 = "IT'S ONLY GOING TO TAPER OFF FROM THIS POINT FORWARD."
+#s2 = "it's only going to taper off from this point forward and again it's about two to four maybe up to five centimeters of snow."
+
+# antonym used
+#s1 = "The quick brown fox jumps over the lazy dog."
+#s2 = "The quick brown fox didn't jump over the lazy dog."
+
+# adverb antonym..?
+#s1 = "The quick brown fox always jumps over the lazy dog."
+#s2 = "The quick brown fox never jump over the lazy dog."
+
+# week 2 Todo list.
+#n1: missing words (count, which words)
+#n2: spelling/grammar errors? (check wordnet for existence?)
+#n3: speaker ID (regex)
+
+#n4: speed of captions
+#      (delay-> 
+#       find the matching n-gram words-> 
+#       compare the start time)
+
+#n5: paraphrasing?
+#     a. tokenize, lemmatize the words ?
+#     b. Use SpaCy similarity first, ? (step a or b)
+#     c. Check antonyms, modify the similarity value
+
+
+
+
+#handling apostrophe use
+
+
+
+
+
+
+
+
+
+
+
+
+# sentence comparison using SpaCy 101
+# spacy 101 uses n-gram language model,
+# based on wordvec uh
+print(s1, s2, nlp(unicode(s1)).similarity(nlp(unicode(s2))))
+
+s1_words, s2_words = {}, {}
+s1_ants, s2_ants = {}, {}
+
+# for each word token in sentence 1
+for token in nlp(unicode(s1)):
+  # if the word is either a verb or an adjective
+  if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
+    # check wordnet for its existence
+    if token.pos_=='VERB':
+      wordnet_token = wn.synsets(token.text, pos=wn.VERB)
+    elif token.pos_=='ADJ':
+      wordnet_token = wn.synsets(token.text, pos=wn.ADJ)
+    elif token.pos_=='ADV':
+      wordnet_token = wn.synsets(token.text, pos=wn.ADV)
+
+    if wordnet_token: # if its in wornet db
+      s1_words[token.text] = wordnet_token # add to the list
+
+# for each word token in sentence 2
+for token in nlp(unicode(s2)):
+  # if the word is either a verb or an adjective
+  if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
+    # check wordnet for its existence
+    if token.pos_=='VERB':
+      wordnet_token = wn.synsets(token.text, pos=wn.VERB)
+    elif token.pos_=='ADJ':
+      wordnet_token = wn.synsets(token.text, pos=wn.ADJ)
+    elif token.pos_=='ADV':
+      wordnet_token = wn.synsets(token.text, pos=wn.ADV)
+
+    if wordnet_token: # if its in wornet db
+      s2_words[token.text] = wordnet_token # add to the list
+
+#nlp = spacy.load('en_vectors_web_lg')
+
+# PRE: two lists with word tokens
+# POST: check whether there exists any antonyms in another sentence
+for w1 in s1_words.values():
+  for s1 in w1:
+    for l1 in s1.lemmas():
+      if l1.antonyms():
+        for ants1 in l1.antonyms():
+          for w2 in s2_words.values():
+            for s2 in w2:
+              for l2 in s2.lemmas():
+                if l2.name() == ants1.name():
+                  print("s1:{}\ns2:{}\nAntonym:{}\nl1:{}\nl2:{}".format(s1,s2,ants1,l1.name(),l2.name()))
+                  print("path score:{}".format(s1.path_similarity(s2)))
+                  print("leacock-chodorow score:{}".format(s1.lch_similarity(s2)))
+                  print("wu-palmer score:{}".format(s1.wup_similarity(s2)))
+                  print("vector score:{}\n".format(nlp(s1.name()).similarity(nlp(s2.name()))))
+
+print(wn.synsets('satisfied')[0].lemmas()[0].antonyms())
+print(wn.synsets('dissatisfied')[0].lemmas()[0].antonyms())
+
+
+
+
+
+#print(w1.text, w1.pos_, w2.text ,w2.pos_, sim)
+
+#word comparison
+#print(nlp(u'satisfied').similarity(nlp(u'dissatisfied')))
+
+# Hyponymy? red is hyponym of color (opposite is hypernym)
+# Meronymy? finger is meronym of hand (opposite is holonym)
+# hypernyms/hyponym
+
+
+# It's important to note that the `Synsets` from such a query are ordered by 
+# how frequent that sense appears in the corpus
+ 
+# You can read more about the different types of wordnet similarity 
+# measures here: http://www.nltk.org/howto/wordnet.html 
+
+'''
+tokens = nlp(u'dog cat feline mammal')
+#for token1 in tokens:
+#    for token2 in tokens:
+#        print(token1.text, token2.text, token1.similarity(token2))
+#for token in tokens:
+#  print(token.text, token.vector_norm)
+'''
+
+
 '''
 stop_words = set(sw.words("english"))
 for w in text_to_word_sequence(s1):
@@ -26,118 +163,7 @@ for w in text_to_word_sequence(s1):
     unicode_w = nlp(unicode(w))[0].lemma_
     #print(unicode_w)
     filtered_s1.append(unicode_w)
-
-for w in text_to_word_sequence(s2):
-  if w not in stop_words:
-    unicode_w = nlp(unicode(w))[0].lemma_
-    #print(unicode_w)
-    filtered_s2.append(unicode_w)
 '''
-
-for token in nlp(unicode(s1)):
-    #print(token.lemma_, token.pos_, token.tag_, token.dep_)
-    if token.pos_=='VERB' or token.pos_=='ADJ':
-      filtered_s1.append(token)
-
-for token in nlp(unicode(s2)):
-    if token.pos_=='VERB' or token.pos_=='ADJ':
-      filtered_s1.append(token)
-
-for w1 in filtered_s1:
-  word_one = wn.synsets(w1.text)[0]
-  for lemma in word_one.lemmas():
-    ant = lemma.antonyms()
-    if ant:
-      print(lemma, ant)
-
-    #sim = wn.synsets(w1.text)[0].wup_similarity(wn.synsets(w2.text)[0])
-    #print(w1.text, w1.pos_, w2.text ,w2.pos_, sim)
-
-# sentence comparison
-#print(s1, s2, nlp(unicode(s1)).similarity(nlp(unicode(s2))))
-#print(s1, s3, nlp(unicode(s1)).similarity(nlp(unicode(s3))))
-#print(s2, s3, nlp(unicode(s2)).similarity(nlp(unicode(s3))))
-
-#word comparison
-#nlp = spacy.load('en_core_web_lg')
-#print(nlp(u'satisfied').similarity(nlp(u'dissatisfied')))
-
-
-# word comparison using wordnet
-#ac = wn.synsets('satisfied','v')[0]
-#rj = wn.synsets('dissatisfied','v')[0]
-#print(ac.wup_similarity(rj))
-
-# using language model of nlp = spacy.load('en'), the sentence similarity
-# seems to be accurate, while the word similarities are not.
-# However, the spacy similarities do not encounter for the antonym uses,
-# which can completly change the meaning of the sentence or intention.
-
-# the wordnet synsets wup_similarity gives the better similarity score 
-# in terms of word meaning comparison.
-
-
-
-
-# Hyponymy? red is hyponym of color (opposite is hypernym)
-# Meronymy? finger is meronym of hand (opposite is holonym)
-
-
-# wordnet: lexical database for the english language
-# 
-# hypernyms/hyponym
-# antonyms
-# 
-
-
-
-
-
-
-
-
-
-
-
-# It's important to note that the `Synsets` from such a query are ordered by 
-# how frequent that sense appears in the corpus
-
-# You can check out how frequent a lemma is by doing:
-#cat = wn.synsets('cat', 'n')[0]     # Get the most common synset
-#dog = wn.synsets('dog', 'n')[0]           # Get the most common synset
-#feline = wn.synsets('feline', 'n')[0]     # Get the most common synset
-#mammal = wn.synsets('mammal', 'n')[0]     # Get the most common synset
- 
-# You can read more about the different types of wordnet similarity 
-# measures here: http://www.nltk.org/howto/wordnet.html
-#for synset in [cat, dog, feline, mammal]:
-#    print "Similarity(%s, %s) = %s" % (cat, synset, cat.wup_similarity(synset))
- 
-# Similarity(Synset('cat.n.01'), Synset('dog.n.01')) = 0.2
-# Similarity(Synset('cat.n.01'), Synset('feline.n.01')) = 0.5
-# Similarity(Synset('cat.n.01'), Synset('mammal.n.01')) = 0.2
-
-'''
-print('spacy below')
-nlp = spacy.load('en_vectors_web_lg')
-tokens = nlp(u'dog cat feline mammal')
-
-#for token1 in tokens:
-#    for token2 in tokens:
-#        print(token1.text, token2.text, token1.similarity(token2))
-#for token in tokens:
-#  print(token.text, token.vector_norm)
-
-doc0 = nlp(u"Paris is the smallest city in France.")
-doc1 = nlp(u"Paris is the largest city in France.")
-doc2 = nlp(u"Vilnius is the capital of Lithuania.")
-doc3 = nlp(u"An emu is a large bird.")
-
-for doc in [doc0, doc1, doc2, doc3]:
-    for other_doc in [doc0, doc1, doc2, doc3]:
-        print(doc, other_doc, doc.similarity(other_doc))
-'''
-
 
 
 
