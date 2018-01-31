@@ -16,8 +16,12 @@ from keras.preprocessing.text import text_to_word_sequence
 from keras.preprocessing.text import one_hot
 from keras.preprocessing.text import Tokenizer
 
-nlp = spacy.load('en')
-#nlp = spacy.load('en_vectors_web_lg')
+import enchant
+from enchant.checker import SpellChecker
+
+
+#nlp = spacy.load('en')
+nlp = spacy.load('en_core_web_lg')
 
 # using apostrophe: should be handled separatly (hardcoded..?)..
 # it's, let's, don't, doesn't, can't, etc.
@@ -25,11 +29,14 @@ nlp = spacy.load('en')
 #s1 = "it was rejected by the senate."
 #s2 = "it was accepted by the senate."
 
-s1 = "i was satisfied."
-s2 = "i was dissatisfied."
+#s1 = "i was satisfied."
+#s2 = "i was dissatisfied."
 
 #s1 = "IT'S ONLY GOING TO TAPER OFF FROM THIS POINT FORWARD."
 #s2 = "it's only going to taper off from this point forward and again it's about two to four maybe up to five centimeters of snow."
+
+s1 = "and as you just heard in sports it is snowing in Ottawa"
+s2 = "AND Z YOU HEARD IN SPORTS IT iS SNOWING IN OTTAWA"
 
 # antonym used
 #s1 = "The quick brown fox jumps over the lazy dog."
@@ -42,6 +49,17 @@ s2 = "i was dissatisfied."
 # week 2 Todo list.
 #n1: missing words (count, which words)
 #n2: spelling/grammar errors? (check wordnet for existence?)
+
+d = enchant.Dict("en_US")
+#print(d.check("hello"))
+#print(d.check("helo"))
+chkr = SpellChecker("en_US")
+s0 = "this is sme sample txt with erors."
+chkr.set_text(s0)
+for e in chkr:
+  print(e.word)
+
+
 #n3: speaker ID (regex)
 
 #n4: speed of captions
@@ -61,9 +79,10 @@ s2 = "i was dissatisfied."
 
 
 
+print('good', 'not good', nlp(str('good')).similarity(nlp(str('not good'))))
+print('good', 'bad', nlp(str('good')).similarity(nlp(str('bad'))))
 
-
-
+print('good', 'bad', wn.synsets('good')[0].wup_similarity(wn.synsets('bad')[0]))
 
 
 
@@ -71,13 +90,13 @@ s2 = "i was dissatisfied."
 # sentence comparison using SpaCy 101
 # spacy 101 uses n-gram language model,
 # based on wordvec uh
-print(s1, s2, nlp(unicode(s1)).similarity(nlp(unicode(s2))))
+print(s1, s2, nlp(str(s1)).similarity(nlp(str(s2))))
 
 s1_words, s2_words = {}, {}
 s1_ants, s2_ants = {}, {}
 
 # for each word token in sentence 1
-for token in nlp(unicode(s1)):
+for token in nlp(str(s1)):
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
@@ -94,7 +113,7 @@ for token in nlp(unicode(s1)):
       s1_words[token.text] = wordnet_token # add to the list
 
 # for each word token in sentence 2
-for token in nlp(unicode(s2)):
+for token in nlp(str(s2)):
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
@@ -149,7 +168,6 @@ for w in s1_words.values():
 #print(w1.text, w1.pos_, w2.text ,w2.pos_, sim)
 
 #word comparison
-#print(nlp(u'satisfied').similarity(nlp(u'dissatisfied')))
 
 # Hyponymy? red is hyponym of color (opposite is hypernym)
 # Meronymy? finger is meronym of hand (opposite is holonym)

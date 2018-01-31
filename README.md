@@ -1,14 +1,29 @@
 # CCNN project
 
-Weekly log
+Weekly Log
 
 Week 2.
+a. Paraphrasing value generation..? :
+  1. Calculating similarity between sentences can be done by using SpaCy. The algorithm which SpaCy uses is to compare the n-gram language model. They claim
+  the context similarity is still reflected.
+  2. Spacy is trained based on the word2vec. (GloVe corpus can also be used)
+  - In terms of CC, will paraphrasing include negation often?
+  - What about multiple sentences merged into a single sentence?
 
-Paraphrasing value generation..? :
-  1. 
+b. Grammar check is not perfect.. 
+  - using nltk language model
+  - using Google's ngram corpus
 
+c. reading srt file:
+  - matching start time with the caption words
+  - how to detect a sentence? -> PERIOD AT THE END OF EVERY SENTENCE.
+    - multiple caption blocks can be used to create a sentence.
 
+Done: 
+  - Spell check can be done.
 
+Todo:
+  - 
 
 
 Week 1.
