@@ -19,17 +19,17 @@ print(X[0], Y[0])
 model = Sequential()
 model.add(Dense(12, input_dim=8, activation='relu'))
 model.add(Dense(12, activation='relu'))
-#model.add(Dense(1, kernel_initializer='normal'))
-model.add(Dense(1, activation='sigmoid'))
+model.add(Dense(1, kernel_initializer='normal'))
+#model.add(Dense(1, activation='sigmoid'))
 
 #compile model
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-#model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+#model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
 
 # for visualization
 tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
 #fit the model
-history = model.fit(X, Y, epochs=150, batch_size=10)
+history = model.fit(X, Y, epochs=350, batch_size=10)
 '''
 one epoch = one forward pass and one backward pass of 
             all the training examples

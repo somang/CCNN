@@ -62,10 +62,13 @@ for e in chkr:
 
 #n3: speaker ID (regex)
 
-#n4: speed of captions
+#n4: delay of captions
 #      (delay-> 
 #       find the matching n-gram words-> 
 #       compare the start time)
+
+# speed, word per minute.
+
 
 #n5: paraphrasing?
 #     a. tokenize, lemmatize the words ?

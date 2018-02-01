@@ -10,6 +10,9 @@ a. Paraphrasing value generation..? :
   - In terms of CC, will paraphrasing include negation often?
   - What about multiple sentences merged into a single sentence?
 
+b. CCNN:
+  - First layer input: values from the CC files
+
 b. Grammar check is not perfect.. 
   - using nltk language model
   - using Google's ngram corpus
@@ -19,11 +22,14 @@ c. reading srt file:
   - how to detect a sentence? -> PERIOD AT THE END OF EVERY SENTENCE.
     - multiple caption blocks can be used to create a sentence.
 
+
+
 Done: 
   - Spell check can be done.
 
 Todo:
-  - 
+  - srt reader script
+  - neural values generation script
 
 
 Week 1.
