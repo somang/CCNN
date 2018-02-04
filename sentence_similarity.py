@@ -1,30 +1,96 @@
-# for python 2
-#!/usr/bin/python2.7
-
-
+# for python 3
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords as sw
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
+
 import spacy
 from spacy.lemmatizer import Lemmatizer
-#from spacy.lang.en import LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES
-
-import numpy
 
 from keras.preprocessing.text import text_to_word_sequence
 from keras.preprocessing.text import one_hot
 from keras.preprocessing.text import Tokenizer
 
+import numpy as np
+import re
+
 import enchant
 from enchant.checker import SpellChecker
 
+# Lemmatize/replace the words ommissions using apostrophe
+# it's, let's, don't, doesn't, can't, you're, you aren't
+# pre: str sentence
+# post: list of words tokenized
+def handleOmissions(sentence):
+  s_list = sentence.split()
+  i = 0
+  while i < len(s_list):
+    word = s_list[i]
+    if word.lower() == "gonna":
+      s_list.pop(i)
+      s_list.insert(i, "going")
+      s_list.insert(i+1, "to")
+    if re.search("'[a-z]+", word): # when the word has apostrophe omission
+      om_word = word.split("'")
+      s_list.pop(i)
+      if om_word[0].lower() == "let":
+        s_list.insert(i, om_word[0])
+        s_list.insert(i+1, "us")
+      elif om_word[1].lower() == "s":
+        s_list.insert(i, om_word[0])
+        s_list.insert(i+1, "is")
+      elif om_word[1].lower() == "t":
+        # handle ain't and won't
+        tmp_verb = om_word[0][:-1] # get rid of 'n'
+        if tmp_verb.lower() == "ai": # aint
+          tmp_verb = "am"
+        elif tmp_verb.lower() == "wo": #wont
+          tmp_verb = "will"
+        else: # otherwise, do should would could did
+          pass
+        s_list.insert(i, tmp_verb)
+        s_list.insert(i+1, "not")
+      elif om_word[1].lower() == "re":
+        s_list.insert(i, om_word[0])
+        s_list.insert(i+1, "are")
+      else:
+        pass
+    i+=1
+  return s_list
 
-#nlp = spacy.load('en')
-nlp = spacy.load('en_core_web_lg')
+# Given two sentences having different number of words
+# find the absolute difference in number of words
+def getWordDifference(s1, s2):
+  return abs(len(s1)-len(s2))
 
-# using apostrophe: should be handled separatly (hardcoded..?)..
-# it's, let's, don't, doesn't, can't, etc.
+def getSpellErr(s):
+  chkr = SpellChecker("en_US")
+  #Check how many words in s1 have spelling errors
+  chkr.set_text(s)
+  counter = 0 # checking how many spelling errors in s1
+  for err in chkr:
+    #print(err.word)
+    counter+=1
+  return counter
+
+def checkSpeakerID(s):
+  # check the first word
+  # if it's a speaker id, 
+  # it should have a semicolon at the end of the word.
+  s_list = s.split()
+  if re.search("[a-zA-Z]+:",s_list[0]):
+    print(s_list[0].strip(":"))
+    return True
+  else:
+    return False
+
+
+
+
+
+
+nlp = spacy.load('en')
+#nlp = spacy.load('en_core_web_lg')
 
 #s1 = "it was rejected by the senate."
 #s2 = "it was accepted by the senate."
@@ -35,8 +101,11 @@ nlp = spacy.load('en_core_web_lg')
 #s1 = "IT'S ONLY GOING TO TAPER OFF FROM THIS POINT FORWARD."
 #s2 = "it's only going to taper off from this point forward and again it's about two to four maybe up to five centimeters of snow."
 
-s1 = "and as you just heard in sports it is snowing in Ottawa"
-s2 = "AND Z YOU HEARD IN SPORTS IT iS SNOWING IN OTTAWA"
+s1 = "and az you jst heard in sportz it's snowing in Ottawa"
+s1_spacy = nlp(str(s1))
+
+s2 = "Forecaster: AND Z YOU HEARD IN SPORTS IT IS SNOWING IN OTTAWA"
+s2_spacy = nlp(str(s2))
 
 # antonym used
 #s1 = "The quick brown fox jumps over the lazy dog."
@@ -46,21 +115,44 @@ s2 = "AND Z YOU HEARD IN SPORTS IT iS SNOWING IN OTTAWA"
 #s1 = "The quick brown fox always jumps over the lazy dog."
 #s2 = "The quick brown fox never jump over the lazy dog."
 
-# week 2 Todo list.
+# replace the omitted words
+# then, replace the sentences to the newly replaced sentences.
+s1_list = handleOmissions(s1)
+s2_list = handleOmissions(s2)
+s1 = ' '.join(s1_list)
+s2 = ' '.join(s2_list)
+#print(s1)
+#print(s2)
+#print(s1_list)
+#print(s2_list)
+
 #n1: missing words (count, which words)
+if len(s1) != len(s2):
+  diff_wordcount = getWordDifference(s1,s2)
+  #print("number of words missing:", diff_wordcount)
+
 #n2: spelling/grammar errors? (check wordnet for existence?)
-
-d = enchant.Dict("en_US")
-#print(d.check("hello"))
-#print(d.check("helo"))
-chkr = SpellChecker("en_US")
-s0 = "this is sme sample txt with erors."
-chkr.set_text(s0)
-for e in chkr:
-  print(e.word)
-
+s1_typos = getSpellErr(s1)
+s2_typos = getSpellErr(s2)
+#print(s1_typos, s2_typos)
 
 #n3: speaker ID (regex)
+'''
+A double chevron (>>) must be used to indicate each new speaker. 
+When the name of the speaker is known, 
+  it must be included in mixed case followed by a colon. 
+
+Guests and others are designated using first and last names.
+People commonly associated with a broadcast will be designated 
+using first names only.
+
+In many instances, 
+graphics containing speaker identifications are covered by real-time captioning. 
+Caption stenographers must insert these identifications
+into the captions depending on the speed and complexity of the broadcast.
+'''
+s1_spID = checkSpeakerID(s1)
+s2_spID = checkSpeakerID(s2)
 
 #n4: delay of captions
 #      (delay-> 
@@ -82,10 +174,9 @@ for e in chkr:
 
 
 
-print('good', 'not good', nlp(str('good')).similarity(nlp(str('not good'))))
-print('good', 'bad', nlp(str('good')).similarity(nlp(str('bad'))))
-
-print('good', 'bad', wn.synsets('good')[0].wup_similarity(wn.synsets('bad')[0]))
+#print('good', 'not good', nlp(str('good')).similarity(nlp(str('not good'))))
+#print('good', 'bad', nlp(str('good')).similarity(nlp(str('bad'))))
+#print('good', 'bad', wn.synsets('good')[0].wup_similarity(wn.synsets('bad')[0]))
 
 
 
@@ -93,13 +184,13 @@ print('good', 'bad', wn.synsets('good')[0].wup_similarity(wn.synsets('bad')[0]))
 # sentence comparison using SpaCy 101
 # spacy 101 uses n-gram language model,
 # based on wordvec uh
-print(s1, s2, nlp(str(s1)).similarity(nlp(str(s2))))
+#print(s1, s2, nlp(str(s1)).similarity(nlp(str(s2))))
 
 s1_words, s2_words = {}, {}
 s1_ants, s2_ants = {}, {}
 
 # for each word token in sentence 1
-for token in nlp(str(s1)):
+for token in s1_spacy:
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
@@ -116,7 +207,7 @@ for token in nlp(str(s1)):
       s1_words[token.text] = wordnet_token # add to the list
 
 # for each word token in sentence 2
-for token in nlp(str(s2)):
+for token in s2_spacy:
   # if the word is either a verb or an adjective
   if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
     # check wordnet for its existence
