@@ -79,7 +79,6 @@ def checkSpeakerID(s):
   # it should have a semicolon at the end of the word.
   s_list = s.split()
   if re.search("[a-zA-Z]+:",s_list[0]):
-    print(s_list[0].strip(":"))
     return True
   else:
     return False

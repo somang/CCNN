@@ -1,10 +1,5 @@
 
 class Caption:
-  sequence = 0
-  start = 0
-  end = 0
-  txt = ""
-
   def __init__(self):
     self.sequence = 0
     self.start = 0
@@ -33,18 +28,24 @@ class Caption:
     self.txt = text
 
   def __str__(self):
-    return "{0}: {1}->{2}\n{3}".format(sequence, start, end, txt)
-
+    return "{0}:\t{1}->{2}\n{3}".format(self.sequence, self.start, self.end, self.txt)
 
 class CaptionTime:
   def __init__(self, hour, minute, second):
     self.hour = int(hour)
-    self.minute = int(minute)
+    self.minutes = int(minute)
     if len(second.split(",")) == 2:
       self.second = second.split(",")[0]
-      self.microsecond = second.split(",")[1]
+      self.milliseconds = second.split(",")[1]
     else:
       self.second = int(second)
 
+  def to_ms(self):
+    tmp_t = 0
+    if self.milliseconds > 0:
+      tmp_t += self.milliseconds
+    tmp_t += (self.hour * 60 * 60 * 1000) + (self.minutes * 60 * 1000) + (self.seconds * 1000)
+    return tmp_t
+
   def __str__(self):
-    return "{0}:{1}:{2},{3}".format(self.hour, self.minute, self.second, self.microsecond)
+    return "{0}:{1}:{2},{3}".format(self.hour, self.minutes, self.second, self.milliseconds)
