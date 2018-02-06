@@ -94,23 +94,26 @@ class ParseSentence:
 
     '''
     i = 1
+    tmp_sent = ""
     while i <= len(cf):
       cap = cf.get(i) # current caption
       sent_cap = [1]
+      tmp_sent = ""
       if sent_cap:
-        tmp_sent = ""
         switch = True
         while switch: # while current caption don't have a period
-          tmp_sent += cap.txt + " "
           if cap.txt.find(".") == -1: # sentence ending not present
+            tmp_sent += cap.txt + " "
             i+=1
             if i <= len(cf):
               cap = cf.get(i)
             else:
               switch = False # turn off the loop
           else: # when there's a sentence ending period in txt
+            p_exist, new_sent = cap.txt.split(".")[0], cap.txt.split(".")[1]
+            tmp_sent += p_exist + "."
             switch = False # turn off the loop
-        print (tmp_sent)
+        print(tmp_sent)
         
 
       else: # when caption is not empty
@@ -125,8 +128,8 @@ class ParseSentence:
 
 
 if __name__ == '__main__':
-  file_name = 'citynews_caption.srt'
-  #file_name = 'citynews_transcript.srt'
+  #file_name = 'citynews_caption.srt'
+  file_name = 'citynews_transcript.srt'
   
   with open(file_name) as f:
     lines = f.readlines()
