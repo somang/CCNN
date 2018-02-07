@@ -2,6 +2,32 @@
 
 Weekly Log
 
+Week 3.
+a. CC Neural Net
+  - Data: Insufficient data points- but can be generated from normal distribution..?
+    - seeding from what's already existing data
+
+b. Value generation from srt file
+  Todo
+  - Speed of Caption generation
+  - Delay calculation
+  - Paraphrasing
+
+  Done
+  - Spelling check
+  - Antonym detection
+  - Apostrophe use-Lemmatization
+
+c. srt file parser
+  Todo
+  - Sentence generation for multiple sentence endings in a single caption object
+
+  Done
+  - reading
+  - parsing the srt file into caption objects
+
+
+
 Week 2.
 a. Paraphrasing value generation..? :
   1. Calculating similarity between sentences can be done by using SpaCy. The algorithm which SpaCy uses is to compare the n-gram language model. They claim
@@ -21,8 +47,6 @@ c. reading srt file:
   - matching start time with the caption words
   - how to detect a sentence? -> PERIOD AT THE END OF EVERY SENTENCE.
     - multiple caption blocks can be used to create a sentence.
-
-
 
 Done: 
   - Spell check can be done.

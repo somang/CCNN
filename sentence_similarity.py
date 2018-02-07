@@ -157,9 +157,29 @@ s2_spID = checkSpeakerID(s2)
 #      (delay-> 
 #       find the matching n-gram words-> 
 #       compare the start time)
+'''
+For live programming, the lag time between the audio and the
+captions must not exceed six seconds, averaged over the program.
+'''
 
 # speed, word per minute.
+'''
+- Real-time captions appear in a three-line roll-up format at the bottom of the
+screen. This allows the maximum presentation rate for ease of reading by
+viewers.
+- However, in many cases, to avoid covering graphics, keys, and other essential
+visual information, captions will have to be moved to another location and
+displayed in a two-line roll-up. When captions change positions, the last
+caption in a segment must have at least a two-second duration before
+blanking and changing position.
+- Every new sentence and every new speaker should begin on a new line for
+ease of reading.
+- Captions must be blanked off the screen prior to entering a television
+commercial frame, and the encoder must be put in pass mode so as not to
+interfere with post-production commercial captions.
 
+-  Captions are limited to 32 characters per line of captions.
+'''
 
 #n5: paraphrasing?
 #     a. tokenize, lemmatize the words ?

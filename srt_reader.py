@@ -57,7 +57,7 @@ class CaptionFile:
                 line = str(lines[i]).strip()
               else:
                 break
-            c.setText(textblock)
+            c.setText(textblock.strip())
             self.captionFile[seq] = c
       else:
         i+=1 # next line.
@@ -96,11 +96,16 @@ class ParseSentence:
     i = 1
     tmp_sent = ""
     while i <= len(cf):
+      sent_cap = [] # initialize the sentence
       cap = cf.get(i) # current caption
-      sent_cap = [1]
-      tmp_sent = ""
-      if sent_cap:
+      if sent_cap: # IF sentence is not empty
+        sent_cap.append(cap.start) # add the start time for the sentence.
+      else: # IF sentence is empty
         switch = True
+        if not tmp_sent:
+          tmp_sent = ""
+        else:
+          tmp_sent += " "
         while switch: # while current caption don't have a period
           if cap.txt.find(".") == -1: # sentence ending not present
             tmp_sent += cap.txt + " "
@@ -110,16 +115,23 @@ class ParseSentence:
             else:
               switch = False # turn off the loop
           else: # when there's a sentence ending period in txt
-            p_exist, new_sent = cap.txt.split(".")[0], cap.txt.split(".")[1]
-            tmp_sent += p_exist + "."
-            switch = False # turn off the loop
-        print(tmp_sent)
-        
+            tmp_sentence_ending = cap.txt.split(".")
+            p_exist = tmp_sentence_ending[0]
+            tmp_sent += p_exist + "." # add the ending
+            sent_cap.append(tmp_sent) # append to the sentence list
 
-      else: # when caption is not empty
-        sent_cap.append(cap.start)
-      i += 1
-      
+            if len(tmp_sentence_ending) > 2: # when there are more then two sentences
+              new_sent = tmp_sentence_ending[1:]
+            else:
+              new_sent = tmp_sentence_ending[1]
+            print(new_sent)
+            print(tmp_sent)
+            tmp_sent = new_sent #update the left over sentence (header)
+            switch = False # turn off the loop
+          #print(sent_cap)
+          #print(tmp_sent)
+          i += 1 # increment for the while loop
+        #while loop ends
 
 
 
