@@ -108,7 +108,7 @@ class ParseSentence:
           tmp_sent += " "
         while switch: # while current caption don't have a period
           if cap.txt.find(".") == -1: # sentence ending not present
-            tmp_sent += cap.txt + " "
+            tmp_sent += cap.txt.strip() + " "
             i+=1
             if i <= len(cf):
               cap = cf.get(i)
@@ -117,20 +117,17 @@ class ParseSentence:
           else: # when there's a sentence ending period in txt
             tmp_sentence_ending = cap.txt.split(".")
             p_exist = tmp_sentence_ending[0]
-            tmp_sent += p_exist + "." # add the ending
+            tmp_sent += p_exist.strip() + "." # add the ending
             sent_cap.append(tmp_sent) # append to the sentence list
-
+            
             if len(tmp_sentence_ending) > 2: # when there are more then two sentences
-              new_sent = tmp_sentence_ending[1:]
+              new_sent = '.'.join(tmp_sentence_ending[1:])
             else:
               new_sent = tmp_sentence_ending[1]
-            print(new_sent)
-            print(tmp_sent)
             tmp_sent = new_sent #update the left over sentence (header)
             switch = False # turn off the loop
-          #print(sent_cap)
-          #print(tmp_sent)
-          i += 1 # increment for the while loop
+      print(sent_cap)
+      i += 1 # increment for the while loop
         #while loop ends
 
 
