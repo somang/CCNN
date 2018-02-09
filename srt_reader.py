@@ -113,6 +113,7 @@ class ParseSentence:
             if i <= len(cf):
               cap = cf.get(i)
             else:
+              sent_cap.append(tmp_sent)
               switch = False # turn off the loop
           else: # when there's a sentence ending period in txt
             tmp_sentence_ending = cap.txt.split(".")
@@ -122,11 +123,16 @@ class ParseSentence:
             
             if len(tmp_sentence_ending) > 2: # when there are more then two sentences
               new_sent = '.'.join(tmp_sentence_ending[1:])
+              print(new_sent)
+              '''
+                check whether there are multiple sentences within a single caption block.
+              '''
+              
             else:
               new_sent = tmp_sentence_ending[1]
             tmp_sent = new_sent #update the left over sentence (header)
             switch = False # turn off the loop
-      print(sent_cap)
+      #print(sent_cap)
       i += 1 # increment for the while loop
         #while loop ends
 
