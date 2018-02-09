@@ -121,7 +121,7 @@ class ParseSentence:
             sent_cap.append(tmp_sent) # append to the sentence list
             
             if len(tmp_sentence_ending) > 2: # when there are more then two sentences
-              new_sent = '.'.join(tmp_sentence_ending[1:])
+              new_sent = ".".join(tmp_sentence_ending[1:])
             else:
               new_sent = tmp_sentence_ending[1]
             tmp_sent = new_sent #update the left over sentence (header)
