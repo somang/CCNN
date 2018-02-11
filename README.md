@@ -2,6 +2,31 @@
 
 Weekly Log
 
+Week 4.
+0. CCQNN
+
+
+a. CC Neural Net
+  - Turns out what we have can be enough to represent the population.
+  - Given 85 (with 12 D) D/HOH data * 2 videos each
+  - The input will be values generated from caption file which is compared against the transcript file
+  - Then, the ratings of the participants preferences or
+      - Q: how did each 'factor' affected the pleasure?
+      - factors include: 
+      1. fast appearing/disappearing (speed)
+      2. slow appearing/disappearing (delay)
+      3. missing words (how many words are missing)
+      4. spelling/grammar errors (how many errors)
+      5. speaker identification (are there any?)
+      6. verbatim accuracy (paraphrasing)
+
+b. value generation from srt file.
+  - should work on the delay calculation
+  - Should work on how many characters are in a single caption 'line'
+
+c. srt file parser is done.
+
+
 Week 3.
 a. CC Neural Net
   - Data: Insufficient data points- but can be generated from normal distribution..?
@@ -25,7 +50,6 @@ c. srt file parser
   Done
   - reading
   - parsing the srt file into caption objects
-
 
 
 Week 2.

@@ -2,7 +2,7 @@
 import re, sys
 from caption import Caption
 
-class CaptionFile:
+class CaptionCollection:
   def __init__(self, lines):
     self.captionFile = {}
     self.makeCaption(lines)
@@ -74,15 +74,16 @@ class ParseSentence:
     -> then the sentences will be used to compare the meaning/paraphrasing...
   '''
 
-  def __init__(self):
+  def __init__(self,cf):
     self.parseSentence = []
+    self.parse(cf)
 
   def __str__(self):
     for c in cf:
       print(cf.get(c))
     return ""
 
-  def parse(self, cf):
+  def parse(self,cf):
     '''
       from a collection of captions (cf),
       iterate over each caption object,
@@ -94,35 +95,44 @@ class ParseSentence:
     '''
     i = 1
     tmp_sent = ""
-    while i <= len(cf):
-      sent_cap = []
-      while not sent_cap:
-        counter = 0
+    while i <= len(cf): # for each caption object
+      sent_cap = [] # create an empty list
+      while not sent_cap: # while the list is empty
+        counter = 0 # counter to check how many captions were connected.
         if tmp_sent.find(".") == -1:         # not the ending block
-          cap = cf.get(i)
-          tmp_sent += cap.txt + " "
-          counter += 1
-          i += 1
-        else:                                # ending block
-          split_ending = tmp_sent.split(".")
+          cap = cf.get(i)                    # get the caption object
+          tmp_sent += cap.txt + " "          # concatenate the sentence
+          counter += 1       # increase the counter
+          i += 1             # move on to next caption object
+        else:                                # sentence ending block
+          split_ending = tmp_sent.split(".") # split the sentence for carry on
           ending = split_ending[0] + "."
-          tmp_sent = '.'.join(split_ending[1:])
-          if counter == 0:
-            i -= 1
-          sent_cap.append(ending)
-      #print(tmp_sent)
+          tmp_sent = '.'.join(split_ending[1:]) # heading of another sentence
+          if counter == 0:  # handling case of multiple sentences 
+            i -= 1          # Don't move to next, since there are more sentences.
+          sent_cap.append(ending) # pickup the completed sentence.
       print(i, sent_cap)
-      i += 1
+      i += 1 # move on.
     #while loop ends
 
 
 if __name__ == '__main__':
-  #file_name = 'citynews_caption.srt'
-  file_name = 'citynews_transcript.srt'
+  caption_file = 'citynews_caption.srt'
+  transcript_file = 'citynews_transcript.srt'
   
-  with open(file_name) as f:
-    lines = f.readlines()
-    cf = CaptionFile(lines)
+  with open(transcript_file) as tf:
+    lines = tf.readlines()
+    cf = CaptionCollection(lines)
+    ps = ParseSentence(cf)
+    
+  
+  '''
+  with open(caption_file) as cf:
+    lines = cf.readlines()
+    cf = CaptionCollection(lines)
     ps = ParseSentence()
     ps.parse(cf)
-    #print(ps)
+  '''
+
+  
+  
