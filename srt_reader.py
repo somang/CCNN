@@ -91,46 +91,29 @@ class ParseSentence:
         - sentence created from single/multiple caption objects
         - start time of the very first (start of sentence) caption object,
         - end time of the very last (end of sentence) caption object.
-
     '''
     i = 1
     tmp_sent = ""
     while i <= len(cf):
-      sent_cap = [] # initialize the sentence
-      cap = cf.get(i) # current caption
-      if sent_cap: # IF sentence is not empty
-        sent_cap.append(cap.start) # add the start time for the sentence.
-      else: # IF sentence is empty
-        switch = True
-        if not tmp_sent:
-          tmp_sent = ""
-        else:
-          tmp_sent += " "
-        while switch: # while current caption don't have a period
-          if cap.txt.find(".") == -1: # sentence ending not present
-            tmp_sent += cap.txt.strip() + " "
-            i+=1
-            if i <= len(cf):
-              cap = cf.get(i)
-            else:
-              switch = False # turn off the loop
-          else: # when there's a sentence ending period in txt
-            tmp_sentence_ending = cap.txt.split(".")
-            p_exist = tmp_sentence_ending[0]
-            tmp_sent += p_exist.strip() + "." # add the ending
-            sent_cap.append(tmp_sent) # append to the sentence list
-            
-            if len(tmp_sentence_ending) > 2: # when there are more then two sentences
-              new_sent = ".".join(tmp_sentence_ending[1:])
-            else:
-              new_sent = tmp_sentence_ending[1]
-            tmp_sent = new_sent #update the left over sentence (header)
-            switch = False # turn off the loop
-      print(sent_cap)
-      i += 1 # increment for the while loop
-        #while loop ends
-
-
+      sent_cap = []
+      while not sent_cap:
+        counter = 0
+        if tmp_sent.find(".") == -1:         # not the ending block
+          cap = cf.get(i)
+          tmp_sent += cap.txt + " "
+          counter += 1
+          i += 1
+        else:                                # ending block
+          split_ending = tmp_sent.split(".")
+          ending = split_ending[0] + "."
+          tmp_sent = '.'.join(split_ending[1:])
+          if counter == 0:
+            i -= 1
+          sent_cap.append(ending)
+      #print(tmp_sent)
+      print(i, sent_cap)
+      i += 1
+    #while loop ends
 
 
 if __name__ == '__main__':
