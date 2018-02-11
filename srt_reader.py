@@ -133,9 +133,6 @@ class ParseSentence:
 
 
 
-
-
-
 if __name__ == '__main__':
   #file_name = 'citynews_caption.srt'
   file_name = 'citynews_transcript.srt'
