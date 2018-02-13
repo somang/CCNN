@@ -51,7 +51,7 @@ class CaptionCollection:
             line = str(lines[i]).strip()
             textblock = ""
             while self.has_text(line):
-              textblock += line + " "
+              textblock += line + "\n" # should there be newline (\n) for multi-line captions
               i+=1 #check for next line
               if i<len(lines):
                 line = str(lines[i]).strip()

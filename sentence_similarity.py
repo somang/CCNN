@@ -17,7 +17,10 @@ import re
 #import enchant
 #from enchant.checker import SpellChecker
 
+'''
+Why does the quality of closed captioning assessed by objective methods?
 
+'''
 
 from srt_reader import CaptionCollection
 
@@ -202,14 +205,14 @@ if __name__ == '__main__':
 
 
 
-  nlp = spacy.load('en')
+  #nlp = spacy.load('en')
   #nlp = spacy.load('en_core_web_lg')
 
   c1 = "and az you jst heard in sportz it's snowing in Ottawa"
-  c1_spacy = nlp(str(c1))
+  #c1_spacy = nlp(str(c1))
 
   c2 = "Forecaster: AND Z YOU HEARD IN SPORTS IT IS SNOWING IN OTTAWA"
-  c2_spacy = nlp(str(c2))
+  #c2_spacy = nlp(str(c2))
 
   # replace the omitted words
   # then, replace the sentences to the newly replaced sentences.
@@ -255,12 +258,37 @@ if __name__ == '__main__':
   captions must not exceed six seconds, averaged over the program.
   '''
   caption_file = 'citynews_caption.srt'
-  
+  transcr_file = 'citynews_transcript.srt'
+
   with open(caption_file) as cf:
     lines = cf.readlines()
     ccf = CaptionCollection(lines)
-    print(ccf)
-    
+
+  with open(transcr_file) as tf:
+    lines = tf.readlines()
+    tcf = CaptionCollection(lines)
+
+  for i in ccf:
+    c = ccf.get(i)
+    duration = c.end.to_ms()-c.start.to_ms()
+    #if duration < 1000:
+    #if len(c.txt) > 32:
+      #print(c.start, c.end, duration)
+      #print(len(c.txt), c.txt)
+      #print()
+
+  for i in ccf:
+    for j in tcf:
+      c = ccf.get(i)
+      t = tcf.get(j)
+      #compare the first four words, to find the identical caption.
+      if ''.join(c.txt.split()[0:3]).lower() == ''.join(t.txt.split()[0:3]).lower():
+        # typically the captions have delay (i.e. later than transcript time)
+        print(abs(c.start.to_ms() - t.start.to_ms()))
+        print(c.txt)
+        print(t.txt)
+        break
+
 
   #print(get_delay_from_captions)
 
