@@ -2,7 +2,9 @@
 
 Weekly Log
 
-Week 4.
+
+
+Week 4. Feb 14th
 0. CCQNN
 
 
@@ -52,7 +54,7 @@ c. srt file parser
   - parsing the srt file into caption objects
 
 
-Week 2.
+Week 2. Feb 7nd
 a. Paraphrasing value generation..? :
   1. Calculating similarity between sentences can be done by using SpaCy. The algorithm which SpaCy uses is to compare the n-gram language model. They claim
   the context similarity is still reflected.
@@ -80,7 +82,7 @@ Todo:
   - neural values generation script
 
 
-Week 1.
+Week 1. Jan 31
 a. Sentence similarity
   - Spacy: the sentence similarity seems to be accurate, but the word similarities are questionable
       - The sentence similarities between antonyms are fairly high.
@@ -106,7 +108,7 @@ c. What to do
     - Speaker ID? (not in weather forecasting though)
     - Speed of Captions (delay..?)
 
-Week 0.
+Week 0. Jan 24
 - Keras: high level framework on tensorflow
       - open sourced, support multiple backend (i.e. theano, CNTR, tensorflow)
 - Word2Vec: These models are shallow, two-layer neural networks that are trained to reconstruct linguistic contexts of words.          - Word2vec takes as its input a large corpus of text and 
