@@ -2,6 +2,14 @@
 
 Weekly Log
 
+Week 5. Feb 21st
+TODo:
+1. Create another caption file, and transcript for CTV video.
+2. Organize, and gather up methods in class, 
+   using sentence by sentence for data generation.
+3. Filter the data, to create a numpy matrix along with the result from 2.
+4. Train the NN with the numpy matrix and generated values.
+
 
 
 Week 4. Feb 14th

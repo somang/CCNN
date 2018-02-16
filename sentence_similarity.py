@@ -4,8 +4,8 @@ from nltk.corpus import stopwords as sw
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
 
-#import spacy
-#from spacy.lemmatizer import Lemmatizer
+import spacy
+from spacy.lemmatizer import Lemmatizer
 
 #from keras.preprocessing.text import text_to_word_sequence
 #from keras.preprocessing.text import one_hot
@@ -14,8 +14,8 @@ from nltk.corpus import wordnet as wn
 import numpy as np
 import re
 
-#import enchant
-#from enchant.checker import SpellChecker
+import enchant
+from enchant.checker import SpellChecker
 
 '''
 Why does the quality of closed captioning assessed by objective methods?
@@ -98,21 +98,23 @@ def getSimilarity(s1, s2):
   # spacy 101 uses n-gram language model,
   # based on wordvec uh
   #print(s1, s2, nlp(str(s1)).similarity(nlp(str(s2))))
+  c1_spacy = nlp(str(c1))
+  c2_spacy = nlp(str(c2))
 
-  s1_words, s2_words = {}, {}
-  s1_ants, s2_ants = {}, {}
+  c1_words, c2_words = {}, {}
+  c1_ants, c2_ants = {}, {}
 
   # for each word token in sentence 1
-  for token in s1_spacy:
+  for token in c1_spacy:
     # if the word is either a verb or an adjective
     if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
       # check wordnet for its existence
       wordnet_token = wn.synsets(token.text)
       if wordnet_token: # if its in wornet db
-        s1_words[token.text] = wordnet_token # add to the list
+        c1_words[token.text] = wordnet_token # add to the list
 
   # for each word token in sentence 2
-  for token in s2_spacy:
+  for token in c2_spacy:
     # if the word is either a verb or an adjective
     if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
       # check wordnet for its existence
@@ -126,30 +128,30 @@ def getSimilarity(s1, s2):
       '''
       wordnet_token = wn.synsets(token.text)
       if wordnet_token: # if its in wornet db
-        s2_words[token.text] = wordnet_token # add to the list
+        c2_words[token.text] = wordnet_token # add to the list
 
   # PRE: two dictionaries with word: word-synsets
   # POST: check whether there exists any antonyms in another sentence
-  for w in s1_words.values(): # for each synset
+  for w in c1_words.values(): # for each synset
     for s in w: # for each synonym
       for l in s.lemmas(): # find its lemma(s)
         if l.antonyms(): # check if it has an antonym or not
           for ants in l.antonyms(): # if there's antonym with this lemma
-            s1_ants[ants.name()] = s # append into the ant dictionary
+            c1_ants[ants.name()] = s # append into the ant dictionary
 
-  for w in s2_words.values(): # for each synset
+  for w in c2_words.values(): # for each synset
     for s in w: # for each synonym
       for l in s.lemmas(): # find its lemma(s)
         if l.antonyms(): # check if it has an antonym or not
           for ants in l.antonyms(): # if there's antonym with this lemma
-            s2_ants[ants.name()] = s # append into the ant dictionary
+            c2_ants[ants.name()] = s # append into the ant dictionary
 
-  for w in s1_words.values():
+  for w in c1_words.values():
     for s in w:
       word = s.name().split(".")[0]
       try:
-        print(s, s2_ants[word])
-        print(s.wup_similarity(s2_ants[word]))
+        print(s, c2_ants[word])
+        print(s.wup_similarity(c2_ants[word]))
       except:
         pass
 
@@ -171,48 +173,35 @@ def getSimilarity(s1, s2):
   # You can read more about the different types of wordnet similarity 
   # measures here: http://www.nltk.org/howto/wordnet.html 
 
-  '''
-  tokens = nlp(u'dog cat feline mammal')
-  #for token1 in tokens:
-  #    for token2 in tokens:
-  #        print(token1.text, token2.text, token1.similarity(token2))
-  #for token in tokens:
-  #  print(token.text, token.vector_norm)
-  '''
-
-
-  '''
-  stop_words = set(sw.words("english"))
-  for w in text_to_word_sequence(s1):
-    if w not in stop_words:
-      unicode_w = nlp(unicode(w))[0].lemma_
-      #print(unicode_w)
-      filtered_s1.append(unicode_w)
-  '''
 
 def get_delay_from_captions(c1,c2):
+  #compare the first four words, to find the identical caption.
+  if ''.join(c1.txt.split()[0:3]).lower() == ''.join(c2.txt.split()[0:3]).lower():
+    # typically the captions have delay (i.e. later than transcript time)
+    print(abs(c.start.to_ms() - t.start.to_ms()))
+    print(c.txt)
+    print(t.txt)
+
   return 0
 
-def get_speed_of_caption(c):
+def get_caption_speed(c):
+  duration = c.end.to_ms()-c.start.to_ms()
+  if len(c.txt) > 32:
+    print(c.start, c.end, duration)
+    print(len(c.txt), c.txt)
+    print()
   return 0
 
 
 
 
 if __name__ == '__main__':
-
-
-
-
-
-  #nlp = spacy.load('en')
+  nlp = spacy.load('en')
   #nlp = spacy.load('en_core_web_lg')
 
   c1 = "and az you jst heard in sportz it's snowing in Ottawa"
-  #c1_spacy = nlp(str(c1))
-
   c2 = "Forecaster: AND Z YOU HEARD IN SPORTS IT IS SNOWING IN OTTAWA"
-  #c2_spacy = nlp(str(c2))
+  
 
   # replace the omitted words
   # then, replace the sentences to the newly replaced sentences.
@@ -227,9 +216,9 @@ if __name__ == '__main__':
     print("number of words missing:", diff_wordcount)
 
   #n2: spelling/grammar errors? (check wordnet for existence?)
-  #c1_typos = getSpellErr(c1)
-  #c2_typos = getSpellErr(c2)
-  #print(s1_typos, s2_typos)
+  c1_typos = getSpellErr(c1)
+  c2_typos = getSpellErr(c2)
+  print(c1_typos, c2_typos)
 
   #n3: speaker ID (regex)
   '''
@@ -269,28 +258,10 @@ if __name__ == '__main__':
     tcf = CaptionCollection(lines)
 
   for i in ccf:
-    c = ccf.get(i)
-    duration = c.end.to_ms()-c.start.to_ms()
-    #if duration < 1000:
-    #if len(c.txt) > 32:
-      #print(c.start, c.end, duration)
-      #print(len(c.txt), c.txt)
-      #print()
-
-  for i in ccf:
     for j in tcf:
       c = ccf.get(i)
       t = tcf.get(j)
-      #compare the first four words, to find the identical caption.
-      if ''.join(c.txt.split()[0:3]).lower() == ''.join(t.txt.split()[0:3]).lower():
-        # typically the captions have delay (i.e. later than transcript time)
-        print(abs(c.start.to_ms() - t.start.to_ms()))
-        print(c.txt)
-        print(t.txt)
-        break
-
-
-  #print(get_delay_from_captions)
+      get_delay_from_captions(c,t)
 
   # speed, word per minute.
   '''
@@ -310,14 +281,17 @@ if __name__ == '__main__':
 
   -  Captions are limited to 32 characters per line of captions.
   '''
-  #print(get_speed_of_caption())
+
+  for i in ccf:
+    c = ccf.get(i)
+    get_caption_speed(c)
 
 
   #n5: paraphrasing?
   #     a. tokenize, lemmatize the words ?
   #     b. Use SpaCy similarity first, ? (step a or b)
   #     c. Check antonyms, modify the similarity value
-
+  getSimilarity(c1, c2)
 
 
   #s1 = "it was rejected by the senate."
