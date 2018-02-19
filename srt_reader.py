@@ -51,7 +51,7 @@ class CaptionCollection:
             line = str(lines[i]).strip()
             textblock = ""
             while self.has_text(line):
-              textblock += line + "\n" # should there be newline (\n) for multi-line captions
+              textblock += line + " " # should there be newline (\n) for multi-line captions
               i+=1 #check for next line
               if i<len(lines):
                 line = str(lines[i]).strip()
@@ -102,33 +102,22 @@ class ParseSentence:
 
     while i <= len(cf):
       sent_cap = []
+      counter = 0
       while not sent_cap:
-        counter = 0
         if tmp_sent.find(".") == -1:
-          cap = cf.get(i)
-
-          if prev_start != 0:
-            start = prev_start
+          if i <= len(cf):
+            cap = cf.get(i)
+            tmp_sent += cap.txt + " "
+            i += 1
+            counter += 1
           else:
-            start = cap.start
-
-          tmp_sent += cap.txt + " "
-          counter += 1
-          i += 1
+            sent_cap.append(tmp_sent)
         else:
           split_ending = tmp_sent.split(".")
           ending = split_ending[0] + "."
           tmp_sent = '.'.join(split_ending[1:])
-
-          if counter == 0: # when a sentence spans over multiple captions
-            prev_start = cap.start
-            i -= 1
-          else:
-            prev_start = 0
-          
-          print(start, cap.end)
+          i -= 1
           sent_cap.append(ending)
-          
       print(i, sent_cap)
       i += 1
 
@@ -136,20 +125,18 @@ class ParseSentence:
 if __name__ == '__main__':
   caption_file = 'citynews_caption.srt'
   transcript_file = 'citynews_transcript.srt'
-  
+  '''
   with open(transcript_file) as tf:
     lines = tf.readlines()
-    cf = CaptionCollection(lines)
-    ps = ParseSentence(cf)
-    
-  
+    tcf = CaptionCollection(lines)
+    ps = ParseSentence(tcf)
   '''
+  
+  
   with open(caption_file) as cf:
     lines = cf.readlines()
-    cf = CaptionCollection(lines)
-    ps = ParseSentence()
-    ps.parse(cf)
-  '''
-
+    ccf = CaptionCollection(lines)
+    ps = ParseSentence(ccf)
+  
   
   
