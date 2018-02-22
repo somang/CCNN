@@ -98,7 +98,7 @@ class ParseSentence:
     '''
     i = 1
     tmp_sent = ""
-    start, prev_start = 0, 0
+    start, prev_start, end = 0, 0, 0
 
     while i <= len(cf):
       sent_cap = []
@@ -110,6 +110,7 @@ class ParseSentence:
             tmp_sent += cap.txt + " "
             i += 1
             counter += 1
+            prev_start = cap.start
           else:
             sent_cap.append(tmp_sent)
         else:
@@ -117,26 +118,35 @@ class ParseSentence:
           ending = split_ending[0] + "."
           tmp_sent = '.'.join(split_ending[1:])
           i -= 1
+          if start == 0:
+            time_tuple = (prev_start, cap.end)
+          else:
+            time_tuple = (start, cap.end)
+          if counter == 0:
+            start = prev_start
+          else:
+            start = cap.start
+          sent_cap.append(time_tuple)
           sent_cap.append(ending)
-      print(i, sent_cap)
+      print(i, sent_cap[0][0], sent_cap[0][1], sent_cap[1])
       i += 1
 
 
 if __name__ == '__main__':
   caption_file = 'citynews_caption.srt'
   transcript_file = 'citynews_transcript.srt'
-  '''
+  
   with open(transcript_file) as tf:
     lines = tf.readlines()
     tcf = CaptionCollection(lines)
     ps = ParseSentence(tcf)
+  
+  
   '''
-  
-  
   with open(caption_file) as cf:
     lines = cf.readlines()
     ccf = CaptionCollection(lines)
     ps = ParseSentence(ccf)
-  
+  '''
   
   
