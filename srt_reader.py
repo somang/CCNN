@@ -63,7 +63,14 @@ class CaptionCollection:
         i+=1 # next line.
         line = str(lines[i]).strip()
 
+class Sentence:
+  def __init__(self):
+    self.time = []
+    self.sentence = ""
 
+  def setSentence(self, time_tuple, txt):
+    self.time = tuple(time_list)
+    self.sentence = txt
 
 class ParseSentence:
   '''
@@ -82,6 +89,13 @@ class ParseSentence:
     for c in cf:
       print(cf.get(c))
     return ""
+
+  def __iter__(self):
+    for k in self.parseSentence:
+      yield k
+
+  def __len__(self):
+    return len(self.parseSentence)
 
   def get_sentences(self):
     return self.parseSentence
@@ -112,24 +126,34 @@ class ParseSentence:
             counter += 1
             prev_start = cap.start
           else:
+
+            if start == 0:
+              time_tuple = (prev_start, cap.end)
+            else:
+              time_tuple = (start, cap.end)
+            sent_cap.append(time_tuple)
             sent_cap.append(tmp_sent)
         else:
           split_ending = tmp_sent.split(".")
           ending = split_ending[0] + "."
           tmp_sent = '.'.join(split_ending[1:])
           i -= 1
+
           if start == 0:
             time_tuple = (prev_start, cap.end)
           else:
             time_tuple = (start, cap.end)
+          sent_cap.append(time_tuple)
+          sent_cap.append(ending)
+
           if counter == 0:
             start = prev_start
           else:
             start = cap.start
-          sent_cap.append(time_tuple)
-          sent_cap.append(ending)
-      print(i, sent_cap[0][0], sent_cap[0][1], sent_cap[1])
+      #print(i, sent_cap[0][0], sent_cap[0][1], sent_cap[1])
+      self.parseSentence.append(sent_cap)
       i += 1
+
 
 
 if __name__ == '__main__':
@@ -139,14 +163,33 @@ if __name__ == '__main__':
   with open(transcript_file) as tf:
     lines = tf.readlines()
     tcf = CaptionCollection(lines)
-    ps = ParseSentence(tcf)
+    tps = ParseSentence(tcf).get_sentences()
   
-  
-  '''
   with open(caption_file) as cf:
     lines = cf.readlines()
     ccf = CaptionCollection(lines)
-    ps = ParseSentence(ccf)
-  '''
-  
-  
+    cps = ParseSentence(ccf).get_sentences()
+
+  first_caption = tps[0]
+  fc_time = first_caption[0]
+  fc_txt = first_caption[1]
+  txt_ngram = ''.join(fc_txt.split()[0:3]).lower()
+  # 1. value generation
+  # a. find the delay first.
+  for i in cps:
+    t_time = i[0]
+    t_words = i[1].split()
+    t_txt_ngram = ''.join(t_words[0:3]).lower()
+    if txt_ngram == t_txt_ngram:
+      delay = abs(t_time[0].to_ms() - fc_time[0].to_ms())
+      # get words per min
+      duration = (fc_time[1].to_ms() - fc_time[0].to_ms())/1000/60.0 # in minutes
+      wpm = len(t_words)/duration
+      # similarity (paraphrasing)
+
+      # spelling errors
+
+
+      print(delay, wpm)
+
+
