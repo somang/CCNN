@@ -1,9 +1,9 @@
-#from keras.models import Sequential
-#from keras.layers import Dense
+from keras.models import Sequential
+from keras.layers import Dense
 import numpy as np
 from time import time
-#from keras.callbacks import TensorBoard
-#from keras.utils import plot_model
+from keras.callbacks import TensorBoard
+from keras.utils import plot_model
 
 # setup data
   # import csv data and create an matrix

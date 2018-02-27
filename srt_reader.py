@@ -1,6 +1,18 @@
 #srt file reader-parser
 import re, sys
 from caption import Caption
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords as sw
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet as wn
+
+import spacy
+from spacy.lemmatizer import Lemmatizer
+
+import numpy as np
+
+import enchant
+from enchant.checker import SpellChecker
 
 class CaptionCollection:
   def __init__(self, lines):
@@ -144,7 +156,8 @@ class ParseSentence:
           else:
             time_tuple = (start, cap.end)
           sent_cap.append(time_tuple)
-          sent_cap.append(ending)
+          final_sentence = ' '.join(handleOmissions(ending.lower().strip()))
+          sent_cap.append(final_sentence)
 
           if counter == 0:
             start = prev_start
@@ -154,12 +167,117 @@ class ParseSentence:
       self.parseSentence.append(sent_cap)
       i += 1
 
+def getSpellErr(s):
+  chkr = SpellChecker("en_US")
+  #Check how many words in s1 have spelling errors
+  chkr.set_text(s)
+  counter = 0 # checking how many spelling errors in s1
+  for err in chkr:
+    print(err.word)
+    counter+=1
+  return counter
+
+def handleOmissions(sentence):
+  s_list = sentence.split()
+  i = 0
+  while i < len(s_list):
+    word = s_list[i]
+    if word.lower() == "gonna":
+      s_list.pop(i)
+      s_list.insert(i, "going")
+      s_list.insert(i+1, "to")
+    if re.search("'[a-z]+", word): # when the word has apostrophe omission
+      om_word = word.split("'")
+      s_list.pop(i)
+      if om_word[0].lower() == "let":
+        s_list.insert(i, om_word[0])
+        s_list.insert(i+1, "us")
+      elif om_word[1].lower() == "s":
+        s_list.insert(i, om_word[0])
+        s_list.insert(i+1, "is")
+      elif om_word[1].lower() == "t":
+        # handle ain't and won't
+        tmp_verb = om_word[0][:-1] # get rid of 'n'
+        if tmp_verb.lower() == "ai": # aint
+          tmp_verb = "am"
+        elif tmp_verb.lower() == "wo": #wont
+          tmp_verb = "will"
+        else: # otherwise, do should would could did
+          pass
+        s_list.insert(i, tmp_verb)
+        s_list.insert(i+1, "not")
+      elif om_word[1].lower() == "re":
+        s_list.insert(i, om_word[0])
+        s_list.insert(i+1, "are")
+      else:
+        pass
+    i+=1
+  return s_list
+
+def getSimilarity(s1, s2):
+  c1_spacy = nlp(str(s1))
+  c2_spacy = nlp(str(s2))
+
+  print(c1_spacy)
+  print(c2_spacy)
+
+  c1_words, c2_words = {}, {}
+  c1_ants, c2_ants = {}, {}
+
+  for token in c1_spacy:
+    if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
+      wordnet_token = wn.synsets(token.text)
+      if wordnet_token: # if its in wornet db
+        c1_words[token.text] = wordnet_token # add to the list
+
+  for token in c2_spacy:
+    if token.pos_=='VERB' or token.pos_=='ADJ' or token.pos_=='ADV':
+      wordnet_token = wn.synsets(token.text)
+      if wordnet_token: # if its in wornet db
+        c2_words[token.text] = wordnet_token # add to the list
+
+  # PRE: two dictionaries with word: word-synsets
+  # POST: check whether there exists any antonyms in another sentence
+  for w in c1_words.values(): # for each synset
+    for s in w: # for each synonym
+      for l in s.lemmas(): # find its lemma(s)
+        if l.antonyms(): # check if it has an antonym or not
+          for ants in l.antonyms(): # if there's antonym with this lemma
+            c1_ants[ants.name()] = s # append into the ant dictionary
+
+  for w in c2_words.values(): # for each synset
+    for s in w: # for each synonym
+      for l in s.lemmas(): # find its lemma(s)
+        if l.antonyms(): # check if it has an antonym or not
+          for ants in l.antonyms(): # if there's antonym with this lemma
+            c2_ants[ants.name()] = s # append into the ant dictionary
+
+  similarity_value = 0
+  for w in c1_words.values():
+    for s in w:
+      word = s.name().split(".")[0]
+      try:
+        print(s, c2_ants[word])
+        similarity_value = s.wup_similarity(c2_ants[word])
+      except:
+        pass
+  if similarity_value == 0:
+    similarity_value = c1_spacy.similarity(c2_spacy)
+  return similarity_value
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
   caption_file = 'citynews_caption.srt'
   transcript_file = 'citynews_transcript.srt'
-  
+  nlp = spacy.load('en')
+
   with open(transcript_file) as tf:
     lines = tf.readlines()
     tcf = CaptionCollection(lines)
@@ -170,26 +288,40 @@ if __name__ == '__main__':
     ccf = CaptionCollection(lines)
     cps = ParseSentence(ccf).get_sentences()
 
-  first_caption = tps[0]
-  fc_time = first_caption[0]
-  fc_txt = first_caption[1]
-  txt_ngram = ''.join(fc_txt.split()[0:3]).lower()
+  t_sentence = tps[0]
+  t_time = t_sentence[0]
+  t_txt = t_sentence[1]
+  t_txt_ngram = ' '.join(t_txt.split()[0:2])
   # 1. value generation
   # a. find the delay first.
-  for i in cps:
-    t_time = i[0]
-    t_words = i[1].split()
-    t_txt_ngram = ''.join(t_words[0:3]).lower()
-    if txt_ngram == t_txt_ngram:
-      delay = abs(t_time[0].to_ms() - fc_time[0].to_ms())
+  input_matrix = []
+  sync_delay = False
+  counter = 0
+  cap = max(len(cps), len(tps))
+
+  while counter < cap:
+    v_list = []
+    c_sentence = cps[counter]
+    c_time = c_sentence[0]
+    c_txt = c_sentence[1].split()
+    c_txt_ngram = ' '.join(c_txt[0:2])
+
+    if t_txt_ngram == c_txt_ngram:
+      # calculate delay
+      delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
       # get words per min
-      duration = (fc_time[1].to_ms() - fc_time[0].to_ms())/1000/60.0 # in minutes
-      wpm = len(t_words)/duration
+      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
+      wpm = len(c_txt)/duration
       # similarity (paraphrasing)
-
+      sim_value = getSimilarity(c_sentence[1], t_txt)
       # spelling errors
+      spelling = getSpellErr(c_sentence[1])
+      # append them all
+      value_list = [delay, wpm, sim_value, spelling]
+      input_matrix.append(v_list)
 
 
-      print(delay, wpm)
 
+
+  #print(input_matrix)
 

@@ -146,14 +146,16 @@ def getSimilarity(s1, s2):
           for ants in l.antonyms(): # if there's antonym with this lemma
             c2_ants[ants.name()] = s # append into the ant dictionary
 
+  similarity_value = 0
   for w in c1_words.values():
     for s in w:
       word = s.name().split(".")[0]
       try:
         print(s, c2_ants[word])
-        print(s.wup_similarity(c2_ants[word]))
+        similarity_value = (s.wup_similarity(c2_ants[word]))
       except:
         pass
+  return similarity_value
 
   #print(wn.synsets('satisfied')[0].lemmas()[0].antonyms())
   #print(wn.synsets('dissatisfied')[0].lemmas()[0].antonyms())
