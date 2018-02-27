@@ -144,7 +144,7 @@ class ParseSentence:
             else:
               time_tuple = (start, cap.end)
             sent_cap.append(time_tuple)
-            sent_cap.append(tmp_sent)
+            sent_cap.append(tmp_sent.lower().strip())
         else:
           split_ending = tmp_sent.split(".")
           ending = split_ending[0] + "."
@@ -173,7 +173,7 @@ def getSpellErr(s):
   chkr.set_text(s)
   counter = 0 # checking how many spelling errors in s1
   for err in chkr:
-    print(err.word)
+    print("spell error at:", err.word)
     counter+=1
   return counter
 
@@ -218,8 +218,8 @@ def getSimilarity(s1, s2):
   c1_spacy = nlp(str(s1))
   c2_spacy = nlp(str(s2))
 
-  print(c1_spacy)
-  print(c2_spacy)
+  #print(c1_spacy)
+  #print(c2_spacy)
 
   c1_words, c2_words = {}, {}
   c1_ants, c2_ants = {}, {}
@@ -257,19 +257,13 @@ def getSimilarity(s1, s2):
     for s in w:
       word = s.name().split(".")[0]
       try:
-        print(s, c2_ants[word])
+        #print(s, c2_ants[word])
         similarity_value = s.wup_similarity(c2_ants[word])
       except:
         pass
   if similarity_value == 0:
     similarity_value = c1_spacy.similarity(c2_spacy)
   return similarity_value
-
-
-
-
-
-
 
 
 
@@ -288,26 +282,35 @@ if __name__ == '__main__':
     ccf = CaptionCollection(lines)
     cps = ParseSentence(ccf).get_sentences()
 
-  t_sentence = tps[0]
-  t_time = t_sentence[0]
-  t_txt = t_sentence[1]
-  t_txt_ngram = ' '.join(t_txt.split()[0:2])
   # 1. value generation
   # a. find the delay first.
   input_matrix = []
   sync_delay = False
-  counter = 0
-  cap = max(len(cps), len(tps))
+  c_index = 0
+  t_index = 0
+  lim = max(len(cps), len(tps))
+  #typically cps would have less sentences
 
-  while counter < cap:
+  while c_index < lim:
     v_list = []
-    c_sentence = cps[counter]
-    c_time = c_sentence[0]
-    c_txt = c_sentence[1].split()
-    c_txt_ngram = ' '.join(c_txt[0:2])
 
-    if t_txt_ngram == c_txt_ngram:
-      # calculate delay
+    c_sentence = cps[c_index]
+    c_time, c_txt = c_sentence[0], c_sentence[1]
+    c_txt_ngram = ' '.join(c_txt.split()[0:2])
+
+    t_sentence = tps[t_index]
+    t_time, t_txt = t_sentence[0], t_sentence[1]
+    t_txt_ngram = ' '.join(t_txt.split()[0:2])
+
+    delay, duration, wpm, sim_value, spelling = 0,0,0,0,0
+
+    print("t:", t_txt)
+    print("c:", c_txt)
+
+    #check the first n-words, to see if it's the same sentence
+    # this can be replaced to check similarity ..?
+    if t_txt_ngram == c_txt_ngram and not sync_delay:
+      # calculate delay from the very first caption
       delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
       # get words per min
       duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
@@ -316,12 +319,20 @@ if __name__ == '__main__':
       sim_value = getSimilarity(c_sentence[1], t_txt)
       # spelling errors
       spelling = getSpellErr(c_sentence[1])
-      # append them all
-      value_list = [delay, wpm, sim_value, spelling]
-      input_matrix.append(v_list)
+    else:
+      # when the transcript sentence is ommitted in caption file
+      delay = abs(t_time[0].to_ms() - c_time[0].to_ms()) # what's the delay in this case then..?
+      # get words per min
+      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
+      wpm = len(c_txt)/duration
+      # not similar at all
+      sim_value = 0
+      # spelling error then is everything
+      # since it was ommitted..
+      spelling = len(t_txt.split())
 
-
-
-
-  #print(input_matrix)
+    # append them all
+    value_list = [delay, wpm, sim_value, spelling]
+    input_matrix.append(v_list)
+    c_index += 1
 
