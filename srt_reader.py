@@ -1,18 +1,18 @@
 #srt file reader-parser
 import re, sys
 from caption import Caption
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords as sw
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import wordnet as wn
+#from nltk.tokenize import word_tokenize
+#from nltk.corpus import stopwords as sw
+#from nltk.stem import WordNetLemmatizer
+#from nltk.corpus import wordnet as wn
 
-import spacy
-from spacy.lemmatizer import Lemmatizer
+#import spacy
+#from spacy.lemmatizer import Lemmatizer
 
 import numpy as np
 
-import enchant
-from enchant.checker import SpellChecker
+#import enchant
+#from enchant.checker import SpellChecker
 
 class CaptionCollection:
   def __init__(self, lines):
@@ -270,7 +270,7 @@ def getSimilarity(s1, s2):
 if __name__ == '__main__':
   caption_file = 'citynews_caption.srt'
   transcript_file = 'citynews_transcript.srt'
-  nlp = spacy.load('en')
+  #nlp = spacy.load('en')
 
   with open(transcript_file) as tf:
     lines = tf.readlines()
@@ -285,15 +285,12 @@ if __name__ == '__main__':
   # 1. value generation
   # a. find the delay first.
   input_matrix = []
-  sync_delay = False
-  c_index = 0
-  t_index = 0
+  sync_delay = 0
+  c_index, t_index = 0, 0
   lim = max(len(cps), len(tps))
+
   #typically cps would have less sentences
-
   while c_index < lim:
-    v_list = []
-
     c_sentence = cps[c_index]
     c_time, c_txt = c_sentence[0], c_sentence[1]
     c_txt_ngram = ' '.join(c_txt.split()[0:2])
@@ -309,30 +306,51 @@ if __name__ == '__main__':
 
     #check the first n-words, to see if it's the same sentence
     # this can be replaced to check similarity ..?
-    if t_txt_ngram == c_txt_ngram and not sync_delay:
+    if t_txt_ngram == c_txt_ngram:
       # calculate delay from the very first caption
       delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
       # get words per min
       duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
       wpm = len(c_txt)/duration
       # similarity (paraphrasing)
-      sim_value = getSimilarity(c_sentence[1], t_txt)
+      #sim_value = getSimilarity(c_sentence[1], t_txt)
       # spelling errors
-      spelling = getSpellErr(c_sentence[1])
-    else:
-      # when the transcript sentence is ommitted in caption file
-      delay = abs(t_time[0].to_ms() - c_time[0].to_ms()) # what's the delay in this case then..?
-      # get words per min
-      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
-      wpm = len(c_txt)/duration
-      # not similar at all
-      sim_value = 0
-      # spelling error then is everything
-      # since it was ommitted..
-      spelling = len(t_txt.split())
+      #spelling = getSpellErr(c_sentence[1])
 
-    # append them all
-    value_list = [delay, wpm, sim_value, spelling]
-    input_matrix.append(v_list)
+      sync_delay = c_index
+      # append them all
+      v_list = [delay, wpm, sim_value, spelling]
+      input_matrix.append(v_list)
+
+      break
     c_index += 1
+  print("sync delay is then:", sync_delay)
+  print()
+  c_index = sync_delay # sync the delayed indices
+  while t_index < len(tps):
+    c_sentence = cps[c_index]
+    c_time, c_txt = c_sentence[0], c_sentence[1]
+    c_txt_ngram = ' '.join(c_txt.split()[0:2])
 
+    t_sentence = tps[t_index]
+    t_time, t_txt = t_sentence[0], t_sentence[1]
+    t_txt_ngram = ' '.join(t_txt.split()[0:2])
+
+    delay, duration, wpm, sim_value, spelling = 0,0,0,0,0
+
+    print("t:", t_txt)
+    print("c:", c_txt)
+
+    if t_txt_ngram == c_txt_ngram:
+      print("match")
+      print()
+      c_index += 1
+    else:
+      print("didn't match, move on")
+      print()
+    t_index += 1
+
+    if t_index == len(tps) and c_index < len(cps):
+      
+    
+      
