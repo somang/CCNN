@@ -1,18 +1,18 @@
 #srt file reader-parser
 import re, sys
 from caption import Caption
-#from nltk.tokenize import word_tokenize
-#from nltk.corpus import stopwords as sw
-#from nltk.stem import WordNetLemmatizer
-#from nltk.corpus import wordnet as wn
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords as sw
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet as wn
 
-#import spacy
-#from spacy.lemmatizer import Lemmatizer
+import spacy
+from spacy.lemmatizer import Lemmatizer
 
 import numpy as np
 
-#import enchant
-#from enchant.checker import SpellChecker
+import enchant
+from enchant.checker import SpellChecker
 
 class CaptionCollection:
   def __init__(self, lines):
@@ -270,7 +270,7 @@ def getSimilarity(s1, s2):
 if __name__ == '__main__':
   caption_file = 'citynews_caption.srt'
   transcript_file = 'citynews_transcript.srt'
-  #nlp = spacy.load('en')
+  nlp = spacy.load('en')
 
   with open(transcript_file) as tf:
     lines = tf.readlines()
@@ -301,8 +301,8 @@ if __name__ == '__main__':
 
     delay, duration, wpm, sim_value, spelling = 0,0,0,0,0
 
-    print("t:", t_txt)
-    print("c:", c_txt)
+    #print("t:", t_txt)
+    #print("c:", c_txt)
 
     #check the first n-words, to see if it's the same sentence
     # this can be replaced to check similarity ..?
@@ -313,9 +313,9 @@ if __name__ == '__main__':
       duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
       wpm = len(c_txt)/duration
       # similarity (paraphrasing)
-      #sim_value = getSimilarity(c_sentence[1], t_txt)
+      sim_value = getSimilarity(c_sentence[1], t_txt)
       # spelling errors
-      #spelling = getSpellErr(c_sentence[1])
+      spelling = getSpellErr(c_sentence[1])
 
       sync_delay = c_index
       # append them all
@@ -325,8 +325,10 @@ if __name__ == '__main__':
       break
     c_index += 1
   print("sync delay is then:", sync_delay)
-  print()
+  #print()
   c_index = sync_delay # sync the delayed indices
+  last_match_index = 0
+  
   while t_index < len(tps):
     c_sentence = cps[c_index]
     c_time, c_txt = c_sentence[0], c_sentence[1]
@@ -336,21 +338,60 @@ if __name__ == '__main__':
     t_time, t_txt = t_sentence[0], t_sentence[1]
     t_txt_ngram = ' '.join(t_txt.split()[0:2])
 
+    c_txt_end_ngram = ' '.join(c_txt.split()[-3:])
+    t_txt_end_ngram =  ' '.join(t_txt.split()[-3:])
+
     delay, duration, wpm, sim_value, spelling = 0,0,0,0,0
 
-    print("t:", t_txt)
-    print("c:", c_txt)
+    #print(c_index, len(cps))
+    #print(c_txt)
 
     if t_txt_ngram == c_txt_ngram:
-      print("match")
+      print("c:", c_txt)
+      print("t:", t_txt)
       print()
+
+      # calculate delay from the very first caption
+      delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
+      # get words per min
+      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
+      wpm = len(c_txt)/duration
+      # similarity (paraphrasing)
+      sim_value = getSimilarity(c_sentence[1], t_txt)
+      # spelling errors
+      spelling = getSpellErr(c_sentence[1])
+      # append them all
+      v_list = [delay, wpm, sim_value, spelling]
+      input_matrix.append(v_list)
       c_index += 1
-    else:
-      print("didn't match, move on")
+      last_match_index = t_index
+    elif t_txt_end_ngram == c_txt_end_ngram:
+      print("ENDING MATCH")
+      print("c:", c_txt)
+      print("t:", t_txt)
       print()
+      # calculate delay from the very first caption
+      delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
+      # get words per min
+      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
+      wpm = len(c_txt)/duration
+      # similarity (paraphrasing)
+      sim_value = getSimilarity(c_sentence[1], t_txt)
+      # spelling errors
+      spelling = getSpellErr(c_sentence[1])
+      # append them all
+      v_list = [delay, wpm, sim_value, spelling]
+      input_matrix.append(v_list)
+      c_index += 1
+      last_match_index = t_index
+    #else:
+      #print("no match, move the transcript sentence on..")
+      #print()
     t_index += 1
 
-    if t_index == len(tps) and c_index < len(cps):
-      
+    if t_index == len(tps) and c_index < len(cps)-1:
+      #print("no match, move the Caption on...")
+      c_index += 1
+      t_index = last_match_index-1
     
-      
+  print(input_matrix)
