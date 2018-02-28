@@ -299,29 +299,9 @@ if __name__ == '__main__':
     t_time, t_txt = t_sentence[0], t_sentence[1]
     t_txt_ngram = ' '.join(t_txt.split()[0:2])
 
-    delay, duration, wpm, sim_value, spelling = 0,0,0,0,0
-
-    #print("t:", t_txt)
-    #print("c:", c_txt)
-
     #check the first n-words, to see if it's the same sentence
     # this can be replaced to check similarity ..?
     if t_txt_ngram == c_txt_ngram:
-      # calculate delay from the very first caption
-      delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
-      # get words per min
-      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
-      wpm = len(c_txt)/duration
-      # similarity (paraphrasing)
-      sim_value = getSimilarity(c_sentence[1], t_txt)
-      # spelling errors
-      spelling = getSpellErr(c_sentence[1])
-
-      sync_delay = c_index
-      # append them all
-      v_list = [delay, wpm, sim_value, spelling]
-      input_matrix.append(v_list)
-
       break
     c_index += 1
   print("sync delay is then:", sync_delay)
@@ -347,9 +327,9 @@ if __name__ == '__main__':
     #print(c_txt)
 
     if t_txt_ngram == c_txt_ngram:
-      print("c:", c_txt)
-      print("t:", t_txt)
-      print()
+      #print("c:", c_txt)
+      #print("t:", t_txt)
+      #print()
 
       # calculate delay from the very first caption
       delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
@@ -366,10 +346,10 @@ if __name__ == '__main__':
       c_index += 1
       last_match_index = t_index
     elif t_txt_end_ngram == c_txt_end_ngram:
-      print("ENDING MATCH")
-      print("c:", c_txt)
-      print("t:", t_txt)
-      print()
+      #print("ENDING MATCH")
+      #print("c:", c_txt)
+      #print("t:", t_txt)
+      #print()
       # calculate delay from the very first caption
       delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
       # get words per min
@@ -384,9 +364,11 @@ if __name__ == '__main__':
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
-    #else:
+    else:
       #print("no match, move the transcript sentence on..")
       #print()
+      print("c:", c_txt)
+
     t_index += 1
 
     if t_index == len(tps) and c_index < len(cps)-1:
@@ -395,3 +377,4 @@ if __name__ == '__main__':
       t_index = last_match_index-1
     
   print(input_matrix)
+  print(len(input_matrix))
