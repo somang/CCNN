@@ -14,6 +14,10 @@ import numpy as np
 import enchant
 from enchant.checker import SpellChecker
 
+from keras.models import Sequential
+from keras.layers import Dense
+
+
 class CaptionCollection:
   def __init__(self, lines):
     self.captionFile = {}
@@ -168,13 +172,17 @@ class ParseSentence:
       i += 1
 
 def getSpellErr(s):
+  stopwords = ["monday", "tuesday", "wednesday", "kilometres", 
+                "simcoe", "york", "unionville", "markham", "ajax", "whitby",
+                "santa", "claus", "grey", "ottawa", "ontario"]
   chkr = SpellChecker("en_US")
   #Check how many words in s1 have spelling errors
   chkr.set_text(s)
   counter = 0 # checking how many spelling errors in s1
   for err in chkr:
-    print("spell error at:", err.word)
-    counter+=1
+    if err.word not in stopwords:
+      print("spell error at:", err.word)
+      counter+=1
   return counter
 
 def handleOmissions(sentence):
@@ -261,8 +269,12 @@ def getSimilarity(s1, s2):
         similarity_value = s.wup_similarity(c2_ants[word])
       except:
         pass
+
   if similarity_value == 0:
     similarity_value = c1_spacy.similarity(c2_spacy)
+  if similarity_value == None:
+    similarity_value = 0
+
   return similarity_value
 
 
@@ -305,7 +317,7 @@ if __name__ == '__main__':
       break
     c_index += 1
   print("sync delay is then:", sync_delay)
-  #print()
+
   c_index = sync_delay # sync the delayed indices
   last_match_index = 0
   
@@ -364,10 +376,10 @@ if __name__ == '__main__':
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
-    else:
+    #else:
       #print("no match, move the transcript sentence on..")
       #print()
-      print("c:", c_txt)
+      #print("c:", c_txt)
 
     t_index += 1
 
@@ -376,5 +388,65 @@ if __name__ == '__main__':
       c_index += 1
       t_index = last_match_index-1
     
-  print(input_matrix)
-  print(len(input_matrix))
+  #print(input_matrix)
+
+  # setup data
+  dataset = np.loadtxt("filtered_data_numbers.csv", delimiter=",")
+
+  # split input(X) and output(Y)
+  Y = dataset[:,:]
+  dY = []
+  dX = []
+
+  for i in range(len(Y)):
+    for j in range(len(input_matrix)):
+      dY.append(Y[i])
+      dX.append(input_matrix[j])
+
+  Y = np.asarray(dY)
+  X = np.asarray(dX)
+
+  print(Y)
+  print(X)
+
+  #create model
+  model = Sequential()
+  model.add(Dense(4, input_dim=4, activation='relu'))
+  model.add(Dense(12, activation='relu'))
+  model.add(Dense(12, activation='relu'))
+  model.add(Dense(6, kernel_initializer='normal'))
+
+  #compile model
+  model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+
+  #fit the model
+  history = model.fit(X, Y, epochs=100, batch_size=10)
+
+  #predict using the model
+  p_input = np.array(
+    [
+      [3319, 548.1481481481483, 1.0000000001558595, 0], 
+      [6820, 582.0467276950403, 0, 0]
+    ]
+    )
+  #print(p_input.shape)
+
+  prediction = model.predict(p_input)
+  print(prediction)
+
+  # the order of input goes
+  # delay
+  # word per minute
+  # similarity_value
+  # spelling
+
+
+  # the order of prediction output goes
+  # how much do you think the 
+  # 0. fast apeearing and disappearing captions
+  # 1. slow apeearing and disappearing captions
+  # 2. missing words
+  # 3. spelling errors
+  # 4. speaker identification 
+  # 5. verbatim accurate captions 
+  # affect viewing pleasure?
