@@ -134,7 +134,7 @@ class ParseSentence:
       sent_cap = []
       counter = 0
       while not sent_cap:
-        if tmp_sent.find(".") == -1:
+        if tmp_sent.find(".") == -1 or tmp_sent.find("!") == -1 or tmp_sent.find("?") == -1:
           if i <= len(cf):
             cap = cf.get(i)
             tmp_sent += cap.txt + " "
