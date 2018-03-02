@@ -150,7 +150,7 @@ class ParseSentence:
             sent_cap.append(time_tuple)
             sent_cap.append(tmp_sent.lower().strip())
         else:
-          split_ending = tmp_sent.split(".")
+          split_ending = re.split("[.?!]", tmp_sent)
           ending = split_ending[0] + "."
           tmp_sent = '.'.join(split_ending[1:])
           i -= 1
