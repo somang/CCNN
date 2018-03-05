@@ -1,227 +1,215 @@
-8,8,5,4,7,8
-4,2,4,4,4,4
-6,3,4,6,6,3
-5,6,4,9,6,6
-3,7,4,2,3,4
-1,6,3,5,4,4
-4,5,3,5,5,6
-10,10,10,10,9,9
-7,5,6,8,6,6
-7,6,5,5,6,5
-3,2,2,2,5,1
-2,0,0,1,5,3
-6,7,4,6,7,3
-8,6,8,5,4,8
-5,3,5,5,5,5
-6,8,7,8,8,5
-3,1,4,5,5,5
-3,3,5,5,5,5
-0,0,0,0,5,0
-5,3,5,5,5,5
-5,5,4,4,3,3
-5,6,4,6,6,6
-3,8,2,2,4,3
-3,5,2,3,2,4
-3,5,5,5,5,5
-5,8,4,7,3,6
-5,5,4,4,5,3
-5,5,4,4,5,3
-6,4,7,5,5,3
-4,6,6,4,8,4
-1,6,3,4,5,4
-3,3,1,3,2,4
-5,5,3,3,5,5
-5,5,5,5,5,5
-2,1,1,5,10,1
-2,2,1,5,5,5
-6,5,5,5,4,4
-6,5,7,4,4,9
-4,4,4,5,5,5
-2,0,3,2,5,2
-3,6,5,4,5,5
-2,2,2,5,5,5
-7,6,4,3,8,6
-7,8,7,6,6,7
-3,2,2,1,2,2
-3,8,2,5,5,3
-2,6,5,4,5,5
-5,5,5,6,6,7
-6,5,6,5,5,4
-1,1,1,1,1,1
-1,5,5,5,5,5
-6,3,6,5,5,3
-6,6,6,6,10,10
-5,5,5,5,5,5
-10,10,5,5,5,4
-3,6,2,0,6,5
-9,5,5,5,5,5
-3,2,5,7,5,5
-5,7,3,5,5,5
-4,7,5,3,5,2
-2,2,2,2,2,2
-8,8,5,5,6,8
-5,5,5,4,5,5
-4,4,3,5,4,6
-0,0,0,5,5,0
-2,2,3,5,5,2
-10,10,5,10,9,9
-0,1,1,0,0,0
-6,3,2,5,5,2
-10,10,5,5,10,10
-0,0,1,5,5,2
-2,2,1,9,5,3
-6,3,5,5,6,6
-5,5,5,5,8,7
-5,4,4,4,6,5
-2,2,2,5,5,0
-5,5,5,5,5,5
-5,5,5,5,5,5
-5,5,6,5,10,4
-8,9,8,8,7,8
-3,7,1,1,6,0
-10,10,5,5,10,10
-5,5,5,5,7,5
-2,3,5,5,5,1
-5,2,5,5,5,9
-4,4,3,5,7,4
-4,5,7,7,7,5
-8,5,5,5,10,5
-4,4,4,5,5,5
-1,5,1,1,5,1
-1,1,1,5,5,4
-3,3,2,2,2,1
-4,4,4,3,4,1
-1,3,5,5,6,1
-7,5,5,4,5,4
-8,6,5,6,9,5
-5,5,5,5,5,5
-2,2,2,2,5,2
-1,5,1,1,3,1
-7,5,6,10,2,3
-5,1,5,10,8,5
-1,1,3,5,5,3
-6,5,5,5,5,5
-0,0,0,5,0,3
-9,5,9,0,5,5
-4,4,3,4,4,4
-4,1,1,1,1,2
-4,4,4,4,4,4
-9,9,9,9,9,9
-7,3,5,5,6,5
-4,6,5,4,5,5
-4,6,4,4,6,2
-1,7,4,5,5,1
-3,5,3,1,5,5
-4,2,4,5,5,4
-1,5,3,3,5,1
-4,2,2,4,5,3
-1,5,1,1,5,1
-1,2,5,5,5,5
-8,5,5,5,5,6
-7,8,4,4,5,6
-7,7,4,3,5,5
-1,1,5,5,5,5
-5,1,1,5,10,5
-5,4,5,6,6,6
-5,2,5,5,5,5
-10,9,7,10,8,8
-6,4,6,4,6,7
-3,4,3,5,6,4
-1,1,5,5,6,3
-5,5,5,4,3,4
-4,5,6,5,5,5
-5,5,4,5,5,5
-9,5,10,9,4,7
-6,3,5,5,5,8
-5,3,5,2,1,4
-2,2,7,5,6,3
-9,9,10,9,8,9
-2,4,5,5,5,3
-0,5,5,5,5,5
-4,5,5,5,3,4
-5,4,3,5,6,4
-1,1,5,5,5,3
-2,1,2,3,5,1
-8,8,6,9,9,8
-4,3,1,3,9,4
-0,0,5,2,5,0
-3,3,5,5,5,5
-2,0,5,5,5,5
-3,3,3,2,5,1
-1,1,5,5,5,1
-7,3,1,5,5,2
-7,7,5,5,5,4
-3,5,8,7,7,7
-2,3,5,5,9,5
-5,7,3,5,4,7
-5,0,5,0,5,5
-6,3,5,4,5,5
-1,1,1,2,3,2
-8,8,9,7,7,8
-5,5,5,5,8,8
-4,5,2,8,5,5
-5,5,0,5,10,0
-4,3,5,5,5,4
-7,4,4,5,5,6
-5,2,5,5,5,5
-2,5,5,6,5,6
-5,7,0,2,2,4
-3,3,5,5,7,5
-0,5,1,5,5,1
-5,5,5,5,5,5
-3,5,5,5,5,5
-5,5,5,5,5,5
-7,7,6,8,5,5
-1,2,1,5,5,5
-6,4,3,3,5,5
-3,3,3,5,5,3
-7,1,4,5,5,6
-9,9,8,9,9,9
-8,3,5,5,10,5
-7,5,5,4,9,5
-2,5,4,5,5,3
-3,2,6,6,4,5
-6,5,6,6,7,5
-5,5,6,7,5,5
-5,1,2,4,2,2
-5,0,5,5,5,5
-4,4,4,5,5,2
-4,7,5,8,5,3
-8,7,8,7,7,7
-1,5,5,5,5,5
-9,7,6,4,6,2
-3,3,5,5,5,3
-8,7,7,7,6,4
-2,3,5,9,5,5
-7,8,7,8,8,9
-4,4,1,5,5,4
-3,5,3,5,5,2
-5,5,4,4,5,5
-3,6,4,7,7,7
-7,5,4,3,0,1
-4,4,4,5,5,5
-4,4,3,3,5,4
-2,6,3,5,9,6
-2,2,2,5,5,1
-2,8,7,6,8,3
-6,3,5,5,5,5
-3,3,4,4,5,0
-6,3,5,3,5,1
-6,2,1,3,6,3
-8,8,7,7,6,8
-5,1,1,5,3,5
-3,4,4,4,3,4
-4,4,8,5,5,1
-5,5,5,5,5,5
-4,3,5,2,3,4
-2,3,3,5,4,3
-0,0,0,0,0,0
-3,6,3,2,5,3
-7,5,4,1,5,4
-8,6,3,7,8,4
-2,2,1,1,3,1
-9,9,9,9,9,9
-0,9,1,0,5,0
-0,5,0,0,5,0
-5,3,5,5,7,4
-5,9,2,6,6,4
+Q9,Q81,Q45_1,Q47_1,Q49_1,Q51_1,Q55_1,Q57_1,Q74_1,Q76_1,Q78_1,Q80_1,Q84_1,Q88_1
+Q1: What statement best describes your relationship to the Deaf and/or hard of hearing communities?,Other:,Q17: How much do you think the fast appearing and disappearing captions affected your viewing pleasure?,Q18: How much do you think the slow appearing and disappearing captions affected your viewing pleasure?,Q19: How much do you think the missing words affected your viewing pleasure?,Q20: How much do you think the spelling and/or grammar errors affected your viewing pleasure?,Q21: How much do you think the use of speaker identification affected your viewing pleasure?,Q22: How much do you think the lack of verbatim accurate captions affected your viewing pleasure?,Q27: How much do you think the fast appearing and disappearing captions affected your viewing pleasure?,Q28: How much do you think the slow appearing and disappearing captions affected your viewing pleasure?,Q29: How much do you think the missing words affected your viewing pleasure?,Q30: How much do you think the spelling and/or grammar errors affected your viewing pleasure?,Q31: How much do you think the use of speaker identification affected your viewing pleasure?,Q32: How much do you think the lack of verbatim accurate captions affected your viewing pleasure?
+I have no relationship to these communities,,1,,5,5,5,5,1,,1,1,,1
+I am Hard of Hearing,,5,5,4,4,5,5,1,1,1,1,1,1
+I have no relationship to these communities,,6,3,6,5,5,3,1,0,0,0,0,0
+"Other, please specify below",My mother is deaf,8,6,3,7,8,4,7,6,8,4,6,4
+I have no relationship to these communities,,6,6,6,6,10,10,6,5,4,3,6,5
+"Other, please specify below",I am a film producer and must always have my films and videos transcribed. ,8,8,5,4,7,8,1,1,4,4,6,6
+I am Hard of Hearing,,6,4,7,5,5,3,2,2,3,2,1,0
+I identify as Deaf,,8,7,7,7,6,4,4,3,5,4,6,3
+I am Hard of Hearing,,3,3,1,3,2,4,9,9,6,8,8,8
+I have no relationship to these communities,,10,10,5,5,5,4,8,8,7,8,8,8
+"Other, please specify below",I was born deaf and could not hear until I was 2 which causes issues for the first 10 years of my life requiring me to learn some sign language and get speech lessons. ,0,9,1,0,5,0,8,8,5,5,7,5
+I am Hard of Hearing,,8,6,8,5,4,8,4,7,8,4,5,8
+I am Deafed,,7,5,4,3,0,1,1,1,2,2,2,1
+I identify as Deaf,,5,5,4,4,3,3,5,4,6,6,5,1
+I have no relationship to these communities,,3,6,2,0,6,,10,5,5,5,10,5
+I am Hard of Hearing,,6,2,1,3,6,3,1,1,1,4,5,2
+I identify as Deaf,,4,4,8,,,1,8,7,5,3,4,
+I have no relationship to these communities,,3,2,5,7,,5,4,7,5,4,5,5
+I have no relationship to these communities,,5,7,3,5,5,5,4,5,5,,7,
+I have no relationship to these communities,,4,7,5,3,5,2,4,4,4,3,3,3
+I have no relationship to these communities,,2,2,2,2,2,2,4,4,5,4,6,4
+I identify as Deaf,,5,5,5,5,5,5,5,5,5,5,10,5
+I have no relationship to these communities,,8,8,5,5,6,8,8,2,3,8,4,6
+I am Hard of Hearing,,8,8,7,7,6,8,7,8,7,6,7,8
+I have no relationship to these communities,,5,5,5,4,5,5,5,4,4,5,5,5
+I have no relationship to these communities,,4,4,3,5,4,6,5,5,5,7,6,7
+I am Hard of Hearing,,6,7,4,6,7,3,6,7,7,7,6,7
+I am Hard of Hearing,,6,8,7,8,8,5,5,5,4,4,4,4
+I am Hard of Hearing,,10,10,10,10,9,9,9,9,9,10,10,10
+I have no relationship to these communities,,0,0,0,5,5,0,5,5,5,5,5,5
+I am Hard of Hearing,,7,5,4,1,5,4,0,,1,4,5,3
+I have no relationship to these communities,,2,2,3,5,5,2,5,5,5,5,5,5
+I have no relationship to these communities,,10,10,5,10,9,9,10,9,5,10,9,9
+I have no relationship to these communities,,0,1,1,0,0,0,4,5,5,6,6,5
+I identify as Deaf,,3,5,2,3,2,4,3,2,3,4,4,4
+I have no relationship to these communities,,6,3,2,,5,2,,3,4,4,6,4
+I have no relationship to these communities,,10,10,5,5,10,10,10,10,5,5,5,10
+I am Hard of Hearing,,1,6,3,4,5,4,2,7,5,5,6,5
+I am Hard of Hearing,,4,5,3,5,5,6,,,,,,
+"Other, please specify below",I have friends who are hard of hearing and/or deaf. ,3,8,2,5,5,3,3,9,3,5,,
+"Other, please specify below",I have a degree in sign language interpreting,4,4,4,5,5,5,0,0,0,1,5,
+I am Hard of Hearing,,6,3,5,,,5,1,,,,,5
+I identify as Deaf,,7,8,7,8,8,9,,,,,,
+"Other, please specify below",My daughter is hearing impaired,0,0,0,0,5,0,,,,,,
+I have no relationship to these communities,,2,2,1,9,5,3,1,,2,3,,1
+I am Hard of Hearing,,7,6,4,3,8,6,,,,,,
+I have no relationship to these communities,,6,3,5,5,6,6,4,6,3,3,,5
+I have no relationship to these communities,,5,5,5,5,8,7,1,,4,4,,5
+I am Hard of Hearing,,3,7,4,2,3,4,4,6,5,4,6,6
+I have no relationship to these communities,,5,4,4,4,6,5,,,,,,
+I have no relationship to these communities,,2,2,2,5,5,0,5,5,5,5,5,5
+I have no relationship to these communities,,5,5,5,5,5,5,5,5,5,5,5,5
+I have no relationship to these communities,,5,5,5,5,5,5,10,10,10,10,10,10
+I have no relationship to these communities,,5,5,6,5,10,4,0,0,4,5,,0
+I have no relationship to these communities,,8,9,8,8,7,8,,,,,,
+"Other, please specify below",my son is no verbal so we are fluent in sign language community but he is not deaf,6,5,7,4,4,9,4,6,4,6,6,8
+"Other, please specify below",My father is partially deaf.,1,6,3,5,,4,5,9,5,5,,5
+I have no relationship to these communities,,,,,,,,,,,,,
+I have no relationship to these communities,,2,3,5,5,,1,,8,5,5,,4
+I have no relationship to these communities,,,2,5,5,5,9,1,,4,3,5,6
+I am Hard of Hearing,,,,,,,,,,,,,
+I am Deafed,,3,4,4,4,3,4,,,,,,
+"Other, please specify below",I have hearing impaired family members,2,3,5,9,5,5,5,5,5,5,7,5
+I am Hard of Hearing,Who regularly use closed captions while watching television.,8,7,8,7,7,7,7,8,7,8,7,8
+I am Hard of Hearing,,5,6,4,6,6,6,,,,,,
+I have no relationship to these communities,,4,4,3,5,7,4,4,4,5,5,5,5
+I have no relationship to these communities,,4,5,7,7,7,5,8,,8,7,8,6
+I have no relationship to these communities,some people come to me they talk they see,8,5,5,5,10,5,5,8,5,5,5,5
+I am Hard of Hearing,,3,2,2,1,2,2,,,,,,
+I have no relationship to these communities,,4,4,4,5,5,5,8,5,5,5,5,5
+I have no relationship to these communities,,1,,1,1,,1,,9,,,6,
+I have no relationship to these communities,,1,1,1,5,5,4,1,2,2,5,5,5
+I have no relationship to these communities,,3,3,2,2,2,1,3,4,4,5,3,4
+I am Hard of Hearing,,2,0,3,2,,2,0,1,2,5,5,0
+I am Hard of Hearing,,5,6,4,9,6,6,7,3,2,8,7,8
+I am Hard of Hearing,,1,5,5,5,5,5,,,,,,
+"Other, please specify below",I'm deaf in my left ear. ,6,3,5,3,5,1,3,5,5,5,5,3
+I have no relationship to these communities,,4,4,4,3,4,1,3,3,2,1,3,1
+I have no relationship to these communities,,1,3,5,5,6,1,,,,,,
+I have no relationship to these communities,,7,5,5,4,5,4,5,2,3,3,5,1
+I am Hard of Hearing,,3,3,4,4,5,0,0,0,2,2,5,1
+I have no relationship to these communities,,8,6,5,6,9,5,6,5,4,4,6,6
+I have no relationship to these communities,,5,5,5,5,5,5,5,5,5,5,5,5
+I have no relationship to these communities,,2,2,2,2,5,2,7,7,7,7,7,8
+I have no relationship to these communities,n/a,1,5,1,1,3,1,5,5,,,5,
+I identify as Deaf,,4,7,5,8,5,3,7,3,5,9,5,3
+I am Hard of Hearing,,3,5,5,5,5,5,4,3,5,6,5,3
+I have no relationship to these communities,,7,5,6,10,2,3,8,4,5,10,7,5
+I have no relationship to these communities,,1,1,3,5,,3,4,6,4,5,8,4
+,I have a friend and family member who is def.,5,5,5,6,6,7,4,5,5,5,0,5
+I am Hard of Hearing,,9,7,6,4,6,2,5,5,5,5,5,6
+I have no relationship to these communities,,0,0,0,5,0,3,0,1,1,1,2,1
+I am Hard of Hearing,,3,6,4,7,7,7,3,6,1,2,5,7
+I have no relationship to these communities,,9,5,9,0,5,5,5,5,1,5,5,5
+I have no relationship to these communities,,4,4,3,4,4,4,6,6,6,6,6,6
+I am Hard of Hearing,,5,9,2,6,6,4,1,3,8,2,2,3
+I have no relationship to these communities,,4,1,1,1,1,2,1,1,1,1,1,1
+I have no relationship to these communities,,4,4,4,4,4,4,7,8,8,8,8,8
+I have no relationship to these communities,,9,9,9,9,9,9,9,9,9,9,9,9
+I have no relationship to these communities,,4,6,5,4,,5,8,8,5,5,,5
+I have no relationship to these communities,,4,6,4,4,6,2,2,2,2,1,2,2
+I have no relationship to these communities,,1,7,4,5,5,1,6,6,5,5,7,5
+"Other, please specify below",I DATED A DEAF PERSON,5,5,5,5,5,5,0,0,0,0,0,0
+"Other, please specify below",I have friends and family members that are deaf,2,2,2,,,1,,,,5,,9
+I have no relationship to these communities,,4,2,4,5,5,4,7,5,5,5,7,5
+I have no relationship to these communities,,1,5,3,3,5,1,8,5,5,5,5,5
+I have no relationship to these communities,,4,2,2,4,5,3,4,4,4,3,5,4
+I have no relationship to these communities,,8,5,5,5,5,6,10,5,5,5,5,5
+I identify as Deaf,,3,8,2,2,4,3,4,4,4,3,3,3
+I am Hard of Hearing,,3,3,5,,,5,5,5,,,7,5
+"Other, please specify below",Close relationship with person who is hard of hearing,4,4,3,3,5,4,1,5,1,1,5,0
+I have no relationship to these communities,,7,8,4,4,5,6,1,1,1,2,2,2
+I have no relationship to these communities,,7,7,4,3,5,5,5,5,5,5,5,5
+I have no relationship to these communities,,1,1,5,5,5,5,2,2,5,5,,5
+I have no relationship to these communities,,5,1,1,5,10,5,1,1,1,1,5,0
+I am Hard of Hearing,,7,5,6,8,6,6,5,6,6,7,6,6
+"Other, please specify below",spouse is hard of hearing,2,6,5,4,,5,6,5,5,5,8,5
+I have no relationship to these communities,,5,4,5,6,6,6,4,5,6,5,6,6
+I identify as Deaf,,9,9,9,9,9,9,6,6,6,7,7,7
+I have no relationship to these communities,,5,2,5,5,5,5,4,1,,4,5,2
+I have no relationship to these communities,,10,9,7,10,8,8,9,7,9,8,7,8
+I have no relationship to these communities,,6,4,6,4,6,7,7,6,6,7,7,7
+I have no relationship to these communities,,3,4,3,5,6,4,6,4,5,3,6,3
+I am Hard of Hearing,,6,3,4,6,6,3,6,4,7,3,7,6
+I have no relationship to these communities,,1,1,5,5,6,3,4,3,5,5,5,5
+I have no relationship to these communities,,5,5,5,4,3,4,1,0,2,5,5,1
+"Other, please specify below",I?€?m not hard of hearing but I watch tv with the captions on day and night. Closed captioning is always used because I feel I can?€?t understand what?€?s being said without being able to read it as well.,0,,0,0,5,0,5,0,0,0,,0
+I have no relationship to these communities,,4,,6,5,5,5,,,,,5,
+I have no relationship to these communities,,5,5,4,,,5,0,,0,0,,0
+I have no relationship to these communities,,9,5,10,9,4,7,8,6,7,7,7,8
+I have no relationship to these communities,,6,3,,,,8,1,1,1,,,3
+I have no relationship to these communities,,5,3,5,2,1,4,1,0,2,5,,5
+"Other, please specify below",I have tinitus in my right ear consider myself hard of hearing. i have friends in the deaf and hard of hearing community ,1,1,1,1,1,1,5,,,,5,
+I have no relationship to these communities,,2,2,7,5,6,3,1,1,3,5,5,3
+I am Hard of Hearing,,2,6,3,5,9,6,2,3,4,5,5,5
+"Other, please specify below",many of my family members are completely deaf or severely impaired.,3,2,2,2,5,1,1,1,4,5,5,2
+I have no relationship to these communities,,9,9,10,9,8,9,7,7,9,10,10,10
+I have no relationship to these communities,,2,4,,,,3,10,7,5,5,5,4
+I am Hard of Hearing,,2,1,1,5,10,1,0,0,0,0,5,0
+I am Hard of Hearing,,,3,5,5,5,5,0,,0,5,5,0
+"Other, please specify below",I have several co-workers who are hearing impaired,3,1,4,5,5,,,,,,,
+I have no relationship to these communities,,4,5,5,5,3,4,1,1,1,1,1,1
+I have no relationship to these communities,,5,4,3,5,6,4,2,5,4,3,3,3
+I have no relationship to these communities,,1,1,5,5,5,3,6,6,5,5,5,4
+I have no relationship to these communities,,2,1,2,3,5,1,0,0,0,0,5,0
+I have no relationship to these communities,,8,8,6,9,9,8,7,5,5,,,
+I have no relationship to these communities,,4,3,1,3,9,4,10,7,5,5,5,5
+I have no relationship to these communities,,0,0,,2,5,0,5,3,5,2,5,5
+I am Hard of Hearing,,4,4,4,5,5,5,5,5,4,6,5,5
+I am Hard of Hearing,,7,6,5,5,6,5,4,4,2,5,6,1
+I have no relationship to these communities,,2,0,5,5,5,5,0,0,5,5,,5
+"Other, please specify below",I deal with deaf patients on a regular basis,5,5,4,4,5,3,5,5,3,4,6,2
+I have no relationship to these communities,,3,3,3,2,5,1,,,,,,
+I am Hard of Hearing,,2,2,2,5,5,,8,7,7,8,8,
+I have no relationship to these communities,,1,1,,,,1,1,,1,1,5,1
+I have no relationship to these communities,,7,3,1,5,,2,1,,3,5,,5
+I have no relationship to these communities,,7,7,5,5,5,4,5,5,5,3,2,2
+I have no relationship to these communities,,3,5,8,7,7,7,7,7,6,8,7,7
+I have no relationship to these communities,,2,3,5,5,9,5,,,,5,5,
+I am Hard of Hearing,,7,8,7,6,6,7,10,10,10,10,10,10
+I am Hard of Hearing,,4,4,1,5,5,4,5,5,5,5,8,4
+I have no relationship to these communities,,5,7,3,5,4,7,6,4,6,5,3,7
+I have no relationship to these communities,,5,0,5,0,5,,5,,5,,5,
+I have no relationship to these communities,,6,3,5,4,5,5,,1,3,3,4,3
+I am Hard of Hearing,,,3,5,5,7,4,1,0,5,5,5,
+I am Hard of Hearing,,,3,5,5,5,5,,3,5,4,5,5
+"Other, please specify below",I am currently learning ASL,2,2,1,1,3,1,8,8,5,5,5,4
+I have no relationship to these communities,,1,1,1,2,3,2,7,7,3,2,4,3
+I have no relationship to these communities,,8,8,9,7,7,8,9,10,7,9,10,9
+I am Hard of Hearing,,6,5,5,5,4,4,5,7,7,6,7,7
+I have no relationship to these communities,,4,5,2,8,5,5,5,5,4,4,6,6
+"Other, please specify below",ONE OF MY EAR IS DEAF.,3,6,5,4,5,5,1,1,0,0,0,0
+,minimal hearing loss 1 ear,2,2,1,,5,,1,1,1,5,,5
+I have no relationship to these communities,,5,5,0,5,10,0,,,,,,
+I have no relationship to these communities,,4,3,5,5,5,4,1,1,0,5,5,3
+I have no relationship to these communities,,7,4,4,5,5,6,5,5,5,5,5,6
+I am Hard of Hearing,,,,4,4,,3,6,,3,5,,4
+I have no relationship to these communities,,5,2,5,5,,,1,,,,,7
+I am Hard of Hearing,,,2,,,4,4,,,,,,
+I have no relationship to these communities,,2,5,,6,,6,8,,,,,
+I have no relationship to these communities,,5,7,0,2,2,4,1,1,2,3,2,2
+I have no relationship to these communities,,3,3,5,5,7,5,,0,5,,,3
+I have no relationship to these communities,,0,,1,5,5,1,,8,4,,5,
+I have no relationship to these communities,,5,5,5,5,,,1,,1,1,,1
+I have no relationship to these communities,,3,5,5,,,5,5,5,5,5,5,5
+I am Hard of Hearing,I am close with someone who is hard of hearing ,5,8,4,7,3,6,,,,,,
+I identify as Deaf,,6,5,6,5,5,4,5,6,4,6,5,5
+I am Hard of Hearing,,,1,1,5,3,5,,1,,2,5,1
+I am Hard of Hearing,,4,6,6,4,8,4,6,5,6,6,6,6
+I am Hard of Hearing,,3,,3,5,,2,2,,2,4,,2
+I have no relationship to these communities,,7,7,6,8,,,,,,,,
+I am Hard of Hearing,,3,3,5,5,5,3,1,0,0,,1,0
+I have no relationship to these communities,,,,,,,,,,,,,
+I have no relationship to these communities,,1,2,1,5,5,5,7,7,5,5,5,5
+I have no relationship to these communities,,6,4,3,3,5,5,1,,2,5,,5
+,I know some people who are hard of hearing.,4,3,5,2,3,4,2,2,3,2,2,3
+I have no relationship to these communities,,3,3,3,5,5,3,10,0,0,1,5,0
+I am Hard of Hearing,,0,0,0,0,0,0,4,5,3,4,4,3
+I have no relationship to these communities,,7,1,4,5,5,6,6,3,4,4,6,5
+I have no relationship to these communities,,9,9,8,9,9,9,9,9,9,9,9,9
+"Other, please specify below",My mother is hard of hearing ,2,0,0,1,5,3,6,6,3,3,8,6
+I am Hard of Hearing,,2,8,7,6,8,3,,,,,,
+"Other, please specify below",I work with deaf and hard of hearing communities,3,6,3,2,,3,,10,,,,
+I have no relationship to these communities,,8,3,5,5,10,,1,1,2,2,,5
+I have no relationship to these communities,,7,,5,4,9,5,3,5,2,4,8,2
+I have no relationship to these communities,,2,5,4,5,5,3,5,6,5,7,6,5
+I am Hard of Hearing,Difficulty with sounds,5,5,3,3,5,5,,,,,,
+I have no relationship to these communities,,3,2,6,6,4,5,,,,,,
+I have no relationship to these communities,,6,5,6,6,7,5,,,,,,
+I have no relationship to these communities,,5,5,6,7,,5,,,,,,
+I am Hard of Hearing,,2,3,3,5,4,3,,,,,,
+I have no relationship to these communities,,5,1,2,4,2,2,,,,,,
+I have no relationship to these communities,,4,4,4,5,5,2,,,,,,
