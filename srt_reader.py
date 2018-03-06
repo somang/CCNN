@@ -134,7 +134,7 @@ class ParseSentence:
       sent_cap = []
       counter = 0
       while not sent_cap:
-        if tmp_sent.find(".") == -1 or tmp_sent.find("!") == -1 or tmp_sent.find("?") == -1:
+        if tmp_sent.find(".") == -1 and tmp_sent.find("!") == -1 and tmp_sent.find("?") == -1:
           if i <= len(cf):
             cap = cf.get(i)
             tmp_sent += cap.txt + " "
@@ -150,7 +150,8 @@ class ParseSentence:
             sent_cap.append(time_tuple)
             sent_cap.append(tmp_sent.lower().strip())
         else:
-          split_ending = re.split("[.?!]", tmp_sent)
+          split_ending = re.split("[.!?]", tmp_sent)
+          #split_ending = tmp_sent.split(".")
           ending = split_ending[0] + "."
           tmp_sent = '.'.join(split_ending[1:])
           i -= 1
@@ -172,15 +173,18 @@ class ParseSentence:
       i += 1
 
 def getSpellErr(s):
-  stopwords = ["monday", "tuesday", "wednesday", "kilometres", 
-                "simcoe", "york", "unionville", "markham", "ajax", "whitby",
+  exception_words = ["monday", "tuesday", "wednesday", "kilometres", 
+                "simcoe", "york", "unionville", "markham", "ajax", 
+                "whitby", "oakville", "november", "hamilton",
+                "gta", "denise", "andreacchi", "niagara", "timmins",
+                "bruce", "ctv", "paul",
                 "santa", "claus", "grey", "ottawa", "ontario"]
   chkr = SpellChecker("en_US")
   #Check how many words in s1 have spelling errors
   chkr.set_text(s)
   counter = 0 # checking how many spelling errors in s1
   for err in chkr:
-    if err.word not in stopwords:
+    if err.word not in exception_words:
       print("spell error at:", err.word)
       counter+=1
   return counter
@@ -282,27 +286,30 @@ def getSimilarity(s1, s2):
 if __name__ == '__main__':
   caption_file = 'citynews_caption.srt'
   transcript_file = 'citynews_transcript.srt'
+  #caption_file = 'CTVnews_caption.srt'
+  #transcript_file = 'CTVnews_transcript.srt'
+
   nlp = spacy.load('en')
+
+
+  with open(caption_file) as cf:
+      lines = cf.readlines()
+      ccf = CaptionCollection(lines)
+      cps = ParseSentence(ccf).get_sentences()
 
   with open(transcript_file) as tf:
     lines = tf.readlines()
     tcf = CaptionCollection(lines)
     tps = ParseSentence(tcf).get_sentences()
   
-  with open(caption_file) as cf:
-    lines = cf.readlines()
-    ccf = CaptionCollection(lines)
-    cps = ParseSentence(ccf).get_sentences()
-
   # 1. value generation
   # a. find the delay first.
   input_matrix = []
   sync_delay = 0
   c_index, t_index = 0, 0
-  lim = max(len(cps), len(tps))
 
   #typically cps would have less sentences
-  while c_index < lim:
+  while c_index < len(cps):
     c_sentence = cps[c_index]
     c_time, c_txt = c_sentence[0], c_sentence[1]
     c_txt_ngram = ' '.join(c_txt.split()[0:2])
@@ -314,14 +321,18 @@ if __name__ == '__main__':
     #check the first n-words, to see if it's the same sentence
     # this can be replaced to check similarity ..?
     if t_txt_ngram == c_txt_ngram:
+      print(t_txt_ngram, c_txt_ngram)
       break
     c_index += 1
-  print("sync delay is then:", sync_delay)
+  print("sync delay is then:", c_index)
 
   c_index = sync_delay # sync the delayed indices
   last_match_index = 0
-  
+  left_sentences = {}
+
   while t_index < len(tps):
+    if c_index == len(cps):
+      break
     c_sentence = cps[c_index]
     c_time, c_txt = c_sentence[0], c_sentence[1]
     c_txt_ngram = ' '.join(c_txt.split()[0:2])
@@ -353,7 +364,7 @@ if __name__ == '__main__':
       # spelling errors
       spelling = getSpellErr(c_sentence[1])
       # append them all
-      v_list = [delay, wpm, sim_value, spelling]
+      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
@@ -366,20 +377,21 @@ if __name__ == '__main__':
       delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
       # get words per min
       duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
-      wpm = len(c_txt)/duration
+      wpm = len(c_txt.split())/duration
       # similarity (paraphrasing)
       sim_value = getSimilarity(c_sentence[1], t_txt)
       # spelling errors
       spelling = getSpellErr(c_sentence[1])
       # append them all
-      v_list = [delay, wpm, sim_value, spelling]
+      #print(wpm, c_txt, duration, len(c_txt.split()))
+      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
-    #else:
+    else:
       #print("no match, move the transcript sentence on..")
       #print()
-      #print("c:", c_txt)
+      left_sentences[c_time[0]] = c_sentence
 
     t_index += 1
 
@@ -387,32 +399,32 @@ if __name__ == '__main__':
       #print("no match, move the Caption on...")
       c_index += 1
       t_index = last_match_index-1
-    
-  #print(input_matrix)
+  
+  #print(len(cps), len(tps))
+  #print(input_matrix, len(input_matrix))
+  #print(left_sentences)
 
   # setup data
-  dataset = np.loadtxt("filtered_data_numbers.csv", delimiter=",")
+  #dataset = np.loadtxt("mixed_data.csv", delimiter=",")
+  dataset = np.genfromtxt("mixed_data.csv", delimiter=",")
 
   # split input(X) and output(Y)
   Y = dataset[:,:]
   dY = []
   dX = []
 
-  for i in range(len(Y)):
-    for j in range(len(input_matrix)):
-      dY.append(Y[i])
-      dX.append(input_matrix[j])
+  for i in range(len(input_matrix)):
+    input_matrix[i].append(Y[:,0][i])
+    print(input_matrix[i])
 
-  Y = np.asarray(dY)
-  X = np.asarray(dX)
+  Y = Y[:,1:7] # 0 = D, 1 = HOH, 2 = H
+  #print(Y)
 
-  print(Y)
-  print(X)
 
+  '''
   #create model
   model = Sequential()
-  model.add(Dense(4, input_dim=4, activation='relu'))
-  model.add(Dense(12, activation='relu'))
+  model.add(Dense(6, input_dim=6, activation='relu'))
   model.add(Dense(12, activation='relu'))
   model.add(Dense(6, kernel_initializer='normal'))
 
@@ -425,7 +437,7 @@ if __name__ == '__main__':
   #predict using the model
   p_input = np.array(
     [
-      [3319, 548.1481481481483, 1.0000000001558595, 0], 
+      [100, 548.1481481481483, 1.0000000001558595, 0], 
       [6820, 582.0467276950403, 0, 0]
     ]
     )
@@ -433,7 +445,7 @@ if __name__ == '__main__':
 
   prediction = model.predict(p_input)
   print(prediction)
-
+  '''
   # the order of input goes
   # delay
   # word per minute
@@ -450,3 +462,22 @@ if __name__ == '__main__':
   # 4. speaker identification 
   # 5. verbatim accurate captions 
   # affect viewing pleasure?
+  '''
+  0,3319,548.1481481481483,0.94170733293952125,0,4,3,5,4,6,3
+  0,6820,582.0467276950403,0.88214744364563769,0,7,5,4,3,0,1
+  0,7690,866.9527896995708.96485043782697499,0,5,5,4,4,3,3
+  0,6470,490.2506963788301,0,0.98002335523151629,0,3,5,2,3,2,4
+  0,6670,772.3577235772358,0.98637051811050569,0,7,8,7,8,8,9
+  0,9280,51.61567826227216,0.88214744364563769,0,3,2,4,4,3,4
+  0,6441,225.74576726686374,1.0000000191147738,0,4,4,4,4,4,4
+  0,6941,886.8583714055361,1.000000014566867,0,4,7,5,8,5,3
+  0,8941,1251.7491413306195,0.84146567103695302,1,3,8,2,2,4,3
+  0,9620,854.5205190420932,0.76122313894492211,0,2,5,3,5,10,3
+  1,7541,1798.9962681765537,0.85008997448299106,0,
+  1,8820,766.497461928934,0.93659734451794641,0,
+  1,8810,171.42857142857144,0.81687708963985195,0,
+  1,11910,260.586319218241,0.76841326916754171,0,
+  1,8760,75.34246575342466,0.89039354114681157,0,
+  1,6220,137.93103448275863,0.94874995546497143,0, 
+  1,9200,446.6666666666667,0.95393009193162548,0,
+  '''
