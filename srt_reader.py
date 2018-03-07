@@ -321,7 +321,7 @@ if __name__ == '__main__':
     #check the first n-words, to see if it's the same sentence
     # this can be replaced to check similarity ..?
     if t_txt_ngram == c_txt_ngram:
-      print(t_txt_ngram, c_txt_ngram)
+      #print(t_txt_ngram, c_txt_ngram)
       break
     c_index += 1
   print("sync delay is then:", c_index)
@@ -364,7 +364,7 @@ if __name__ == '__main__':
       # spelling errors
       spelling = getSpellErr(c_sentence[1])
       # append them all
-      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
+      v_list = [delay, wpm, sim_value, spelling] #, c_txt, t_txt]
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
@@ -384,7 +384,7 @@ if __name__ == '__main__':
       spelling = getSpellErr(c_sentence[1])
       # append them all
       #print(wpm, c_txt, duration, len(c_txt.split()))
-      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
+      v_list = [delay, wpm, sim_value, spelling,] # c_txt, t_txt]
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
@@ -401,14 +401,15 @@ if __name__ == '__main__':
       t_index = last_match_index-1
   
   #print(len(cps), len(tps))
-  print(input_matrix, len(input_matrix))
-  print(left_sentences)
+  #print(input_matrix, len(input_matrix))
+  #print(left_sentences)
 
   # setup data
   #dataset = np.loadtxt("mixed_data.csv", delimiter=",")
   dataset = np.genfromtxt("mixed_data.csv", delimiter=",")
 
   # split input(X) and output(Y)
+  X = []
   Y = dataset[:,:]
   dY = []
   dX = []
@@ -416,15 +417,18 @@ if __name__ == '__main__':
   for i in range(len(input_matrix)):
     input_matrix[i].append(Y[:,0][i])
     print(input_matrix[i])
+    X.append(input_matrix[i])
 
-  Y = Y[:,1:7] # 0 = D, 1 = HOH, 2 = H
-  #print(Y)
+  X = np.asarray(X)
+  Y = Y[:12,1:7] # 0 = D, 1 = HOH, 2 = H
+  print(X)
+  print(Y)
 
 
-  '''
+  
   #create model
   model = Sequential()
-  model.add(Dense(6, input_dim=6, activation='relu'))
+  model.add(Dense(32, input_dim=5, activation='relu'))
   model.add(Dense(12, activation='relu'))
   model.add(Dense(6, kernel_initializer='normal'))
 
@@ -437,15 +441,15 @@ if __name__ == '__main__':
   #predict using the model
   p_input = np.array(
     [
-      [100, 548.1481481481483, 1.0000000001558595, 0], 
-      [6820, 582.0467276950403, 0, 0]
+      [100, 548.1481481481483, 1.0000000001558595, 0, 0], 
+      [6820, 582.0467276950403, 0, 0, 1]
     ]
     )
   #print(p_input.shape)
 
   prediction = model.predict(p_input)
   print(prediction)
-  '''
+  
   # the order of input goes
   # delay
   # word per minute

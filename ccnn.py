@@ -27,26 +27,37 @@ Y = dataset[:,5:] #6, 7, 8, 9, 10, 11
 
 #create model
 model = Sequential()
-model.add(Dense(5, input_dim=5, activation='relu'))
+model.add(Dense(64, input_dim=5, activation='relu'))
 model.add(Dense(64, activation='relu'))
-model.add(Dense(6, activation='sigmoid', kernel_initializer='normal'))
+model.add(Dense(6))
+#model.add(Dense(6, activation='sigmoid', kernel_initializer='normal'))
 
 #compile model
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+#model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
 
-# for visualization
-#tensorboard = TensorBoard(log_dir="logs/{}".format(time()))
 #fit the model
-history = model.fit(X, Y, epochs=50000, batch_size=12)
+hist = model.fit(X, Y, epochs=50000, batch_size=12)
+w = model.get_weights()
+print(w)
 
 
+#%matplotlib inline
+import matplotlib.pyplot as plt
+
+plt.plot(hist.history['loss'])
+plt.ylim(0.0, 1.5)
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train'], loc='upper left')
+plt.show()
 
 '''
-one epoch = one forward pass and one backward pass of 
-            all the training examples
-batch size = the number of training examples in one 
-            forward/backward pass. The higher the batch size,
-            the more memory space you'll need.
+  one epoch = one forward pass and one backward pass of 
+              all the training examples
+  batch size = the number of training examples in one 
+              forward/backward pass. The higher the batch size,
+              the more memory space you'll need.
 '''
 
 # plot model
