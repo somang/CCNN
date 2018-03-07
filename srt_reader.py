@@ -284,10 +284,10 @@ def getSimilarity(s1, s2):
 
 
 if __name__ == '__main__':
-  caption_file = 'citynews_caption.srt'
-  transcript_file = 'citynews_transcript.srt'
-  #caption_file = 'CTVnews_caption.srt'
-  #transcript_file = 'CTVnews_transcript.srt'
+  #caption_file = 'citynews_caption.srt'
+  #transcript_file = 'citynews_transcript.srt'
+  caption_file = 'CTVnews_caption.srt'
+  transcript_file = 'CTVnews_transcript.srt'
 
   nlp = spacy.load('en')
 
@@ -401,8 +401,8 @@ if __name__ == '__main__':
       t_index = last_match_index-1
   
   #print(len(cps), len(tps))
-  #print(input_matrix, len(input_matrix))
-  #print(left_sentences)
+  print(input_matrix, len(input_matrix))
+  print(left_sentences)
 
   # setup data
   #dataset = np.loadtxt("mixed_data.csv", delimiter=",")
