@@ -27,9 +27,9 @@ Y = dataset[:,5:] #6, 7, 8, 9, 10, 11
 
 #create model
 model = Sequential()
-model.add(Dense(64, input_dim=5, activation='relu'))
-model.add(Dense(64, activation='relu'))
-model.add(Dense(6))
+model.add(Dense(units=32, input_dim=5, activation='relu'))
+#model.add(Dense(units=64, activation='relu'))
+model.add(Dense(units=6))
 #model.add(Dense(6, activation='sigmoid', kernel_initializer='normal'))
 
 #compile model

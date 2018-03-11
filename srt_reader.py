@@ -284,10 +284,10 @@ def getSimilarity(s1, s2):
 
 
 if __name__ == '__main__':
-  #caption_file = 'citynews_caption.srt'
-  #transcript_file = 'citynews_transcript.srt'
-  caption_file = 'CTVnews_caption.srt'
-  transcript_file = 'CTVnews_transcript.srt'
+  caption_file = 'citynews_caption.srt'
+  transcript_file = 'citynews_transcript.srt'
+  #caption_file = 'CTVnews_caption.srt'
+  #transcript_file = 'CTVnews_transcript.srt'
 
   nlp = spacy.load('en')
 
@@ -358,13 +358,13 @@ if __name__ == '__main__':
       delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
       # get words per min
       duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
-      wpm = len(c_txt)/duration
+      wpm = len(c_txt.split())/duration
       # similarity (paraphrasing)
       sim_value = getSimilarity(c_sentence[1], t_txt)
       # spelling errors
       spelling = getSpellErr(c_sentence[1])
       # append them all
-      v_list = [delay, wpm, sim_value, spelling] #, c_txt, t_txt]
+      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
@@ -384,7 +384,7 @@ if __name__ == '__main__':
       spelling = getSpellErr(c_sentence[1])
       # append them all
       #print(wpm, c_txt, duration, len(c_txt.split()))
-      v_list = [delay, wpm, sim_value, spelling,] # c_txt, t_txt]
+      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
@@ -421,10 +421,10 @@ if __name__ == '__main__':
 
   X = np.asarray(X)
   Y = Y[:12,1:7] # 0 = D, 1 = HOH, 2 = H
-  print(X)
-  print(Y)
+  #print(X)
+  #print(Y)
 
-
+  '''
   
   #create model
   model = Sequential()
@@ -449,7 +449,7 @@ if __name__ == '__main__':
 
   prediction = model.predict(p_input)
   print(prediction)
-  
+  '''
   # the order of input goes
   # delay
   # word per minute
