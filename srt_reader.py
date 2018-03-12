@@ -284,8 +284,8 @@ def getSimilarity(s1, s2):
 
 
 if __name__ == '__main__':
-  caption_file = 'citynews_caption.srt'
-  transcript_file = 'citynews_transcript.srt'
+  caption_file = 'captions/citynews_caption.srt'
+  transcript_file = 'captions/citynews_transcript.srt'
   #caption_file = 'CTVnews_caption.srt'
   #transcript_file = 'CTVnews_transcript.srt'
 
