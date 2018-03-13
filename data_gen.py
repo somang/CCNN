@@ -91,8 +91,8 @@ print(c)
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 
 
-'''
+
 with open('generated_data.csv', 'w') as mf:
-  wr = csv.writer(mf, quoting=csv.QUOTE_ALL)
-  wr.writerow(gen_data)
-'''
+  wr = csv.writer(mf)
+  for i in c:
+    wr.writerow(i)

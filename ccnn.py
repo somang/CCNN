@@ -17,17 +17,17 @@ import time
 start = time.time()
 # setup data
   # import csv data and create an matrix
-dataset = np.loadtxt("sample_wip.csv", delimiter=",")
-#print(len(dataset))
+dataset = np.loadtxt("generated_data.csv", delimiter=",")
+print(len(dataset))
 
 # split input(X) and output(Y)
-X = dataset[:,1:5]
-Y = dataset[:,5:] #6, 7, 8, 9, 10
+X = dataset[:,0:4]
+Y = dataset[:,4:] #6, 7, 8, 9, 10
 
 ##### multivariate linear regression
-mlm = linear_model.LinearRegression()
-model = mlm.fit(X,Y)
-print(model.coef_)
+#mlm = linear_model.LinearRegression()
+#model = mlm.fit(X,Y)
+#print(model.coef_)
 
 
 
@@ -43,7 +43,7 @@ print(model.coef_)
 #print(Y)
 
 #create model
-'''
+
 model = Sequential()
 model.add(Dense(units=64, input_dim=4, activation='relu'))
 model.add(Dense(units=64, activation='relu'))
@@ -60,7 +60,7 @@ model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
 model.summary()
 #fit the model
-hist = model.fit(X, Y, epochs=50000, batch_size=5)
+hist = model.fit(X, Y, epochs=50000, batch_size=10)
 w = model.get_weights()
 #save the model
 model.save('model.h5') #creates a hdf5 file
@@ -74,15 +74,6 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train'], loc='upper left')
 plt.show()
-'''
-
-'''
-  one epoch = one forward pass and one backward pass of 
-              all the training examples
-  batch size = the number of training examples in one 
-              forward/backward pass. The higher the batch size,
-              the more memory space you'll need.
-'''
 
 #load model
 #model = load_model('model.h5')
@@ -121,3 +112,12 @@ print(prediction)
 for i in prediction:
   print(list(map(lambda x: round(x), i)))
 
+
+
+'''
+  one epoch = one forward pass and one backward pass of 
+              all the training examples
+  batch size = the number of training examples in one 
+              forward/backward pass. The higher the batch size,
+              the more memory space you'll need.
+'''
