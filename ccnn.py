@@ -90,7 +90,7 @@ plt.show()
 #plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)
 
 # status, delay, wpm, similarity, number of errors
-# speed, delay, missing words, grammer errors, speaker id, verbatim
+# speed, delay, missing words, grammar errors, verbatim
 #predict using the model
 p_input = np.array(
   [
