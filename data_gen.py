@@ -10,10 +10,10 @@ gen_data = []
 
 
 # delay, wpm, similarity, number of errors
-rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(5,1))
-rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(5,1))
-rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(5,1))
-rand_errors = np.random.randint(10, size=(5,1))
+rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(3000,1))
+rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(3000,1))
+rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(3000,1))
+rand_errors = np.random.randint(10, size=(3000,1))
 
 
 c = np.column_stack((rand_delay, rand_wpm))
@@ -82,16 +82,9 @@ for i in c:
   rating_list[2].append(misspell_rating)
   rating_list[3].append(grammar_rating)
   rating_list[4].append(verbatim_rating)
-
-
 p = np.asarray(rating_list)
 
-print(c.shape)
-print(p.shape)
-
-
 for i in p:
-  print(i)
   c = np.column_stack((c, i))
 
 print(c)
