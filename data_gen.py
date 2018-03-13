@@ -88,7 +88,7 @@ for i in p:
   c = np.column_stack((c, i))
 
 print(c)
-print(c.shape)
+print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 
 
 '''
