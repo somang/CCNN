@@ -17,9 +17,9 @@ import time
 start = time.time()
 # setup data
   # import csv data and create an matrix
-dataset = np.loadtxt("generated_data.csv", delimiter=",")
+dataset = np.loadtxt("gen_dt_100000.csv", delimiter=",")
 print(len(dataset))
-t_index = round(len(dataset)*0.3)
+t_index = round(len(dataset)*0.8)
 
 # normalization
 sc = StandardScaler()
@@ -32,16 +32,15 @@ X_train, Y_train = X_data[:t_index,:], Y_data[:t_index,:]
 X_test, Y_test = X_data[t_index:,:], Y_data[t_index:,:]
 
 #create model
+in_layer = Input(shape=(3,)) #number of columns
+hidden_1 = Dense(40, activation='relu', kernel_initializer='normal')(in_layer)
+out_layer = Dense(3, activation='relu')(hidden_1)
+model = Model(inputs=in_layer, outputs=out_layer)
 
-model = Sequential()
-model.add(Dense(units=30, input_dim=3, activation='relu', kernel_initializer='normal'))
-model.add(Dense(units=30, activation='relu'))
-#model.add(Dense(units=8, activation='relu'))
-
-#model.add(Dropout(0.2))
-
-model.add(Dense(3, activation='relu', kernel_initializer='normal'))
+# summarize the model
 model.summary()
+# plot model
+plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)
 
 
 #compile model
@@ -52,7 +51,7 @@ model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
 #fit the model
 hist = model.fit(X_train, Y_train, 
-                epochs=250, batch_size=10,
+                epochs=150, batch_size=500,
                 verbose=1, validation_data=(X_test, Y_test)
                 )
 w = model.get_weights()
@@ -82,8 +81,6 @@ plt.show()
 
 #load model
 #model = load_model('model.h5')
-# plot model
-#plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)
 
 # delay, wpm, similarity
 # speed, delay, verbatim
@@ -110,6 +107,11 @@ for i in prediction:
 
 
 '''
+  unit = 
+  optimizer = 
+        adam:
+        rmsprop:
+        stochastic gradient descent:
   one epoch = one forward pass and one backward pass of 
               all the training examples
   batch size = the number of training examples in one 

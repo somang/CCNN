@@ -10,16 +10,17 @@ gen_data = []
 
 
 # delay, wpm, similarity, number of errors
-rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(2000,1))
-rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(2000,1))
-rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(2000,1))
+rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(100000,1))
+rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(100000,1))
+rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(100000,1))
 #rand_errors = np.random.randint(10, size=(25000,1))
 
 
 c = np.column_stack((rand_delay, rand_wpm))
 c = np.column_stack((c, rand_sentence_sim))
 #c = np.column_stack((c, rand_errors))
-
+# shuffle the order?
+np.random.shuffle(c)
 #print(c)
 # speed, delay, missing words, grammar errors, verbatim
 rating_list = [[],[],[]]#,[],[]]
@@ -95,7 +96,7 @@ print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 
 
 
-with open('generated_data.csv', 'w') as mf:
+with open('gen_dt_100000.csv', 'w') as mf:
   wr = csv.writer(mf)
   for i in c:
     wr.writerow(i)

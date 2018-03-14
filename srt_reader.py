@@ -17,6 +17,10 @@ from enchant.checker import SpellChecker
 from keras.models import Sequential
 from keras.layers import Dense
 
+from sklearn import preprocessing
+from sklearn import linear_model
+from sklearn.preprocessing import StandardScaler
+
 
 class CaptionCollection:
   def __init__(self, lines):
@@ -417,39 +421,44 @@ if __name__ == '__main__':
   for i in range(len(input_matrix)):
     input_matrix[i].append(Y[:,0][i])
     print(input_matrix[i])
-    X.append(input_matrix[i])
+    X.append(input_matrix[i][:4])
 
-  X = np.asarray(X)
-  Y = Y[:12,1:7] # 0 = D, 1 = HOH, 2 = H
+  print()
+  print(X[0])
+  X_np = np.asarray(X)
+  # normalization
+  sc = StandardScaler()
+  X_scaled = sc.fit_transform(X_np)
+
+  Y = Y[:19,1:6] # 0 = D, 1 = HOH, 2 = H
   #print(X)
   #print(Y)
 
-  '''
-  
   #create model
   model = Sequential()
-  model.add(Dense(32, input_dim=5, activation='relu'))
-  model.add(Dense(12, activation='relu'))
-  model.add(Dense(6, kernel_initializer='normal'))
+  model.add(Dense(32, input_dim=4, activation='relu'))
+  model.add(Dense(32, activation='relu'))
+  model.add(Dense(5, kernel_initializer='normal'))
 
   #compile model
-  model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+  model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
   #fit the model
-  history = model.fit(X, Y, epochs=100, batch_size=10)
+  history = model.fit(X_scaled, Y, epochs=100, batch_size=10)
 
   #predict using the model
   p_input = np.array(
     [
-      [100, 548.1481481481483, 1.0000000001558595, 0, 0], 
-      [6820, 582.0467276950403, 0, 0, 1]
+      [100, 548.1481481481483, 1.0000000001558595, 0], 
+      [6820, 582.0467276950403, 0, 1]
     ]
     )
-  #print(p_input.shape)
+  p_input = sc.fit_transform(p_input)
 
   prediction = model.predict(p_input)
   print(prediction)
-  '''
+  
+
   # the order of input goes
   # delay
   # word per minute
