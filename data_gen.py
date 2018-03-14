@@ -10,10 +10,10 @@ gen_data = []
 
 
 # delay, wpm, similarity, number of errors
-rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(3000,1))
-rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(3000,1))
-rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(3000,1))
-rand_errors = np.random.randint(10, size=(3000,1))
+rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(25000,1))
+rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(25000,1))
+rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(25000,1))
+rand_errors = np.random.randint(10, size=(25000,1))
 
 
 c = np.column_stack((rand_delay, rand_wpm))
