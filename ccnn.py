@@ -19,7 +19,7 @@ start = time.time()
   # import csv data and create an matrix
 dataset = np.loadtxt("generated_data.csv", delimiter=",")
 print(len(dataset))
-t_index = round(len(dataset)*0.8)
+t_index = round(len(dataset)*0.3)
 
 # normalization
 sc = StandardScaler()
@@ -31,23 +31,14 @@ Y_data = dataset[:,3:]
 X_train, Y_train = X_data[:t_index,:], Y_data[:t_index,:]
 X_test, Y_test = X_data[t_index:,:], Y_data[t_index:,:]
 
-##### multivariate linear regression
-#mlm = linear_model.LinearRegression()
-#model = mlm.fit(X,Y)
-#print(model.coef_)
-
-#print(Y)
-#min_max_scaler = preprocessing.MinMaxScaler()
-#Y = min_max_scaler.fit_transform(Y)
-#print(Y)
-
 #create model
 
 model = Sequential()
 model.add(Dense(units=30, input_dim=3, activation='relu', kernel_initializer='normal'))
-model.add(Dropout(0.2))
 model.add(Dense(units=30, activation='relu'))
-model.add(Dropout(0.2))
+#model.add(Dense(units=8, activation='relu'))
+
+#model.add(Dropout(0.2))
 
 model.add(Dense(3, activation='relu', kernel_initializer='normal'))
 model.summary()
@@ -61,7 +52,7 @@ model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
 #fit the model
 hist = model.fit(X_train, Y_train, 
-                epochs=250, batch_size=50,
+                epochs=250, batch_size=10,
                 verbose=1, validation_data=(X_test, Y_test)
                 )
 w = model.get_weights()
@@ -125,3 +116,21 @@ for i in prediction:
               forward/backward pass. The higher the batch size,
               the more memory space you'll need.
 '''
+
+
+
+##### multivariate linear regression
+mlm = linear_model.LinearRegression()
+model = mlm.fit(X_train,Y_train)
+predictions = mlm.predict(X_test)
+## plot the mlm
+plt.scatter(Y_test, predictions)
+plt.xlabel("Real Values")
+plt.ylabel("Predictions")
+plt.show()
+# print the accuracy score
+print("Score:", model.score(X_test, Y_test))
+prediction = model.predict(p_input)
+print(prediction)
+for i in prediction:
+  print(list(map(lambda x: round(x), i)))
