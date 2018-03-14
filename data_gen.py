@@ -10,21 +10,21 @@ gen_data = []
 
 
 # delay, wpm, similarity, number of errors
-rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(25000,1))
-rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(25000,1))
-rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(25000,1))
-rand_errors = np.random.randint(10, size=(25000,1))
+rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(2000,1))
+rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(2000,1))
+rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(2000,1))
+#rand_errors = np.random.randint(10, size=(25000,1))
 
 
 c = np.column_stack((rand_delay, rand_wpm))
 c = np.column_stack((c, rand_sentence_sim))
-c = np.column_stack((c, rand_errors))
+#c = np.column_stack((c, rand_errors))
 
 #print(c)
 # speed, delay, missing words, grammar errors, verbatim
-rating_list = [[],[],[],[],[]]
+rating_list = [[],[],[]]#,[],[]]
 for i in c:
-  print(i)
+  #print(i)
   speed_rating, delay_rating, misspell_rating, grammar_rating, verbatim_rating = 0,0,0,0,0
 
   # calculate delay rating
@@ -67,7 +67,8 @@ for i in c:
   else:
     verbatim_rating = randint(0,3)
     grammar_rating = randint(0,10)
-
+  
+  '''
   # calculate misspell_rating
   misspelled = i[3]
   if misspelled == 0:
@@ -76,12 +77,14 @@ for i in c:
     misspell_rating = randint(4,9)
   else:
     misspell_rating = randint(0,3)
+  '''
 
   rating_list[0].append(speed_rating)
   rating_list[1].append(delay_rating)
-  rating_list[2].append(misspell_rating)
-  rating_list[3].append(grammar_rating)
-  rating_list[4].append(verbatim_rating)
+  rating_list[2].append(verbatim_rating)
+  #rating_list[2].append(misspell_rating)
+  #rating_list[3].append(grammar_rating)
+
 p = np.asarray(rating_list)
 
 for i in p:

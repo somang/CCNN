@@ -23,9 +23,9 @@ t_index = round(len(dataset)*0.8)
 
 # normalization
 sc = StandardScaler()
-X_data = sc.fit_transform(dataset[:,:4])
-#X_data = dataset[:,:4]
-Y_data = dataset[:,4:]
+X_data = sc.fit_transform(dataset[:,:3])
+#X_data = dataset[:,:3]
+Y_data = dataset[:,3:]
 
 # split input(X) and output(Y)
 X_train, Y_train = X_data[:t_index,:], Y_data[:t_index,:]
@@ -44,25 +44,24 @@ X_test, Y_test = X_data[t_index:,:], Y_data[t_index:,:]
 #create model
 
 model = Sequential()
-model.add(Dense(units=64, input_dim=4, kernel_initializer='normal', activation='relu'))
-model.add(Dense(units=64, activation='relu'))
-model.add(Dense(5, kernel_initializer='normal'))
-model.summary()
+model.add(Dense(units=30, input_dim=3, activation='relu', kernel_initializer='normal'))
+model.add(Dropout(0.2))
+model.add(Dense(units=30, activation='relu'))
+model.add(Dropout(0.2))
 
-'''
-  [32, 12, 12, 5], 500 epochs = 60%
-'''
+model.add(Dense(3, activation='relu', kernel_initializer='normal'))
+model.summary()
 
 
 #compile model
 #model.compile(loss='mse', optimizer='sgd', metrics=['accuracy'])
-#model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-model.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
+model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+#model.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
 
 
 #fit the model
 hist = model.fit(X_train, Y_train, 
-                epochs=1500, batch_size=250,
+                epochs=250, batch_size=50,
                 verbose=1, validation_data=(X_test, Y_test)
                 )
 w = model.get_weights()
@@ -95,18 +94,18 @@ plt.show()
 # plot model
 #plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)
 
-# delay, wpm, similarity, number of errors
-# speed, delay, missing words, grammar errors, verbatim
+# delay, wpm, similarity
+# speed, delay, verbatim
 #predict using the model
 p_input = np.array(
   [
-    [0,120,1,0],  # 10,10,10,10,10
-    [10000,120,1,0], # 10,0,10,10,10
-    [7060,57.142,0.7292,0], # 3,0-3,0-10,0
+    [0,120,1],  # 10,10,10
+    [10000,120,1], # 10,0,10
+    [7060,57.142,0.7292], # 3,<4,3
 
-    [2669,337.61,0.878,0], # 3,4,4,10,3
-    [7271,814.15,0.689,1], # 1,1,3,10,0
-    [4480,305.41,0.804,0], # 3,2,10,10,3
+    [2669,337.61,0.878], # 1, 3, 7
+    [7271,814.15,0.689], # 1, 1, 4
+    [4480,305.41,0.804], # 3, 2, 3
   ]
 )
 
