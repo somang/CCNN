@@ -17,25 +17,32 @@ import time
 start = time.time()
 # setup data
   # import csv data and create an matrix
-dataset = np.loadtxt("gen_dt_100000.csv", delimiter=",")
+dataset = np.loadtxt("gen_dt_10000.csv", delimiter=",")
 print(len(dataset))
 t_index = round(len(dataset)*0.8)
 
 # normalization
 sc = StandardScaler()
-X_data = sc.fit_transform(dataset[:,:3])
-#X_data = dataset[:,:3]
-Y_data = dataset[:,3:]
+X_data = sc.fit_transform(dataset[:,:1])
+#X_data = dataset[:,:1]
+Y_data = dataset[:,4:5]
 
 # split input(X) and output(Y)
 X_train, Y_train = X_data[:t_index,:], Y_data[:t_index,:]
 X_test, Y_test = X_data[t_index:,:], Y_data[t_index:,:]
 
 #create model
-in_layer = Input(shape=(3,)) #number of columns
-hidden_1 = Dense(40, activation='relu', kernel_initializer='normal')(in_layer)
-out_layer = Dense(3, activation='relu')(hidden_1)
-model = Model(inputs=in_layer, outputs=out_layer)
+# using sequential
+model = Sequential()
+model.add(Dense(500, input_dim=1))
+model.add(Dense(1, activation='relu'))
+
+
+# using functional API
+#in_layer = Input(shape=(3,)) #number of columns
+#hidden_1 = Dense(40, activation='relu', kernel_initializer='normal')(in_layer)
+#out_layer = Dense(1, activation='relu')(in_layer)
+#model = Model(inputs=in_layer, outputs=out_layer)
 
 # summarize the model
 model.summary()
@@ -48,17 +55,20 @@ plot_model(model, to_file='model.png', show_shapes=True, show_layer_names=True)
 model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 #model.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
 
-
 #fit the model
 hist = model.fit(X_train, Y_train, 
-                epochs=150, batch_size=500,
+                epochs=100, batch_size=500,
                 verbose=1, validation_data=(X_test, Y_test)
                 )
 w = model.get_weights()
+print(w)
+
 # evaluate the model
 scores = model.evaluate(X_test, Y_test)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
+
+'''
 #save the model
 model.save('model.h5') #creates a hdf5 file
 end = time.time()
@@ -81,7 +91,9 @@ plt.show()
 
 #load model
 #model = load_model('model.h5')
+'''
 
+'''
 # delay, wpm, similarity
 # speed, delay, verbatim
 #predict using the model
@@ -103,7 +115,7 @@ prediction = model.predict(p_input)
 print(prediction)
 for i in prediction:
   print(list(map(lambda x: round(x), i)))
-
+'''
 
 
 '''
@@ -123,7 +135,7 @@ for i in prediction:
 
 ##### multivariate linear regression
 mlm = linear_model.LinearRegression()
-model = mlm.fit(X_train,Y_train)
+stat_model = mlm.fit(X_train, Y_train[:,0])
 predictions = mlm.predict(X_test)
 ## plot the mlm
 plt.scatter(Y_test, predictions)
@@ -131,8 +143,8 @@ plt.xlabel("Real Values")
 plt.ylabel("Predictions")
 plt.show()
 # print the accuracy score
-print("Score:", model.score(X_test, Y_test))
-prediction = model.predict(p_input)
-print(prediction)
-for i in prediction:
-  print(list(map(lambda x: round(x), i)))
+print("Score:", mlm.score(X_test, Y_test[:,0]))
+#prediction = mlm.predict(p_input)
+#print(prediction)
+#for i in prediction:
+#  print(list(map(lambda x: round(x), i)))

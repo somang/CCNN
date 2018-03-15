@@ -33,11 +33,11 @@ for i in c:
   if delay <= 100:
     delay_rating = 10
   elif 100 < delay <= 500:
-    delay_rating = randint(8,9)
+    delay_rating = randint(8, 9)
   elif 500 < delay <= 2000:
-    delay_rating = randint(6, 9)
+    delay_rating = randint(4, 7)
   elif 2000 < delay <= 4000:
-    delay_rating = randint(2, 6)
+    delay_rating = randint(2, 4)
   else:
     delay_rating = randint(0, 3)
 

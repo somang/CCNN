@@ -2,6 +2,43 @@
 
 Weekly Log
 
+Week 9. March 14th
+1. Paraphrasing Factor:
+  a. Check the sentence similarity (cosine similarity)
+  b. if it's 100% then it is a verbatim
+  c. else, then chek whether there are missing words
+    compare two sentences, and find the missing words
+    -> generate number of missing words
+  d. if there are no grammar mistakes,
+    -> then paraphrasing is 1
+    else: 
+      give it a 0
+
+2. make ccnn to have
+  a. number of spelling mistakes
+  b. number of grammar mistakes
+  c. number of missing words
+
+3. generated data -> fit the model
+
+4. Write ASSETS paper:
+  A. lit review from qual report
+  
+  B. data generation
+    a. how did you handle paraphrasing?
+    
+  C. main neural net architecture
+    number of neurons, layers,
+    keras, activation functions
+  
+  D. discussion:
+    performance -> compare with other models
+  
+  E. future work
+
+
+
+
 Week 6-7. March 7th
 Todo:
 1. Generate data that can train the NN to be 'reasonable' and 'rational'
