@@ -8,17 +8,36 @@ from random import randint
 gen_data = []
 #https://crtc.gc.ca/eng/archive/2012/2012-362.htm
 
+DATASIZE = 100
 
 # delay, wpm, similarity, number of errors
-rand_delay = np.random.uniform(low=0.0, high=10000.0, size=(100000,1))
-rand_wpm = np.random.uniform(low=0.0, high=500.0, size=(100000,1))
-rand_sentence_sim = np.random.uniform(low=0.0, high=100.0, size=(100000,1))
-#rand_errors = np.random.randint(10, size=(25000,1))
+r_delay = np.random.uniform(
+  low=0.0, high=10000.0, size=(DATASIZE,1))
+r_wpm = np.random.uniform(
+  low=0.0, high=400.0, size=(DATASIZE,1))
+r_sentence_sim = np.random.uniform(
+  low=0.0, high=100.0, size=(DATASIZE,1)) # sentence cosine similarity
+r_spell_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of spelling errors
+r_grammar_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of grammar errors
+r_missing_words = np.random.randint(10, size=(DATASIZE,1)) # random number of missing words
 
+'''
+# paraphrasing factor:
+  #check sentence similarity (ss):
+  if ss == 100:
+    pf = 0
+  else:
+    if r_missing_words > 0:
+    # when there are missing words, 
+    # then it means there has been paraphrasing
+'''
 
-c = np.column_stack((rand_delay, rand_wpm))
-c = np.column_stack((c, rand_sentence_sim))
-#c = np.column_stack((c, rand_errors))
+c = np.column_stack((r_delay, r_wpm))
+c = np.column_stack((c, r_sentence_sim))
+c = np.column_stack((c, r_spell_errors))
+c = np.column_stack((c, r_grammar_errors))
+c = np.column_stack((c, r_missing_words))
+
 # shuffle the order?
 np.random.shuffle(c)
 #print(c)
@@ -96,7 +115,7 @@ print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 
 
 
-with open('gen_dt_100000.csv', 'w') as mf:
+with open('gen_dt_100.csv', 'w') as mf:
   wr = csv.writer(mf)
   for i in c:
     wr.writerow(i)
