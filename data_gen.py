@@ -61,7 +61,7 @@ np.random.shuffle(c)
 # [delay], [speed], [verbatim factor score], [grammar error score], [missing words score] 
 rating_list = [[],[],[],[],[]]
 for i in c:
-  delay_score, speed_score, verbatim_score, spell_grammar_score = 0,0,0,0,0
+  delay_score, speed_score, verbatim_score, spell_grammar_score, missing_words_score = 0,0,0,0,0
   # calculate delay rating
   delay = i[0]
   if delay <= 100:
@@ -75,7 +75,7 @@ for i in c:
   else:
     delay_score = randint(0, 3)
 
-  '''
+  
   # calculate speed_rating
   wpm = i[1]
   if wpm <= 90:
@@ -91,6 +91,7 @@ for i in c:
   else:
     speed_score = randint(0,4)
 
+  '''
   # calculate grammar errors AND verbatim_ness
   verbatim_score = i[2]
   if sentence_sim == 100:
@@ -102,6 +103,10 @@ for i in c:
   else:
     verbatim_score = randint(0,3)
   
+
+  # verbatim_score, spell_grammar_score, missing_words_score
+
+
   rating_list[0].append(delay_score)
   rating_list[1].append(speed_score)
   rating_list[2].append(verbatim_score)
