@@ -18,6 +18,7 @@ r_wpm = np.random.uniform(
   low=0.0, high=400.0, size=(DATASIZE,1))
 r_sentence_sim = np.random.uniform(
   low=0.0, high=100.0, size=(DATASIZE-portion,1)) # sentence cosine similarity
+
 r_spell_grammar_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of spelling and grammar errors
 r_missing_words = np.random.randint(10, size=(DATASIZE,1)) # random number of missing words
 
@@ -43,13 +44,7 @@ for i in range(DATASIZE):
   else:
     pf = 0
   pf_factors.append(pf)
-  print(r_sentence_sim[i], r_missing_words[i], pf)
 pf_factors = np.asarray(pf_factors)
-
-
-
-
-
 
 c = np.column_stack((r_delay, r_wpm))
 c = np.column_stack((c, r_sentence_sim))
@@ -59,7 +54,10 @@ c = np.column_stack((c, pf_factors))
 
 # shuffle the order?
 np.random.shuffle(c)
-'''
+
+
+###### Simulated scores based on the fact generated from previous.
+
 # [delay], [speed], [verbatim factor score], [grammar error score], [missing words score] 
 rating_list = [[],[],[],[],[]]
 for i in c:
@@ -77,6 +75,7 @@ for i in c:
   else:
     delay_score = randint(0, 3)
 
+  '''
   # calculate speed_rating
   wpm = i[1]
   if wpm <= 90:
@@ -115,8 +114,11 @@ for i in p:
 print(c)
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 
+'''
 
 
+
+'''
 with open('gen_dt_100.csv', 'w') as mf:
   wr = csv.writer(mf)
   for i in c:
