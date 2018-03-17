@@ -52,18 +52,21 @@ c = np.column_stack((c, r_spell_grammar_errors))
 c = np.column_stack((c, r_missing_words))
 c = np.column_stack((c, pf_factors))
 
-# shuffle the order?
-np.random.shuffle(c)
+np.random.shuffle(c) # shuffle the order?
 
 
-###### Simulated scores based on the fact generated from previous.
-
-# [delay], [speed], [verbatim factor score], [grammar error score], [missing words score] 
+###### Simulated scores based on the fact generated from previous. ######
 rating_list = [[],[],[],[],[]]
+# [delay], [speed], [verbatim factor score], [spelling and grammar error score], [missing words score] 
 for i in c:
-  delay_score, speed_score, verbatim_score, spell_grammar_score, missing_words_score = 0,0,0,0,0
+  delay_score, speed_score, verbatim_score, sge_score, missing_words_score = 0,0,0,0,0
   # calculate delay rating
   delay = i[0]
+  wpm = i[1]
+  sentence_sim = i[2]
+  spell_grammar_errors = i[3]
+  missing_words = i[4]
+
   if delay <= 100:
     delay_score = 10
   elif 100 < delay <= 500:
@@ -74,10 +77,8 @@ for i in c:
     delay_score = randint(2, 4)
   else:
     delay_score = randint(0, 3)
-
   
   # calculate speed_rating
-  wpm = i[1]
   if wpm <= 90:
     speed_score = randint(0,4) # when its too slow to read
   elif 90 < wpm <= 100:
@@ -91,25 +92,47 @@ for i in c:
   else:
     speed_score = randint(0,4)
 
-  '''
-  # calculate grammar errors AND verbatim_ness
-  verbatim_score = i[2]
+  # Paraphrasing (verbatimness) score which audiences subjectively feel
   if sentence_sim == 100:
-    verbatim_score = 10
+      verbatim_score = 10
   elif 96 <= sentence_sim < 100:
-    verbatim_score = randint(8,10)
-  elif 90 <= sentence_sim < 96:
-    verbatim_score = randint(4,7)
+    if missing_words > 0:
+      verbatim_score = randint(8,9)
+    elif 0 < missing_words < 2:
+      verbatim_score = randint(5,8)
+  elif 90 <= sentence_sim < 96: # over 95%
+    if 0 < missing_words <= 2:
+      verbatim_score = randint(4,7)
+    elif 2 < missing_words <= 5:
+      verbatim_score = randint(2,4)
+    elif 5 < missing_words:
+      verbatim_score = randint(0,3)
   else:
     verbatim_score = randint(0,3)
   
+  if spell_grammar_errors == 0:
+    sge_score = 10
+  elif spell_grammar_errors <= randint(2,3):
+    sge_score = randint(8,10)
+  elif 2 < spell_grammar_errors <= 5:
+    sge_score = randint(3,7)
+  else:
+    sge_score = randint(0,2)
 
-  # verbatim_score, spell_grammar_score, missing_words_score
-
-
+  if missing_words == 0:
+    missing_words_score = 10
+  elif 0 < missing_words <= randint(2,3):
+    missing_words_score = randint(5,9)
+  elif 3 < missing_words <= 5:
+    missing_words_score = randint(4,6)
+  else:
+    missing_words_score = randint(0,3)
+  
   rating_list[0].append(delay_score)
   rating_list[1].append(speed_score)
   rating_list[2].append(verbatim_score)
+  rating_list[3].append(sge_score)
+  rating_list[4].append(missing_words_score)
 
 p = np.asarray(rating_list)
 
@@ -119,13 +142,8 @@ for i in p:
 print(c)
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 
-'''
-
-
-
-'''
-with open('gen_dt_100.csv', 'w') as mf:
+filename = 'gen_dt_' + str(DATASIZE) + '.csv'
+with open(filename, 'w') as mf:
   wr = csv.writer(mf)
   for i in c:
     wr.writerow(i)
-'''
