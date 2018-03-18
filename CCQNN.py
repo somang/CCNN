@@ -41,8 +41,7 @@ def data_prep():
   return emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y
 
 
-def train_nn():
-  emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
+def train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   # create model using sequential
   emp_model = Sequential()
   emp_model.add(Dense(units=64, input_dim=4, activation='relu'))
@@ -82,42 +81,35 @@ def draw_graphs(hist):
 
 if __name__ == '__main__':
   if TRAINING:
-    model,hist = train_nn()
+    emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
+    emp_model,hist = train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y)
     draw_graphs(hist)
-    
-  else:
-    model = load_nn()
-  predict(model)
 
+  # graph the comparison between prediction vs real
+  predictions = emp_model.predict(emp_tst_x, batch_size=10)
 
-# graph the comparison between prediction vs real
-predictions = emp_model.predict(emp_test_X, batch_size=10)
+  category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
+  col_set = ['g','b','y','c']
+  for i in range(4):
+    color = col_set[i]
+    category = category_set[i]
 
-category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
-col_set = ['g','b','y','c']
-for i in range(4):
-  color = col_set[i]
-  category = category_set[i]
+    if VS_SWITCH:
+      plt.plot(emp_tst_y[:,i], predictions[:,i], c=color)
+      plt.xlabel('real values')
+      plt.ylabel('predictions')
+      plt.title(category + ' Score predictions')
+      plt.legend(['real values', 'predictions'])
+      plt.show()
+    else:
+      plt.plot(emp_tst_x[:,i], emp_tst_y[:,i], c=color) # real values
+      plt.plot(emp_tst_x[:,i], predictions[:,i], c='r') # predictions
+      plt.xlabel('Input X')
+      plt.ylabel('Scores')
+      plt.title(category + ' Score comparison')
+      plt.legend(['Input X', 'Scores'])
 
-  if VS_SWITCH:
-    plt.plot(emp_test_Y[:,i], predictions[:,i], c=color)
-    plt.xlabel('real values')
-    plt.ylabel('predictions')
-    plt.title(category + ' Score predictions')
-    plt.legend(['real values', 'predictions'])
-    plt.show()
-  else:
-    plt.plot(emp_test_X[:,i], emp_test_Y[:,i], c=color) # real values
-    plt.plot(emp_test_X[:,i], predictions[:,i], c='r') # predictions
-    plt.xlabel('Input X')
-    plt.ylabel('Scores')
-    plt.title(category + ' Score comparison')
-    plt.legend(['Input X', 'Scores'])
+      plt.show()
 
-    plt.show()
-
-
-
-
-##### multivariate nonlinear regression fitting
+  ##### multivariate nonlinear regression fitting
 

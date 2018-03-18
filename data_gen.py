@@ -9,7 +9,7 @@ gen_data = []
 #https://crtc.gc.ca/eng/archive/2012/2012-362.htm
 
 DATASIZE = 100000
-portion = math.ceil(DATASIZE*0.1)
+portion = math.ceil(DATASIZE*0.25)
 
 # delay, wpm, similarity, number of errors
 r_delay = np.random.uniform(
@@ -17,8 +17,7 @@ r_delay = np.random.uniform(
 r_wpm = np.random.uniform(
   low=0.0, high=400.0, size=(DATASIZE,1))
 r_sentence_sim = np.random.uniform(
-  low=0.0, high=100.0, size=(DATASIZE-portion,1)) # sentence cosine similarity
-
+  low=80.0, high=100.0, size=(DATASIZE-portion,1)) # sentence cosine similarity
 r_spell_grammar_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of spelling and grammar errors
 r_missing_words = np.random.randint(10, size=(DATASIZE,1)) # random number of missing words
 
@@ -52,8 +51,7 @@ c = np.column_stack((c, r_missing_words))
 c = np.column_stack((c, r_sentence_sim))
 c = np.column_stack((c, pf_factors))
 
-np.random.shuffle(c) # shuffle the order?
-
+np.random.shuffle(c) # shuffle the order in rows
 
 ###### Simulated scores based on the fact generated from previous. ######
 rating_list = [[],[],[],[],[]]
@@ -63,9 +61,9 @@ for i in c:
   # calculate delay rating
   delay = i[0]
   wpm = i[1]
-  sentence_sim = i[2]
-  spell_grammar_errors = i[3]
-  missing_words = i[4]
+  spell_grammar_errors = i[2]
+  missing_words = i[3]
+  sentence_sim = i[4]
 
   if delay <= 100:
     delay_score = 10
@@ -134,7 +132,6 @@ for i in c:
   rating_list[2].append(sge_score)
   rating_list[3].append(missing_words_score)
   rating_list[4].append(verbatim_score)
-
 
 p = np.asarray(rating_list)
 
