@@ -8,7 +8,7 @@ import math
 gen_data = []
 #https://crtc.gc.ca/eng/archive/2012/2012-362.htm
 
-DATASIZE = 100
+DATASIZE = 100000
 portion = math.ceil(DATASIZE*0.1)
 
 # delay, wpm, similarity, number of errors
@@ -47,9 +47,9 @@ for i in range(DATASIZE):
 pf_factors = np.asarray(pf_factors)
 
 c = np.column_stack((r_delay, r_wpm))
-c = np.column_stack((c, r_sentence_sim))
 c = np.column_stack((c, r_spell_grammar_errors))
 c = np.column_stack((c, r_missing_words))
+c = np.column_stack((c, r_sentence_sim))
 c = np.column_stack((c, pf_factors))
 
 np.random.shuffle(c) # shuffle the order?
@@ -110,29 +110,31 @@ for i in c:
   else:
     verbatim_score = randint(0,3)
   
+  tmp_flag = randint(2,3)
   if spell_grammar_errors == 0:
     sge_score = 10
-  elif spell_grammar_errors <= randint(2,3):
+  elif spell_grammar_errors <= tmp_flag:
     sge_score = randint(8,10)
-  elif 2 < spell_grammar_errors <= 5:
-    sge_score = randint(3,7)
+  elif tmp_flag < spell_grammar_errors <= 5:
+    sge_score = randint(4,7)
   else:
-    sge_score = randint(0,2)
+    sge_score = randint(0,3)
 
   if missing_words == 0:
     missing_words_score = 10
   elif 0 < missing_words <= randint(2,3):
     missing_words_score = randint(5,9)
   elif 3 < missing_words <= 5:
-    missing_words_score = randint(4,6)
+    missing_words_score = randint(4,7)
   else:
     missing_words_score = randint(0,3)
   
   rating_list[0].append(delay_score)
   rating_list[1].append(speed_score)
-  rating_list[2].append(verbatim_score)
-  rating_list[3].append(sge_score)
-  rating_list[4].append(missing_words_score)
+  rating_list[2].append(sge_score)
+  rating_list[3].append(missing_words_score)
+  rating_list[4].append(verbatim_score)
+
 
 p = np.asarray(rating_list)
 

@@ -17,7 +17,7 @@ import time
 start = time.time()
 # setup data
   # import csv data and create an matrix
-dataset = np.loadtxt("gen_dt_10000.csv", delimiter=",")
+dataset = np.loadtxt("gen_dt_1000.csv", delimiter=",")
 print(len(dataset))
 t_index = round(len(dataset)*0.8)
 
@@ -130,7 +130,6 @@ for i in prediction:
               forward/backward pass. The higher the batch size,
               the more memory space you'll need.
 '''
-
 
 
 ##### multivariate linear regression
