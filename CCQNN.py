@@ -112,4 +112,15 @@ if __name__ == '__main__':
       plt.show()
 
   ##### multivariate nonlinear regression fitting
-
+  mlm = linear_model.LinearRegression()
+  stat_model = mlm.fit(emp_tr_x, emp_tr_y, c='r')
+  predictions = mlm.predict(emp_tst_x)
+  ## plot the mlm
+  plt.plot(emp_tst_y, predictions, c='c')
+  #plt.scatter(ver_tst_y, predictions)
+  plt.title('Linear Regression Score predictions')
+  plt.xlabel("Real Values")
+  plt.ylabel("Predictions")
+  plt.show()
+  # print the accuracy score
+  print("Score:", mlm.score(ver_tst_x, ver_tst_y))
