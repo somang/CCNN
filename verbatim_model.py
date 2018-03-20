@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-DATAFILE = "ver_gen_dt_100000.csv"
+DATAFILE = "5ver_gen_dt_100000.csv"
 MODEL_FILE = "ver_model.h5" 
 
 def data_prep():
@@ -117,9 +117,15 @@ if __name__ == '__main__':
               )
   # evaluate the regression value model
   loss_and_metrics = regression_model.evaluate(ver_tst_x, ver_tst_y[:,-1:], batch_size=50)
-  print("\n%s: %.2f%%" % (regression_model.metrics_names[1], loss_and_metrics[1]*100))
+  #print("\n%s: %.2f%%" % (regression_model.metrics_names[1], loss_and_metrics[1]*100))
   #draw_graphs(reg_hist)
   predictions = regression_model.predict(ver_tst_x, batch_size=10)
+  predictions = np.rint(predictions)
+  correct_count = 0
+  for i in range(len(predictions)):
+    if predictions[i][0] == ver_tst_y[i,-1:][0]:
+      correct_count += 1
+  print("Neural Networks accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
 
   #save the model
   categorical_model.save('cat_ver_model.h5') #creates a hdf5 file
@@ -130,7 +136,6 @@ if __name__ == '__main__':
   plt.xlabel('real values')
   plt.ylabel('predictions')
   plt.title('Neural Networks Score predictions')
-  plt.legend(['real values', 'predictions'])
   plt.show()
   
 
@@ -138,32 +143,45 @@ if __name__ == '__main__':
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(ver_tr_x, ver_tr_y[:,-1:])
   predictions = mlm.predict(ver_tst_x)
-  ## plot the mlm
-  #plt.plot(ver_tst_y[:,0], predictions, c='c')
+  predictions = np.rint(predictions)
+
+  # print the accuracy score
+  correct_count = 0
+  for i in range(len(predictions)):
+    if predictions[i][0] == ver_tst_y[i,-1:][0]:
+      correct_count += 1
+  print("Linear regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
+
+  # plot the mlm
+  #plt.plot(ver_tst_y[:,-1:], predictions, c='c')
   plt.scatter(ver_tst_y[:,-1:], predictions, c='r')
   plt.title('Linear Regression Score predictions')
   plt.xlabel("Real Values")
   plt.ylabel("Predictions")
   plt.show()
-  # print the accuracy score
-  print("Score:", mlm.score(ver_tst_x, ver_tst_y[:,-1:]))
-  
+
   ############################## Polynomial linear regression
   poly = PolynomialFeatures(degree=2)
   training_x = poly.fit_transform(ver_tr_x)
   testing_x = poly.fit_transform(ver_tst_x)
-
   lg = linear_model.LinearRegression()
   lg.fit(training_x, ver_tr_y[:,-1:])
   predictions = lg.predict(testing_x)
+  predictions = np.rint(predictions)
+  
+  # print the accuracy score
+  correct_count = 0
+  for i in range(len(predictions)):
+    if predictions[i][0] == ver_tst_y[i,-1:][0]:
+      correct_count += 1
+  print("Polynomial regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
+
   ## plot the lg
-  #plt.plot(ver_tst_y[:,0], predictions, c='b')
+  #plt.plot(ver_tst_y[:,-1:], predictions, c='b')
   plt.scatter(ver_tst_y[:,-1:], predictions, c='b')
   plt.title('Polynomial Regression Score predictions')
   plt.xlabel("Real Values")
   plt.ylabel("Predictions")
   plt.show()
-  # print the accuracy score
-  print("Score:", lg.score(testing_x, ver_tst_y[:,-1:]))
   
   ############################## Support Vector Machine?

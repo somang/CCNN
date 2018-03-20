@@ -48,7 +48,8 @@ for i in c:
   sentence_sim = i[0]
   missing_words = i[1]
   pf_factor = i[2]
-
+  
+  '''
   # Paraphrasing (verbatimness) score which audiences subjectively feel
   if sentence_sim == 100 and missing_words == 0:
       verbatim_score = 10
@@ -70,6 +71,29 @@ for i in c:
       verbatim_score = randint(0,3)
   else:
     verbatim_score = randint(0,3)
+  '''
+
+  # Paraphrasing (verbatimness) score which audiences subjectively feel
+  if sentence_sim == 100 and missing_words == 0:
+      verbatim_score = 5
+  elif 96 <= sentence_sim < 100:
+    if missing_words <= 1:
+      verbatim_score = 5
+    elif 1 < missing_words <= 2:
+      verbatim_score = 4
+    elif 2 < missing_words <= 5:
+      verbatim_score = 3
+    else:
+      verbatim_score = 1
+  elif 90 <= sentence_sim < 96: # over 95%
+    if 0 < missing_words <= 2:
+      verbatim_score = 3
+    elif 2 < missing_words <= 5:
+      verbatim_score = 2
+    else:
+      verbatim_score = 1
+  else:
+    verbatim_score = 1
   
   #print(sentence_sim, missing_words, pf_factor, verbatim_score)
 
@@ -90,7 +114,7 @@ c = np.column_stack((c, p))
 
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 
-filename = 'ver_gen_dt_' + str(DATASIZE) + '.csv'
+filename = '5ver_gen_dt_' + str(DATASIZE) + '.csv'
 with open(filename, 'w') as mf:
   wr = csv.writer(mf)
   for i in c:
