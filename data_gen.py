@@ -12,6 +12,9 @@ DATASIZE = 100000
 portion = math.ceil(DATASIZE*0.25)
 
 # delay, wpm, similarity, number of errors
+mu, sigma = 0, 0.1 #mean and standard deviation
+np.random.normal(mu, sigma, DATASIZE)
+
 r_delay = np.random.uniform(
   low=0.0, high=10000.0, size=(DATASIZE,1))
 r_wpm = np.random.uniform(
@@ -132,6 +135,27 @@ for i in c:
   rating_list[2].append(sge_score)
   rating_list[3].append(missing_words_score)
   rating_list[4].append(verbatim_score)
+
+  '''
+  1. Normal distribtion on human ratings
+  2. Generate data first for 0-10, then map into
+   
+    0 <= x <= 2  : 1
+    3 <= x <= 4  : 2
+    5 <= x <= 6  : 3
+    7 <= x <= 8  : 4
+    9 <= x <= 10 : 5
+
+  3. Then train NN, linear regression, polynomial regression (order 2)
+  4. Map with 3, and 7 too.
+
+  0,1,2,3 : 1
+  4,5,6 : 2
+  7,8,9,10 : 3
+
+  find differences,
+
+  '''
 
 p = np.asarray(rating_list)
 

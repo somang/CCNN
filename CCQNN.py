@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
   ##### multivariate nonlinear regression fitting
   mlm = linear_model.LinearRegression()
-  stat_model = mlm.fit(emp_tr_x, emp_tr_y, c='r')
+  stat_model = mlm.fit(emp_tr_x, emp_tr_y)
   predictions = mlm.predict(emp_tst_x)
   ## plot the mlm
   plt.plot(emp_tst_y, predictions, c='c')

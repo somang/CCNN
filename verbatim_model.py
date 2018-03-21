@@ -25,7 +25,7 @@ MODEL_FILE = "ver_model.h5"
 def data_prep():
   ######################## data prep ###########################################
   dataset = np.loadtxt(DATAFILE, delimiter=",")
-  dataset = dataset[:10000,:]
+  dataset = dataset[:100000,:]
   t_index = round(len(dataset)*0.8)
 
   X_data_ver = dataset[:,:3]
@@ -96,9 +96,10 @@ if __name__ == '__main__':
   test_y_nn = ver_tst_y[:,:-1]
   # create model
   #model = KerasClassifier(build_fn=baseline_model, verbose=1)
-  categorical_model = baseline_model(10, 'categorical_crossentropy', 'softmax')
+  #categorical_model = baseline_model(10, 'categorical_crossentropy', 'softmax')
   regression_model = baseline_model(1, 'mse', 'relu')
   
+  '''
   print("TRAINING: Categorical model")
   cat_hist = categorical_model.fit(ver_tr_x, train_y_nn, 
               epochs=150, batch_size=500,
@@ -109,11 +110,12 @@ if __name__ == '__main__':
   print("\n%s: %.2f%%" % (categorical_model.metrics_names[1], loss_and_metrics[1]*100))
   #draw_graphs(cat_hist)
   predictions = categorical_model.predict(ver_tst_x, batch_size=10)
+  '''
 
   print("TRAINING: Regression model")
   reg_hist = regression_model.fit(ver_tr_x, ver_tr_y[:,-1:], 
-              epochs=150, batch_size=500,
-              verbose=0, validation_data=(ver_tst_x, ver_tst_y[:,-1:])
+              epochs=50, batch_size=500,
+              verbose=1, validation_data=(ver_tst_x, ver_tst_y[:,-1:])
               )
   # evaluate the regression value model
   loss_and_metrics = regression_model.evaluate(ver_tst_x, ver_tst_y[:,-1:], batch_size=50)
@@ -128,7 +130,7 @@ if __name__ == '__main__':
   print("Neural Networks accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
 
   #save the model
-  categorical_model.save('cat_ver_model.h5') #creates a hdf5 file
+  #categorical_model.save('cat_ver_model.h5') #creates a hdf5 file
   regression_model.save('reg_ver_model.h5') #creates a hdf5 file
 
   #plt.plot(ver_tst_y[:,-1:], predictions, c='r')
