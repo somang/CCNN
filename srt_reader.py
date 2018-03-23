@@ -1,5 +1,5 @@
 #srt file reader-parser
-import re, sys
+import re, sys, string
 from caption import Caption
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords as sw
@@ -11,16 +11,16 @@ from spacy.lemmatizer import Lemmatizer
 
 import numpy as np
 
-import enchant
-from enchant.checker import SpellChecker
-
+#import enchant
+#from enchant.checker import SpellChecker
+'''
 from keras.models import Sequential
 from keras.layers import Dense
 
 from sklearn import preprocessing
 from sklearn import linear_model
 from sklearn.preprocessing import StandardScaler
-
+'''
 
 class CaptionCollection:
   def __init__(self, lines):
@@ -285,6 +285,65 @@ def getSimilarity(s1, s2):
 
   return similarity_value
 
+def getMissingWords(nlp, caption_s, transcript_s):
+  # check whether caption sentence is missing words
+  # from transcript sentence. which means, transcript
+  # sentence will have more words than caption words
+  # 
+  missing = []
+  table = "".maketrans("","",string.punctuation)
+  a = caption_s.split(" ")
+  b = transcript_s.split(" ")
+  a_prime = []
+  b_prime = []
+
+  for i in a:
+    word = i.translate(table)
+    token = nlp(word)    
+    if token:
+      token = token[0]
+      if token.lemma_ == "-PRON-":
+        a_prime.append(word)
+      else:
+        a_prime.append(str(token.lemma_))
+    else:
+      a_prime.append(word)
+
+  for i in b:
+    word = i.translate(table)
+    token = nlp(word)
+    if token:
+      token = token[0]
+      if token.lemma_ == "-PRON-":
+        b_prime.append(word)
+      else:
+        b_prime.append(str(token.lemma_))
+    else:
+      b_prime.append(word)
+
+  # for each word in transcript,
+  # check whether the word is in the caption sentence.
+  for j in b_prime:
+    if j not in a_prime:
+      missing.append(j)
+
+  #print(len(missing), missing)
+  return len(missing), abs(len(a_prime)-len(b_prime))
+
+def addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp):
+  # calculate delay from the very first caption
+  delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
+  # get words per min
+  duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
+  wpm = len(c_txt.split())/duration
+  # similarity (paraphrasing)
+  sim_value = getSimilarity(c_sentence[1], t_txt)
+  # spelling errors
+  #spelling = getSpellErr(c_sentence[1])
+  # missing words?
+  mw, wd = getMissingWords(nlp, c_sentence[1], t_txt)
+  # append them all
+  return [delay, wpm, sim_value, spelling, mw, wd, c_txt, t_txt]
 
 
 if __name__ == '__main__':
@@ -292,8 +351,8 @@ if __name__ == '__main__':
   transcript_file = 'captions/citynews_transcript.srt'
   #caption_file = 'CTVnews_caption.srt'
   #transcript_file = 'CTVnews_transcript.srt'
-
   nlp = spacy.load('en')
+
 
 
   with open(caption_file) as cf:
@@ -350,51 +409,18 @@ if __name__ == '__main__':
 
     delay, duration, wpm, sim_value, spelling = 0,0,0,0,0
 
-    #print(c_index, len(cps))
-    #print(c_txt)
-
     if t_txt_ngram == c_txt_ngram:
-      #print("c:", c_txt)
-      #print("t:", t_txt)
-      #print()
-
-      # calculate delay from the very first caption
-      delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
-      # get words per min
-      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
-      wpm = len(c_txt.split())/duration
-      # similarity (paraphrasing)
-      sim_value = getSimilarity(c_sentence[1], t_txt)
-      # spelling errors
-      spelling = getSpellErr(c_sentence[1])
-      # append them all
-      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
+      v_list = addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp)
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
     elif t_txt_end_ngram == c_txt_end_ngram:
-      #print("ENDING MATCH")
-      #print("c:", c_txt)
-      #print("t:", t_txt)
-      #print()
-      # calculate delay from the very first caption
-      delay = abs(t_time[0].to_ms() - c_time[0].to_ms())
-      # get words per min
-      duration = (t_time[1].to_ms() - t_time[0].to_ms())/1000/60.0 # in minutes
-      wpm = len(c_txt.split())/duration
-      # similarity (paraphrasing)
-      sim_value = getSimilarity(c_sentence[1], t_txt)
-      # spelling errors
-      spelling = getSpellErr(c_sentence[1])
-      # append them all
-      #print(wpm, c_txt, duration, len(c_txt.split()))
-      v_list = [delay, wpm, sim_value, spelling, c_txt, t_txt]
+      v_list = addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp)
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
     else:
       #print("no match, move the transcript sentence on..")
-      #print()
       left_sentences[c_time[0]] = c_sentence
 
     t_index += 1
@@ -405,9 +431,29 @@ if __name__ == '__main__':
       t_index = last_match_index-1
   
   #print(len(cps), len(tps))
-  #print(input_matrix, len(input_matrix))
+  
   #print(left_sentences)
+  
+  for i in input_matrix:
+    delay = i[0]
+    wpm = i[1]
+    ss = i[2]
+    sge = 0
+    mw = i[4]
+    wd = i[5]
+    print("delay:", delay)
+    print("wpm:", wpm)
+    print("sentence similarity:", ss)
+    print("spelling and grammar errors:", sge)
+    print("missing words:", mw)
+    print("word difference:", wd)
+    print()
 
+
+  
+  
+  
+  '''
   # setup data
   #dataset = np.loadtxt("mixed_data.csv", delimiter=",")
   dataset = np.genfromtxt("mixed_data.csv", delimiter=",")
@@ -457,7 +503,7 @@ if __name__ == '__main__':
 
   prediction = model.predict(p_input)
   print(prediction)
-  
+  '''
 
   # the order of input goes
   # delay

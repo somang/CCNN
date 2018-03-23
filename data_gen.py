@@ -15,6 +15,19 @@ portion = math.ceil(DATASIZE*0.25)
 mu, sigma = 0, 0.1 #mean and standard deviation
 np.random.normal(mu, sigma, DATASIZE)
 
+### normal distribution
+r_delay = np.random.normal(
+  low=0.0, high=10000.0, size=(DATASIZE,1))
+r_wpm = np.random.uniform(
+  low=0.0, high=400.0, size=(DATASIZE,1))
+r_sentence_sim = np.random.uniform(
+  low=80.0, high=100.0, size=(DATASIZE-portion,1)) # sentence cosine similarity
+r_spell_grammar_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of spelling and grammar errors
+r_missing_words = np.random.randint(10, size=(DATASIZE,1)) # random number of missing words
+
+
+'''
+### uniform distribution
 r_delay = np.random.uniform(
   low=0.0, high=10000.0, size=(DATASIZE,1))
 r_wpm = np.random.uniform(
@@ -23,6 +36,7 @@ r_sentence_sim = np.random.uniform(
   low=80.0, high=100.0, size=(DATASIZE-portion,1)) # sentence cosine similarity
 r_spell_grammar_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of spelling and grammar errors
 r_missing_words = np.random.randint(10, size=(DATASIZE,1)) # random number of missing words
+'''
 
 max_ss = []
 for i in range(portion):
