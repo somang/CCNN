@@ -12,17 +12,19 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-DATAFILE = "gen_dt_100000.csv"
+DATAFILE = "5_gen_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 TRAINING = 1
 EPOCHS = 150
-VS_SWITCH = 0
+VS_SWITCH = 1
 
 def data_prep():
   ######################## data prep ###########################################
   dataset = np.loadtxt(DATAFILE, delimiter=",")
-  t_index = round(len(dataset)*0.7)
+  t_index = round(len(dataset)*0.8) # 80% to train
   # normalization and prep the data for train and validation
+  # values: delay, wpm, sge, mw, ss, pf
+  # score:  delay, speed, sge, mw, verbatim
   sc = StandardScaler()
   X_data = sc.fit_transform(dataset[:,:6])
   X_data_emp, Y_data_emp = X_data[:,:4], dataset[:,6:10]
@@ -54,7 +56,7 @@ def train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   # fit the empirical value model
   emp_hist = emp_model.fit(emp_tr_x, emp_tr_y, 
                 epochs=EPOCHS, batch_size=500,
-                verbose=1, validation_data=(emp_tst_x, emp_tst_y)
+                verbose=0, validation_data=(emp_tst_x, emp_tst_y)
                 )
   #save the model
   emp_model.save(MODEL_FILE) #creates a hdf5 file
@@ -83,19 +85,30 @@ if __name__ == '__main__':
   if TRAINING:
     emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
     emp_model,hist = train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y)
-    draw_graphs(hist)
+    #draw_graphs(hist)
 
   # graph the comparison between prediction vs real
   predictions = emp_model.predict(emp_tst_x, batch_size=10)
+  predictions = np.rint(predictions)
 
   category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
   col_set = ['g','b','y','c']
   for i in range(4):
     color = col_set[i]
     category = category_set[i]
+    cat = predictions[:,i]
+    tst = emp_tst_y[:,i]
+    correct_count = 0
+    for j in range(len(cat)):
+      p_value, t_value = cat[j], tst[j]
+      if p_value == t_value:
+        correct_count += 1
+    print("NN accuracy on " + category_set[i] + ": {:.2f}%".format(correct_count/len(cat)*100))
 
+    '''
     if VS_SWITCH:
-      plt.plot(emp_tst_y[:,i], predictions[:,i], c=color)
+      #plt.plot(emp_tst_y[:,i], predictions[:,i], c=color)
+      plt.scatter(emp_tst_y[:,i], predictions[:,i], c=color)
       plt.xlabel('real values')
       plt.ylabel('predictions')
       plt.title(category + ' Score predictions')
@@ -108,19 +121,39 @@ if __name__ == '__main__':
       plt.ylabel('Scores')
       plt.title(category + ' Score comparison')
       plt.legend(['Input X', 'Scores'])
-
       plt.show()
+    '''
 
   ##### multivariate nonlinear regression fitting
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(emp_tr_x, emp_tr_y)
   predictions = mlm.predict(emp_tst_x)
-  ## plot the mlm
-  plt.plot(emp_tst_y, predictions, c='c')
-  #plt.scatter(ver_tst_y, predictions)
-  plt.title('Linear Regression Score predictions')
-  plt.xlabel("Real Values")
-  plt.ylabel("Predictions")
-  plt.show()
+  predictions = np.rint(predictions)
+  
   # print the accuracy score
-  print("Score:", mlm.score(ver_tst_x, ver_tst_y))
+  category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
+  col_set = ['g','b','y','c']
+  for i in range(4):
+    color = col_set[i]
+    category = category_set[i]
+    cat = predictions[:,i]
+    tst = emp_tst_y[:,i]
+    correct_count = 0
+    for j in range(len(cat)):
+      p_value, t_value = cat[j], tst[j]
+      if p_value == t_value:
+        correct_count += 1
+    print("MLM accuracy on " + category_set[i] + ": {:.2f}%".format(correct_count/len(cat)*100))
+
+    ## plot the mlm
+    '''
+    for i in range(4):
+      #plt.plot(emp_tst_y[:,i], predictions[:,i], c='c')
+      plt.scatter(emp_tst_y[:,i], predictions[:,i])
+      plt.title('Linear Regression Score predictions')
+      plt.xlabel("Real Values")
+      plt.ylabel("Predictions")
+      plt.show()
+      # print the accuracy score
+    '''
+
