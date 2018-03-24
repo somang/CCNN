@@ -1,65 +1,74 @@
 import csv
 import numpy as np
-from scipy.stats import skewnorm
 import matplotlib.pyplot as plt
 from random import randint
+from scipy.stats import truncnorm
 import math
 
-gen_data = []
 #https://crtc.gc.ca/eng/archive/2012/2012-362.htm
+def get_truncated_normal(mean=0, sd=0, low=0, high=10):
+  value = truncnorm(
+    (low - mean) / sd, 
+    (high - mean) / sd, 
+    loc=mean, scale=sd)
+  return value
 
+def score_normalization(x, range):
+  if range == 10:
+    return x
+  elif range == 5:
+    if 0 <= x <= 2: return 1
+    elif 3 <= x <= 4: return 2
+    elif 5 <= x <= 6: return 3
+    elif 7 <= x <= 8: return 4
+    elif 8 <= x <= 10: return 5
+    else: return 0
+  elif range == 3:
+    if 0 <= x <= 3: return 1
+    elif 4 <= x <= 6: return 2
+    elif 7 <= x <= 10: return 3
+    else: return 0
+
+SCALE = 3
 DATASIZE = 100000
-portion = math.ceil(DATASIZE*0.25)
-
 # delay, wpm, similarity, number of errors
-mu, sigma = 0, 0.1 #mean and standard deviation
-np.random.normal(mu, sigma, DATASIZE)
+### normal distribution using the mean and sd from existing data.
+trn = get_truncated_normal(mean=4895.75, sd=1477.94, low=0, high=12000)
+r_delay = trn.rvs(DATASIZE)
+print(max(r_delay), min(r_delay))
 
-### normal distribution
-r_delay = np.random.normal(
-  low=0.0, high=10000.0, size=(DATASIZE,1))
-r_wpm = np.random.uniform(
-  low=0.0, high=400.0, size=(DATASIZE,1))
-r_sentence_sim = np.random.uniform(
-  low=80.0, high=100.0, size=(DATASIZE-portion,1)) # sentence cosine similarity
-r_spell_grammar_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of spelling and grammar errors
-r_missing_words = np.random.randint(10, size=(DATASIZE,1)) # random number of missing words
+trn = get_truncated_normal(mean=232.03, sd=200.48, low=0, high=850)
+r_wpm = trn.rvs(DATASIZE)
 
+trn = get_truncated_normal(mean=0.85, sd=0.2, low=0.0, high=1.01)
+r_sentence_sim = trn.rvs(DATASIZE)
 
-'''
-### uniform distribution
-r_delay = np.random.uniform(
-  low=0.0, high=10000.0, size=(DATASIZE,1))
-r_wpm = np.random.uniform(
-  low=0.0, high=400.0, size=(DATASIZE,1))
-r_sentence_sim = np.random.uniform(
-  low=80.0, high=100.0, size=(DATASIZE-portion,1)) # sentence cosine similarity
-r_spell_grammar_errors = np.random.randint(10, size=(DATASIZE,1)) # random number of spelling and grammar errors
-r_missing_words = np.random.randint(10, size=(DATASIZE,1)) # random number of missing words
-'''
+trn = get_truncated_normal(mean=1, sd=2, low=0.0, high=10)
+r_spell_grammar_errors = np.rint(trn.rvs(DATASIZE))
 
-max_ss = []
-for i in range(portion):
-  max_ss.append([100.0])
+trn = get_truncated_normal(mean=5.02, sd=6.79, low=0.0, high=25)
+r_missing_words = []
+for i in range(DATASIZE):
+  # because it cannot have a 100% and a missing word..
+  if r_sentence_sim[i] > 1.0:
+    r_sentence_sim[i] = 1.0
+    r_missing_words.append(0)
+  else:
+    mw = np.rint(trn.rvs())
+    r_missing_words.append(mw)
+r_missing_words = np.asarray(r_missing_words)
 
-max_ss = np.asarray(max_ss)
-r_sentence_sim = np.concatenate((r_sentence_sim, max_ss))
-
-# paraphrasing factor:
+# generate paraphrasing factor:
 pf_factors = []
 pf = 0
 for i in range(DATASIZE):
-  if i < 100:
-    missing_word_count = r_missing_words[i]
-    if missing_word_count > 0:
+  if r_sentence_sim[i] < 1.0:
+    if r_missing_words[i] > 0:
       # when there are missing words, 
       # then it means there has been paraphrasing
       pf = 1
-    else:
-      pf = 0
-  else:
-    pf = 0
   pf_factors.append(pf)
+  pf = 0
 pf_factors = np.asarray(pf_factors)
 
 c = np.column_stack((r_delay, r_wpm))
@@ -82,16 +91,14 @@ for i in c:
   missing_words = i[3]
   sentence_sim = i[4]
 
-  if delay <= 100:
-    delay_score = 10
-  elif 100 < delay <= 500:
-    delay_score = randint(8, 9)
-  elif 500 < delay <= 2000:
+  if delay <= 1000:
+    delay_score = randint(8,10)
+  elif 1000 < delay <= 2000:
     delay_score = randint(4, 7)
   elif 2000 < delay <= 4000:
     delay_score = randint(2, 4)
   else:
-    delay_score = randint(0, 3)
+    delay_score = randint(0, 2)
   
   # calculate speed_rating
   if wpm <= 90:
@@ -143,43 +150,28 @@ for i in c:
     missing_words_score = randint(4,7)
   else:
     missing_words_score = randint(0,3)
-  
+
+  delay_score = score_normalization(delay_score, SCALE)
+  speed_score = score_normalization(speed_score, SCALE)
+  sge_score = score_normalization(sge_score, SCALE)
+  missing_words_score = score_normalization(missing_words_score, SCALE)
+  verbatim_score = score_normalization(verbatim_score, SCALE)
+
   rating_list[0].append(delay_score)
   rating_list[1].append(speed_score)
   rating_list[2].append(sge_score)
   rating_list[3].append(missing_words_score)
   rating_list[4].append(verbatim_score)
 
-  '''
-  1. Normal distribtion on human ratings
-  2. Generate data first for 0-10, then map into
-   
-    0 <= x <= 2  : 1
-    3 <= x <= 4  : 2
-    5 <= x <= 6  : 3
-    7 <= x <= 8  : 4
-    9 <= x <= 10 : 5
-
-  3. Then train NN, linear regression, polynomial regression (order 2)
-  4. Map with 3, and 7 too.
-
-  0,1,2,3 : 1
-  4,5,6 : 2
-  7,8,9,10 : 3
-
-  find differences,
-
-  '''
-
 p = np.asarray(rating_list)
+print(max(p[:,0]), min(p[:,0]))
 
 for i in p:
   c = np.column_stack((c, i))
+np.set_printoptions(precision=4, suppress=True)
 
-print(c)
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
-
-filename = 'gen_dt_' + str(DATASIZE) + '.csv'
+filename = str(SCALE) + '_gen_dt_' + str(DATASIZE) + '.csv'
 with open(filename, 'w') as mf:
   wr = csv.writer(mf)
   for i in c:

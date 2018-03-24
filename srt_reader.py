@@ -347,13 +347,11 @@ def addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp):
 
 
 if __name__ == '__main__':
-  caption_file = 'captions/citynews_caption.srt'
-  transcript_file = 'captions/citynews_transcript.srt'
-  #caption_file = 'CTVnews_caption.srt'
-  #transcript_file = 'CTVnews_transcript.srt'
+  #caption_file = 'captions/citynews_caption.srt'
+  #transcript_file = 'captions/citynews_transcript.srt'
+  caption_file = 'captions/CTVnews_caption.srt'
+  transcript_file = 'captions/CTVnews_transcript.srt'
   nlp = spacy.load('en')
-
-
 
   with open(caption_file) as cf:
       lines = cf.readlines()
@@ -434,90 +432,42 @@ if __name__ == '__main__':
   
   #print(left_sentences)
   
+  input_arr = []
   for i in input_matrix:
-    delay = i[0]
-    wpm = i[1]
-    ss = i[2]
-    sge = 0
-    mw = i[4]
-    wd = i[5]
-    print("delay:", delay)
-    print("wpm:", wpm)
-    print("sentence similarity:", ss)
-    print("spelling and grammar errors:", sge)
-    print("missing words:", mw)
-    print("word difference:", wd)
-    print()
+    tmp_arr = []
+    tmp_arr.append([i[0]]) # delay
+    tmp_arr.append([i[1]]) # wpm
+    tmp_arr.append([i[2]]) # similarity
+    tmp_arr.append([i[3]]) # sge
+    tmp_arr.append([i[4]]) # mw
+    tmp_arr.append([i[5]]) # md
 
+    input_arr.append(tmp_arr)
 
-  
-  
-  
-  '''
-  # setup data
-  #dataset = np.loadtxt("mixed_data.csv", delimiter=",")
-  dataset = np.genfromtxt("mixed_data.csv", delimiter=",")
+  input_arr = np.asarray(input_arr)
 
-  # split input(X) and output(Y)
-  X = []
-  Y = dataset[:,:]
-  dY = []
-  dX = []
+  print("Citytv news: delay, wpm, sim_value, spelling, mw, wd,")
+  print(np.mean(input_arr[:,0]), np.std(input_arr[:,0]), max(input_arr[:,0]), min(input_arr[:,0]))
+  print(np.mean(input_arr[:,1]), np.std(input_arr[:,1]), max(input_arr[:,1]), min(input_arr[:,1]))
+  print(np.mean(input_arr[:,2]), np.std(input_arr[:,2]), max(input_arr[:,2]), min(input_arr[:,2]))
+  print(np.mean(input_arr[:,3]), np.std(input_arr[:,3]), max(input_arr[:,3]), min(input_arr[:,3]))
+  print(np.mean(input_arr[:,4]), np.std(input_arr[:,4]), max(input_arr[:,4]), min(input_arr[:,4]))
+  print(np.mean(input_arr[:,5]), np.std(input_arr[:,5]), max(input_arr[:,5]), min(input_arr[:,5]))
 
-  for i in range(len(input_matrix)):
-    input_matrix[i].append(Y[:,0][i])
-    print(input_matrix[i])
-    X.append(input_matrix[i][:4])
+"""
+Citytv news: delay, wpm, sim_value, spelling, mw, wd,
+4895.75 1477.93680092 [ 7271.] [ 2669.]
+232.030168841 200.483475942 [ 814.15929204] [ 57.14285714]
+0.854127058149 0.104484176634 [ 1.00000003] [ 0.68996752]
+0.0 0.0 [ 0.] [ 0.]
+4.83333333333 6.24277360011 [ 20.] [ 0.]
+12.3333333333 11.2496913538 [ 39.] [ 0.]
 
-  print()
-  print(X[0])
-  X_np = np.asarray(X)
-  # normalization
-  sc = StandardScaler()
-  X_scaled = sc.fit_transform(X_np)
-
-  Y = Y[:19,1:6] # 0 = D, 1 = HOH, 2 = H
-  #print(X)
-  #print(Y)
-
-  #create model
-  model = Sequential()
-  model.add(Dense(32, input_dim=4, activation='relu'))
-  model.add(Dense(32, activation='relu'))
-  model.add(Dense(5, kernel_initializer='normal'))
-
-  #compile model
-  model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-
-  #fit the model
-  history = model.fit(X_scaled, Y, epochs=100, batch_size=10)
-
-  #predict using the model
-  p_input = np.array(
-    [
-      [100, 548.1481481481483, 1.0000000001558595, 0], 
-      [6820, 582.0467276950403, 0, 1]
-    ]
-    )
-  p_input = sc.fit_transform(p_input)
-
-  prediction = model.predict(p_input)
-  print(prediction)
-  '''
-
-  # the order of input goes
-  # delay
-  # word per minute
-  # similarity_value
-  # spelling
-
-
-  # the order of prediction output goes
-  # how much do you think the 
-  # 0. fast apeearing and disappearing captions
-  # 1. slow apeearing and disappearing captions
-  # 2. missing words
-  # 3. spelling errors
-  # 4. speaker identification 
-  # 5. verbatim accurate captions 
-  # affect viewing pleasure?
+Citytv news: delay, wpm, sim_value, spelling, mw, wd,
+7992.78947368 1888.85787209 [ 11910.] [ 3319.]
+132.197394492 77.1592149465 [ 355.16664522] [ 48.37409299]
+0.816991536733 0.289766435418 [ 1.00000002] [ 0.]
+0.0 0.0 [ 0.] [ 0.]
+5.21052631579 7.35261462531 [ 24.] [ 0.]
+8.84210526316 11.0132129157 [ 34.] [ 0.]
+"""
