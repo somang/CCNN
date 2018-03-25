@@ -31,20 +31,20 @@ def score_normalization(x, range):
 
 SCALE = 3
 DATASIZE = 100000
+print("SCALE:",SCALE,", SIZE:",DATASIZE)
 # delay, wpm, similarity, number of errors
 ### normal distribution using the mean and sd from existing data.
 trn = get_truncated_normal(mean=4895.75, sd=1477.94, low=0, high=12000)
 r_delay = trn.rvs(DATASIZE)
-print(max(r_delay), min(r_delay))
 
 trn = get_truncated_normal(mean=232.03, sd=200.48, low=0, high=850)
 r_wpm = trn.rvs(DATASIZE)
 
-trn = get_truncated_normal(mean=0.85, sd=0.2, low=0.0, high=1.01)
-r_sentence_sim = trn.rvs(DATASIZE)
-
 trn = get_truncated_normal(mean=1, sd=2, low=0.0, high=10)
 r_spell_grammar_errors = np.rint(trn.rvs(DATASIZE))
+
+trn = get_truncated_normal(mean=0.85, sd=0.2, low=0.0, high=1.01)
+r_sentence_sim = trn.rvs(DATASIZE)
 
 trn = get_truncated_normal(mean=5.02, sd=6.79, low=0.0, high=25)
 r_missing_words = []
@@ -115,22 +115,28 @@ for i in c:
     speed_score = randint(0,4)
 
   # Paraphrasing (verbatimness) score which audiences subjectively feel
-  if sentence_sim == 100:
+  if sentence_sim == 1.0:
       verbatim_score = 10
-  elif 96 <= sentence_sim < 100:
-    if missing_words > 0:
-      verbatim_score = randint(8,9)
-    elif 0 < missing_words < 2:
-      verbatim_score = randint(5,8)
-  elif 90 <= sentence_sim < 96: # over 95%
+  elif 0.96 <= sentence_sim < 1.0:
     if 0 < missing_words <= 2:
-      verbatim_score = randint(4,7)
-    elif 2 < missing_words <= 5:
-      verbatim_score = randint(2,4)
-    elif 5 < missing_words:
+      verbatim_score = randint(8,9)
+    elif 2 < missing_words < 5:
+      verbatim_score = randint(5,8)
+    elif 5 < missing_words < 10:
+      verbatim_score = randint(3,6)
+    else:
+      verbatim_score = randint(0,3)
+  elif 0.9 <= sentence_sim < 0.96: # over 95%
+    if 0 < missing_words <= 2:
+      verbatim_score = randint(6,8)
+    elif 2 < missing_words < 5:
+      verbatim_score = randint(5,8)
+    elif 5 < missing_words < 10:
+      verbatim_score = randint(3,5)
+    else:
       verbatim_score = randint(0,3)
   else:
-    verbatim_score = randint(0,3)
+    verbatim_score = randint(0,2)
   
   tmp_flag = randint(2,3)
   if spell_grammar_errors == 0:
@@ -164,11 +170,27 @@ for i in c:
   rating_list[4].append(verbatim_score)
 
 p = np.asarray(rating_list)
-print(max(p[:,0]), min(p[:,0]))
 
 for i in p:
   c = np.column_stack((c, i))
-np.set_printoptions(precision=4, suppress=True)
+
+#np.set_printoptions(precision=4, suppress=True)
+
+print("====== SCORES =====")
+print("delay score:", min(c[:,6]), max(c[:,6]))
+print("speed score:", min(c[:,7]), max(c[:,7]))
+print("sge score:", min(c[:,8]), max(c[:,8]))
+print("missing words scores:", min(c[:,9]), max(c[:,9]))
+print("verbatim score:", min(c[:,10]), max(c[:,10]))
+
+print("====== Actual Values =====")
+print("delay:", min(c[:,0]), max(c[:,0]))
+print("speed:", min(c[:,1]), max(c[:,1]))
+print("sge:", min(c[:,2]), max(c[:,2]))
+print("missing words:", min(c[:,3]), max(c[:,3]))
+print("verbatim:", min(c[:,4]), max(c[:,4]))
+print("PF factor:", min(c[:,5]), max(c[:,5]))
+
 
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 filename = str(SCALE) + '_gen_dt_' + str(DATASIZE) + '.csv'

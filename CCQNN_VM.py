@@ -5,7 +5,6 @@ from keras.models import load_model
 from keras.wrappers.scikit_learn import KerasClassifier
 from keras.optimizers import SGD
 
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import Perceptron
 from sklearn import preprocessing, linear_model
 from sklearn.preprocessing import StandardScaler, LabelEncoder, PolynomialFeatures
@@ -19,27 +18,32 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-DATAFILE = "5ver_gen_dt_100000.csv"
+DATAFILE = "10_gen_dt_100000.csv"
 MODEL_FILE = "ver_model.h5" 
 
 def data_prep():
-  ######################## data prep ###########################################
+  ######################## data prep #################
   dataset = np.loadtxt(DATAFILE, delimiter=",")
   dataset = dataset[:100000,:]
   t_index = round(len(dataset)*0.8)
-
-  X_data_ver = dataset[:,:3]
-  Y_data_ver = dataset[:,3:]
+  # normalize data, prep for train and validation
+  # values: delay, wpm, sge, mw, ss, pf
+  # score:  delay, speed, sge, mw, verbatim
   sc = StandardScaler()
-  X_data_ver = sc.fit_transform(X_data_ver)
-
+  X_data = sc.fit_transform(dataset[:,:6])
+  X_data_emp, Y_data_emp = X_data[:,:4], dataset[:,6:10]
+  X_data_ver, Y_data_ver = X_data[:,3:6], dataset[:,10:]
   # split input(X) and output(Y)
+  emp_tr_x = X_data_emp[:t_index,:]
+  emp_tr_y = Y_data_emp[:t_index,:]
+  emp_tst_x = X_data_emp[t_index:,:]
+  emp_tst_y = Y_data_emp[t_index:,:]
+
   ver_tr_x = X_data_ver[:t_index,:]
   ver_tr_y = Y_data_ver[:t_index,:]
-  
   ver_tst_x = X_data_ver[t_index:,:]
   ver_tst_y = Y_data_ver[t_index:,:]
-
+  ######################## data prep ################
   '''
   # draw data
   plt.plot(ver_tr_x[:,0], ver_tr_y[:,0], c='r')
@@ -57,8 +61,7 @@ def data_prep():
   plt.ylabel('verbatimness')
   plt.show()
   '''
-
-  return ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y
+  return emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y
 
 def draw_graphs(hist):
   #val loss graph
@@ -91,9 +94,7 @@ def baseline_model(output_unit, loss, output_activation):
 
 if __name__ == '__main__':
   # data prep
-  ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
-  train_y_nn = ver_tr_y[:,:-1]
-  test_y_nn = ver_tst_y[:,:-1]
+  emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
   # create model
   #model = KerasClassifier(build_fn=baseline_model, verbose=1)
   #categorical_model = baseline_model(10, 'categorical_crossentropy', 'softmax')
@@ -113,33 +114,34 @@ if __name__ == '__main__':
   '''
 
   print("TRAINING: Regression model")
-  reg_hist = regression_model.fit(ver_tr_x, ver_tr_y[:,-1:], 
+  reg_hist = regression_model.fit(ver_tr_x, ver_tr_y, 
               epochs=50, batch_size=500,
-              verbose=1, validation_data=(ver_tst_x, ver_tst_y[:,-1:])
+              verbose=0, validation_data=(ver_tst_x, ver_tst_y)
               )
   # evaluate the regression value model
-  loss_and_metrics = regression_model.evaluate(ver_tst_x, ver_tst_y[:,-1:], batch_size=50)
+  #loss_and_metrics = regression_model.evaluate(ver_tst_x, ver_tst_y, batch_size=50)
   #print("\n%s: %.2f%%" % (regression_model.metrics_names[1], loss_and_metrics[1]*100))
   #draw_graphs(reg_hist)
   predictions = regression_model.predict(ver_tst_x, batch_size=10)
   predictions = np.rint(predictions)
   correct_count = 0
   for i in range(len(predictions)):
-    if predictions[i][0] == ver_tst_y[i,-1:][0]:
-      correct_count += 1
+    if predictions[i][0] == ver_tst_y[i][0]:
+      correct_count+=1
   print("Neural Networks accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
 
   #save the model
   #categorical_model.save('cat_ver_model.h5') #creates a hdf5 file
   regression_model.save('reg_ver_model.h5') #creates a hdf5 file
 
-  #plt.plot(ver_tst_y[:,-1:], predictions, c='r')
-  plt.scatter(ver_tst_y[:,-1:], predictions)
+  '''
+  #plt.plot(ver_tst_y, predictions, c='r')
+  plt.scatter(ver_tst_y, predictions)
   plt.xlabel('real values')
   plt.ylabel('predictions')
   plt.title('Neural Networks Score predictions')
   plt.show()
-  
+  '''
 
   ############################## multivariate linear regression
   mlm = linear_model.LinearRegression()
@@ -149,41 +151,46 @@ if __name__ == '__main__':
 
   # print the accuracy score
   correct_count = 0
+  correct_count = 0
   for i in range(len(predictions)):
-    if predictions[i][0] == ver_tst_y[i,-1:][0]:
-      correct_count += 1
+    if predictions[i][0] == ver_tst_y[i][0]:
+      correct_count+=1
   print("Linear regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
 
+  '''
   # plot the mlm
-  #plt.plot(ver_tst_y[:,-1:], predictions, c='c')
-  plt.scatter(ver_tst_y[:,-1:], predictions, c='r')
+  #plt.plot(ver_tst_y, predictions, c='c')
+  plt.scatter(ver_tst_y, predictions, c='r')
   plt.title('Linear Regression Score predictions')
   plt.xlabel("Real Values")
   plt.ylabel("Predictions")
   plt.show()
+  '''
 
   ############################## Polynomial linear regression
   poly = PolynomialFeatures(degree=2)
   training_x = poly.fit_transform(ver_tr_x)
   testing_x = poly.fit_transform(ver_tst_x)
   lg = linear_model.LinearRegression()
-  lg.fit(training_x, ver_tr_y[:,-1:])
+  lg.fit(training_x, ver_tr_y)
   predictions = lg.predict(testing_x)
   predictions = np.rint(predictions)
   
   # print the accuracy score
   correct_count = 0
   for i in range(len(predictions)):
-    if predictions[i][0] == ver_tst_y[i,-1:][0]:
+    if predictions[i][0] == ver_tst_y[i][0]:
       correct_count += 1
   print("Polynomial regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
 
+  '''
   ## plot the lg
   #plt.plot(ver_tst_y[:,-1:], predictions, c='b')
-  plt.scatter(ver_tst_y[:,-1:], predictions, c='b')
+  plt.scatter(ver_tst_y, predictions, c='b')
   plt.title('Polynomial Regression Score predictions')
   plt.xlabel("Real Values")
   plt.ylabel("Predictions")
   plt.show()
+  '''
   
   ############################## Support Vector Machine?
