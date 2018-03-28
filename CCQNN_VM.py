@@ -2,15 +2,13 @@ from keras.models import Sequential, Model
 from keras.layers import Dense, Input, Dropout, Activation
 from keras.utils import plot_model, np_utils
 from keras.models import load_model
-from keras.wrappers.scikit_learn import KerasClassifier
 from keras.optimizers import SGD
 
 from sklearn.linear_model import Perceptron
 from sklearn import preprocessing, linear_model
-from sklearn.preprocessing import StandardScaler, LabelEncoder, PolynomialFeatures
-from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline
-from sklearn.model_selection import KFold
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.metrics import mean_squared_error
+from math import sqrt
 
 import numpy as np
 import matplotlib as mpl
@@ -18,7 +16,8 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-DATAFILE = "10_gen_dt_100000.csv"
+#DATAFILE = "10_gen_dt_100000.csv"
+DATAFILE = "10_nd_dt_100000.csv"
 MODEL_FILE = "ver_model.h5" 
 
 def data_prep():
@@ -96,22 +95,7 @@ if __name__ == '__main__':
   # data prep
   emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
   # create model
-  #model = KerasClassifier(build_fn=baseline_model, verbose=1)
-  #categorical_model = baseline_model(10, 'categorical_crossentropy', 'softmax')
   regression_model = baseline_model(1, 'mse', 'relu')
-  
-  '''
-  print("TRAINING: Categorical model")
-  cat_hist = categorical_model.fit(ver_tr_x, train_y_nn, 
-              epochs=150, batch_size=500,
-              verbose=0, validation_data=(ver_tst_x, test_y_nn)
-              )
-  # evaluate the categorical value model
-  loss_and_metrics = categorical_model.evaluate(ver_tst_x, test_y_nn, batch_size=50)
-  print("\n%s: %.2f%%" % (categorical_model.metrics_names[1], loss_and_metrics[1]*100))
-  #draw_graphs(cat_hist)
-  predictions = categorical_model.predict(ver_tst_x, batch_size=10)
-  '''
 
   print("TRAINING: Regression model")
   reg_hist = regression_model.fit(ver_tr_x, ver_tr_y, 
@@ -119,19 +103,12 @@ if __name__ == '__main__':
               verbose=0, validation_data=(ver_tst_x, ver_tst_y)
               )
   # evaluate the regression value model
-  #loss_and_metrics = regression_model.evaluate(ver_tst_x, ver_tst_y, batch_size=50)
-  #print("\n%s: %.2f%%" % (regression_model.metrics_names[1], loss_and_metrics[1]*100))
   #draw_graphs(reg_hist)
   predictions = regression_model.predict(ver_tst_x, batch_size=10)
-  predictions = np.rint(predictions)
-  correct_count = 0
-  for i in range(len(predictions)):
-    if predictions[i][0] == ver_tst_y[i][0]:
-      correct_count+=1
-  print("Neural Networks accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
-
+  rms = sqrt(mean_squared_error(ver_tst_y, predictions))
+  print("NN MSE: {:.2f}%".format(rms))
+  
   #save the model
-  #categorical_model.save('cat_ver_model.h5') #creates a hdf5 file
   regression_model.save('reg_ver_model.h5') #creates a hdf5 file
 
   '''
@@ -147,15 +124,8 @@ if __name__ == '__main__':
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(ver_tr_x, ver_tr_y[:,-1:])
   predictions = mlm.predict(ver_tst_x)
-  predictions = np.rint(predictions)
-
-  # print the accuracy score
-  correct_count = 0
-  correct_count = 0
-  for i in range(len(predictions)):
-    if predictions[i][0] == ver_tst_y[i][0]:
-      correct_count+=1
-  print("Linear regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
+  rms = sqrt(mean_squared_error(ver_tst_y, predictions))
+  print("MLM MSE: {:.2f}%".format(rms))
 
   '''
   # plot the mlm
@@ -174,14 +144,16 @@ if __name__ == '__main__':
   lg = linear_model.LinearRegression()
   lg.fit(training_x, ver_tr_y)
   predictions = lg.predict(testing_x)
-  predictions = np.rint(predictions)
-  
+  rms = sqrt(mean_squared_error(ver_tst_y, predictions))
+  print("MPM MSE: {:.2f}%".format(rms))
+
+  #predictions = np.rint(predictions)
   # print the accuracy score
-  correct_count = 0
-  for i in range(len(predictions)):
-    if predictions[i][0] == ver_tst_y[i][0]:
-      correct_count += 1
-  print("Polynomial regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
+  #correct_count = 0
+  #for i in range(len(predictions)):
+  #  if predictions[i][0] == ver_tst_y[i][0]:
+  #    correct_count += 1
+  #print("Polynomial regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
 
   '''
   ## plot the lg

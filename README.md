@@ -2,6 +2,22 @@
 
 Weekly Log
 
+Week 11. On March 29th: todo by April 3rd.
+- 
+
+- Next week, presentation for the BAF group.
+  - talk about the motivation (why this framework?)
+  - talk about the progress, methods, performance rate
+  - future work?
+
+- Finish writing literature review
+  - Quality factors?
+  - ANN?
+- Finish writing data, architecture part.
+- What to write in the discussion??
+
+
+
 Week 9. March 14th
 1. Paraphrasing Factor:
   a. Check the sentence similarity (cosine similarity)

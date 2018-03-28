@@ -3,8 +3,12 @@ from keras.layers import Dense, Input, Dropout
 from keras.utils import plot_model
 from keras.models import load_model
 
+from scipy import stats
 from sklearn import preprocessing, linear_model
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+import statsmodels.api as sm
 
 import numpy as np
 import matplotlib as mpl
@@ -12,16 +16,17 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-DATAFILE = "5_gen_dt_100000.csv"
+#DATAFILE = "10_gen_dt_100000.csv"
+DATAFILE = "5_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 TRAINING = 1
-EPOCHS = 150
+EPOCHS = 25
 VS_SWITCH = 1
 
 def data_prep():
   ######################## data prep ###########################################
   dataset = np.loadtxt(DATAFILE, delimiter=",")
-  t_index = round(len(dataset)*0.8) # 80% to train
+  t_index = round(len(dataset)*0.7) # 80% to train
   # normalization and prep the data for train and validation
   # values: delay, wpm, sge, mw, ss, pf
   # score:  delay, speed, sge, mw, verbatim
@@ -61,8 +66,8 @@ def train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   #save the model
   emp_model.save(MODEL_FILE) #creates a hdf5 file
   # evaluate the empirical value model
-  loss_and_metrics = emp_model.evaluate(emp_tst_x, emp_tst_y, batch_size=50)
-  print("\n%s: %.2f%%" % (emp_model.metrics_names[1], loss_and_metrics[1]*100))
+  #loss_and_metrics = emp_model.evaluate(emp_tst_x, emp_tst_y, batch_size=50)
+  #print("\n%s: %.2f%%" % (emp_model.metrics_names[1], loss_and_metrics[1]*100))
   return emp_model, emp_hist
 
 def draw_graphs(hist):
@@ -81,79 +86,83 @@ def draw_graphs(hist):
   plt.legend(['acc', 'val_acc'])
   plt.show()
 
+def plot_pred(x,y):
+  '''
+  still developing...
+  '''
+  if VS_SWITCH:
+    #plt.plot(x,y, c=color)
+    plt.scatter(x,y, c=color)
+    plt.xlabel('real values')
+    plt.ylabel('predictions')
+    plt.title(category + ' Score predictions')
+    plt.legend(['real values', 'predictions'])
+  else:
+    plt.plot(emp_tst_x[:,i], emp_tst_y[:,i], c=color) # real values
+    plt.plot(emp_tst_x[:,i], predictions[:,i], c='r') # predictions
+    plt.xlabel('Input X')
+    plt.ylabel('Scores')
+    plt.title(category + ' Score comparison')
+    plt.legend(['Input X', 'Scores'])
+  plt.show()
+
+def print_model_perf(tst_y, predictions):
+  category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
+  col_set = ['g','b','y','c']
+  for i in range(4):
+    color = col_set[i]
+    category = category_set[i]
+    x,y = tst_y[:,i], predictions[:,i]
+    rms = sqrt(mean_squared_error(x, y))
+    print("NN MSE on " + category_set[i] + ": {:.2f}%".format(rms))
+  print()
+
 if __name__ == '__main__':
   if TRAINING:
     emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
     emp_model,hist = train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y)
     #draw_graphs(hist)
-
-  # graph the comparison between prediction vs real
+  '''
+  # Graph the comparison between prediction vs real
   predictions = emp_model.predict(emp_tst_x, batch_size=10)
-  predictions = np.rint(predictions)
+  rms = sqrt(mean_squared_error(emp_tst_y, predictions))
+  print("NN MSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, emp_tst_y)
 
-  category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
-  col_set = ['g','b','y','c']
-  for i in range(4):
-    color = col_set[i]
-    category = category_set[i]
-    cat = predictions[:,i]
-    tst = emp_tst_y[:,i]
-    correct_count = 0
-    for j in range(len(cat)):
-      p_value, t_value = cat[j], tst[j]
-      if p_value == t_value:
-        correct_count += 1
-    print("NN accuracy on " + category_set[i] + ": {:.2f}%".format(correct_count/len(cat)*100))
-
-    '''
-    if VS_SWITCH:
-      #plt.plot(emp_tst_y[:,i], predictions[:,i], c=color)
-      plt.scatter(emp_tst_y[:,i], predictions[:,i], c=color)
-      plt.xlabel('real values')
-      plt.ylabel('predictions')
-      plt.title(category + ' Score predictions')
-      plt.legend(['real values', 'predictions'])
-      plt.show()
-    else:
-      plt.plot(emp_tst_x[:,i], emp_tst_y[:,i], c=color) # real values
-      plt.plot(emp_tst_x[:,i], predictions[:,i], c='r') # predictions
-      plt.xlabel('Input X')
-      plt.ylabel('Scores')
-      plt.title(category + ' Score comparison')
-      plt.legend(['Input X', 'Scores'])
-      plt.show()
-    '''
-
-  ##### multivariate nonlinear regression fitting
+  ##### Multivariate linear regression
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(emp_tr_x, emp_tr_y)
   predictions = mlm.predict(emp_tst_x)
-  predictions = np.rint(predictions)
-  
-  # print the accuracy score
-  category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
-  col_set = ['g','b','y','c']
+  rms = sqrt(mean_squared_error(emp_tst_y, predictions))
+  print("MLM MSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, emp_tst_y)
+
+  ##### Polynomial linear regression
+  poly = PolynomialFeatures(degree=2)
+  training_x = poly.fit_transform(emp_tr_x)
+  testing_x = poly.fit_transform(emp_tst_x)
+  lg = linear_model.LinearRegression()
+  lg.fit(training_x, emp_tr_y)
+  predictions = lg.predict(testing_x)
+  rms = sqrt(mean_squared_error(emp_tst_y, predictions))
+  print("MPM MSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, emp_tst_y)
+  '''
+
+
+
+  ### linear regression one by one
   for i in range(4):
-    color = col_set[i]
-    category = category_set[i]
-    cat = predictions[:,i]
-    tst = emp_tst_y[:,i]
-    correct_count = 0
-    for j in range(len(cat)):
-      p_value, t_value = cat[j], tst[j]
-      if p_value == t_value:
-        correct_count += 1
-    print("MLM accuracy on " + category_set[i] + ": {:.2f}%".format(correct_count/len(cat)*100))
+    X = emp_tr_x[:,i]
+    y = emp_tr_y[:,i]
+    # Note the difference in argument order
+    model = sm.OLS(y, X).fit()
 
-    ## plot the mlm
-    '''
-    for i in range(4):
-      #plt.plot(emp_tst_y[:,i], predictions[:,i], c='c')
-      plt.scatter(emp_tst_y[:,i], predictions[:,i])
-      plt.title('Linear Regression Score predictions')
-      plt.xlabel("Real Values")
-      plt.ylabel("Predictions")
-      plt.show()
-      # print the accuracy score
-    '''
+    # Print out the statistics
+    print(model.summary())
+    xfit = np.linspace(min(X), max(X), 1000)
+    yfit = model.predict(xfit)
 
+    plt.scatter(X, y)
+    plt.plot(xfit, yfit)
+    plt.show()

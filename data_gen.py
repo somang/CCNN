@@ -29,7 +29,7 @@ def score_normalization(x, range):
     elif 7 <= x <= 10: return 3
     else: return 0
 
-SCALE = 3
+SCALE = 10
 DATASIZE = 100000
 print("SCALE:",SCALE,", SIZE:",DATASIZE)
 # delay, wpm, similarity, number of errors
@@ -177,11 +177,12 @@ for i in p:
 #np.set_printoptions(precision=4, suppress=True)
 
 print("====== SCORES =====")
-print("delay score:", min(c[:,6]), max(c[:,6]))
-print("speed score:", min(c[:,7]), max(c[:,7]))
-print("sge score:", min(c[:,8]), max(c[:,8]))
-print("missing words scores:", min(c[:,9]), max(c[:,9]))
-print("verbatim score:", min(c[:,10]), max(c[:,10]))
+print("delay score:", min(c[:,6]), max(c[:,6]), np.mean(c[:,6]), np.std(c[:,6]))
+print("speed score:", min(c[:,7]), max(c[:,7]), np.mean(c[:,7]), np.std(c[:,7]))
+print("sge score:", min(c[:,8]), max(c[:,8]), np.mean(c[:,8]), np.std(c[:,8]))
+print("missing words scores:", min(c[:,9]), max(c[:,9]), np.mean(c[:,9]), np.std(c[:,9]))
+print("verbatim score:", min(c[:,10]), max(c[:,10]), np.mean(c[:,10]), np.std(c[:,10]))
+
 
 print("====== Actual Values =====")
 print("delay:", min(c[:,0]), max(c[:,0]))
@@ -190,7 +191,6 @@ print("sge:", min(c[:,2]), max(c[:,2]))
 print("missing words:", min(c[:,3]), max(c[:,3]))
 print("verbatim:", min(c[:,4]), max(c[:,4]))
 print("PF factor:", min(c[:,5]), max(c[:,5]))
-
 
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 filename = str(SCALE) + '_gen_dt_' + str(DATASIZE) + '.csv'
