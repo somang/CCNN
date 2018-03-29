@@ -20,7 +20,7 @@ mpl.rcParams['agg.path.chunksize'] = 10000
 DATAFILE = "5_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 TRAINING = 1
-EPOCHS = 25
+EPOCHS = 80
 VS_SWITCH = 1
 
 def data_prep():
@@ -51,8 +51,8 @@ def data_prep():
 def train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   # create model using sequential
   emp_model = Sequential()
-  emp_model.add(Dense(units=64, input_dim=4, activation='relu'))
-  emp_model.add(Dense(units=32, activation='relu'))
+  emp_model.add(Dense(units=60, input_dim=4, activation='relu'))
+  emp_model.add(Dense(units=30, activation='relu'))
   emp_model.add(Dense(units=4))
   # compile
   emp_model.compile(loss='mean_squared_error',
@@ -61,7 +61,7 @@ def train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   # fit the empirical value model
   emp_hist = emp_model.fit(emp_tr_x, emp_tr_y, 
                 epochs=EPOCHS, batch_size=500,
-                verbose=0, validation_data=(emp_tst_x, emp_tst_y)
+                verbose=1, validation_data=(emp_tst_x, emp_tst_y)
                 )
   #save the model
   emp_model.save(MODEL_FILE) #creates a hdf5 file
@@ -106,7 +106,7 @@ def plot_pred(x,y):
     plt.legend(['Input X', 'Scores'])
   plt.show()
 
-def print_model_perf(tst_y, predictions):
+def print_model_perf(tst_y, predictions, name):
   category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
   col_set = ['g','b','y','c']
   for i in range(4):
@@ -114,7 +114,7 @@ def print_model_perf(tst_y, predictions):
     category = category_set[i]
     x,y = tst_y[:,i], predictions[:,i]
     rms = sqrt(mean_squared_error(x, y))
-    print("NN MSE on " + category_set[i] + ": {:.2f}%".format(rms))
+    print(name + " RMSE on " + category_set[i] + ": {:.2f}%".format(rms))
   print()
 
 if __name__ == '__main__':
@@ -122,20 +122,20 @@ if __name__ == '__main__':
     emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y = data_prep()
     emp_model,hist = train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y)
     #draw_graphs(hist)
-  '''
+
   # Graph the comparison between prediction vs real
   predictions = emp_model.predict(emp_tst_x, batch_size=10)
   rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("NN MSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, emp_tst_y)
+  print("NN RMSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, emp_tst_y, "NN")
 
   ##### Multivariate linear regression
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(emp_tr_x, emp_tr_y)
   predictions = mlm.predict(emp_tst_x)
   rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("MLM MSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, emp_tst_y)
+  print("MLM RMSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, emp_tst_y, "MLM")
 
   ##### Polynomial linear regression
   poly = PolynomialFeatures(degree=2)
@@ -145,8 +145,8 @@ if __name__ == '__main__':
   lg.fit(training_x, emp_tr_y)
   predictions = lg.predict(testing_x)
   rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("MPM MSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, emp_tst_y)
+  print("MPM RMSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, emp_tst_y, "MPM")
   '''
 
 
@@ -166,3 +166,4 @@ if __name__ == '__main__':
     plt.scatter(X, y)
     plt.plot(xfit, yfit)
     plt.show()
+  '''

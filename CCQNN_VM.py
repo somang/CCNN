@@ -17,7 +17,7 @@ import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
 #DATAFILE = "10_gen_dt_100000.csv"
-DATAFILE = "10_nd_dt_100000.csv"
+DATAFILE = "5_nd_dt_100000.csv"
 MODEL_FILE = "ver_model.h5" 
 
 def data_prep():
@@ -78,11 +78,23 @@ def draw_graphs(hist):
   plt.legend(['acc', 'val_acc'])
   plt.show()
   
+
+def print_model_perf(tst_y, predictions, name):
+  category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
+  col_set = ['g','b','y','c']
+  for i in range(4):
+    color = col_set[i]
+    category = category_set[i]
+    x,y = tst_y[:,i], predictions[:,i]
+    rms = sqrt(mean_squared_error(x, y))
+    print(name + " RMSE on " + category_set[i] + ": {:.2f}%".format(rms))
+  print()
+
 def baseline_model(output_unit, loss, output_activation):
   # create model
   model = Sequential()
-  model.add(Dense(64, input_dim=3, kernel_initializer='glorot_uniform', activation='relu'))
-  model.add(Dense(32, kernel_initializer='glorot_uniform', activation='relu'))
+  model.add(Dense(4, input_dim=3, kernel_initializer='glorot_uniform', activation='relu'))
+  model.add(Dense(8, kernel_initializer='glorot_uniform', activation='relu'))
   model.add(Dense(output_unit, kernel_initializer='glorot_uniform', activation=output_activation))
   # Compile model
   sgd = SGD(lr=0.01, decay=1e-6, momentum=0.8, nesterov=True)
@@ -99,15 +111,16 @@ if __name__ == '__main__':
 
   print("TRAINING: Regression model")
   reg_hist = regression_model.fit(ver_tr_x, ver_tr_y, 
-              epochs=50, batch_size=500,
-              verbose=0, validation_data=(ver_tst_x, ver_tst_y)
+              epochs=30, batch_size=500,
+              verbose=1, validation_data=(ver_tst_x, ver_tst_y)
               )
   # evaluate the regression value model
   #draw_graphs(reg_hist)
   predictions = regression_model.predict(ver_tst_x, batch_size=10)
   rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("NN MSE: {:.2f}%".format(rms))
-  
+  print("NN RMSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, ver_tst_y, "NN")
+
   #save the model
   regression_model.save('reg_ver_model.h5') #creates a hdf5 file
 
@@ -125,7 +138,8 @@ if __name__ == '__main__':
   stat_model = mlm.fit(ver_tr_x, ver_tr_y[:,-1:])
   predictions = mlm.predict(ver_tst_x)
   rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("MLM MSE: {:.2f}%".format(rms))
+  print("MLM RMSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, ver_tst_y, "MLM")
 
   '''
   # plot the mlm
@@ -145,15 +159,8 @@ if __name__ == '__main__':
   lg.fit(training_x, ver_tr_y)
   predictions = lg.predict(testing_x)
   rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("MPM MSE: {:.2f}%".format(rms))
-
-  #predictions = np.rint(predictions)
-  # print the accuracy score
-  #correct_count = 0
-  #for i in range(len(predictions)):
-  #  if predictions[i][0] == ver_tst_y[i][0]:
-  #    correct_count += 1
-  #print("Polynomial regression accuracy: {:.2f}%".format(correct_count/len(predictions)*100))
+  print("MPM RMSE: {:.2f}%".format(rms))
+  print_model_perf(predictions, ver_tst_y, "MPM")
 
   '''
   ## plot the lg
