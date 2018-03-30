@@ -447,21 +447,28 @@ if __name__ == '__main__':
   input_arr = np.asarray(input_arr)
 
   print("Citytv news: delay, wpm, sim_value, spelling, mw, wd,")
-  print(np.mean(input_arr[:,0]), np.std(input_arr[:,0]), max(input_arr[:,0]), min(input_arr[:,0]))
-  print(np.mean(input_arr[:,1]), np.std(input_arr[:,1]), max(input_arr[:,1]), min(input_arr[:,1]))
-  print(np.mean(input_arr[:,2]), np.std(input_arr[:,2]), max(input_arr[:,2]), min(input_arr[:,2]))
-  print(np.mean(input_arr[:,3]), np.std(input_arr[:,3]), max(input_arr[:,3]), min(input_arr[:,3]))
-  print(np.mean(input_arr[:,4]), np.std(input_arr[:,4]), max(input_arr[:,4]), min(input_arr[:,4]))
-  print(np.mean(input_arr[:,5]), np.std(input_arr[:,5]), max(input_arr[:,5]), min(input_arr[:,5]))
+  print(np.mean(input_arr[:,0]), np.std(input_arr[:,0]),
+        np.percentile(input_arr[:,0], [25,50,75]))
+  print(np.mean(input_arr[:,1]), np.std(input_arr[:,1]),
+        np.percentile(input_arr[:,1], [25,50,75]))
+  print(np.mean(input_arr[:,2]), np.std(input_arr[:,2]),
+        np.percentile(input_arr[:,2], [25,50,75]))
+  print(np.mean(input_arr[:,3]), np.std(input_arr[:,3]),
+        np.percentile(input_arr[:,3], [25,50,75]))
+  print(np.mean(input_arr[:,4]), np.std(input_arr[:,4]),
+        np.percentile(input_arr[:,4], [25,50,75]))
+  print(np.mean(input_arr[:,5]), np.std(input_arr[:,5]),
+        np.percentile(input_arr[:,5], [25,50,75]))
+
 
 """
 Citytv news: delay, wpm, sim_value, spelling, mw, wd,
-4895.75 1477.93680092 [ 7271.] [ 2669.]
-232.030168841 200.483475942 [ 814.15929204] [ 57.14285714]
-0.854127058149 0.104484176634 [ 1.00000003] [ 0.68996752]
+4895.75 1477.93 [7271 2669] [4075 4669.5 5775]
+232.03 200.48 [814.159 57.143] [118.56 143.21 313.46]
+0.854 0.1045 [1 0.689] [0.7770  0.8416  0.9467]
 0.0 0.0 [ 0.] [ 0.]
-4.83333333333 6.24277360011 [ 20.] [ 0.]
-12.3333333333 11.2496913538 [ 39.] [ 0.]
+4.833 6.243 [20 0] [0.75  1.5   7]
+12.333 11.2496 [39 0] [1.75 11 20]
 
 Citytv news: delay, wpm, sim_value, spelling, mw, wd,
 7992.78947368 1888.85787209 [ 11910.] [ 3319.]

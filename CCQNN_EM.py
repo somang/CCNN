@@ -17,16 +17,15 @@ import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
 #DATAFILE = "10_gen_dt_100000.csv"
-DATAFILE = "5_nd_dt_100000.csv"
+DATAFILE = "10_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 TRAINING = 1
-EPOCHS = 80
-VS_SWITCH = 1
+EPOCHS = 50
 
 def data_prep():
   ######################## data prep ###########################################
   dataset = np.loadtxt(DATAFILE, delimiter=",")
-  t_index = round(len(dataset)*0.7) # 80% to train
+  t_index = round(len(dataset)*0.8) # 80% to train
   # normalization and prep the data for train and validation
   # values: delay, wpm, sge, mw, ss, pf
   # score:  delay, speed, sge, mw, verbatim
@@ -47,12 +46,11 @@ def data_prep():
   ######################## data prep ###########################################
   return emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y, ver_tr_x, ver_tr_y, ver_tst_x, ver_tst_y
 
-
 def train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   # create model using sequential
   emp_model = Sequential()
-  emp_model.add(Dense(units=60, input_dim=4, activation='relu'))
-  emp_model.add(Dense(units=30, activation='relu'))
+  emp_model.add(Dense(units=64, input_dim=4, activation='relu'))
+  emp_model.add(Dense(units=32, activation='relu'))
   emp_model.add(Dense(units=4))
   # compile
   emp_model.compile(loss='mean_squared_error',
@@ -86,35 +84,25 @@ def draw_graphs(hist):
   plt.legend(['acc', 'val_acc'])
   plt.show()
 
-def plot_pred(x,y):
-  '''
-  still developing...
-  '''
-  if VS_SWITCH:
-    #plt.plot(x,y, c=color)
-    plt.scatter(x,y, c=color)
-    plt.xlabel('real values')
-    plt.ylabel('predictions')
-    plt.title(category + ' Score predictions')
-    plt.legend(['real values', 'predictions'])
-  else:
-    plt.plot(emp_tst_x[:,i], emp_tst_y[:,i], c=color) # real values
-    plt.plot(emp_tst_x[:,i], predictions[:,i], c='r') # predictions
-    plt.xlabel('Input X')
-    plt.ylabel('Scores')
-    plt.title(category + ' Score comparison')
-    plt.legend(['Input X', 'Scores'])
+def plot_pred(x, y, pred, color, category):
+  scatter1 = plt.scatter(x, pred, c='r', label="predictions")
+  scatter2 = plt.scatter(x, y, c=color, label="real values")
+  plt.ylabel('output Y values')
+  plt.xlabel('input X values')
+  plt.title(category + ' Score predictions')
+  plt.legend(handles=[scatter1, scatter2], loc = 0)
   plt.show()
 
-def print_model_perf(tst_y, predictions, name):
+def print_model_perf(predictions, tst_x, tst_y, name):
   category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
   col_set = ['g','b','y','c']
   for i in range(4):
     color = col_set[i]
     category = category_set[i]
-    x,y = tst_y[:,i], predictions[:,i]
-    rms = sqrt(mean_squared_error(x, y))
-    print(name + " RMSE on " + category_set[i] + ": {:.2f}%".format(rms))
+    rms = sqrt(mean_squared_error(tst_y[:,i], predictions[:,i]))
+    print(name + category_set[i] + ": {:.2f}".format(rms))
+    # plot the graph prediction vs real value
+    #plot_pred(tst_x[:,i], tst_y[:,i], predictions[:,i], color, category)
   print()
 
 if __name__ == '__main__':
@@ -123,47 +111,33 @@ if __name__ == '__main__':
     emp_model,hist = train_nn(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y)
     #draw_graphs(hist)
 
+  
+
+
+
+  '''
   # Graph the comparison between prediction vs real
   predictions = emp_model.predict(emp_tst_x, batch_size=10)
   rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("NN RMSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, emp_tst_y, "NN")
-
+  print("NN RMSE: {:.2f}".format(rms))
+  print_model_perf(predictions, emp_tst_x, emp_tst_y, "NN")
+  
   ##### Multivariate linear regression
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(emp_tr_x, emp_tr_y)
   predictions = mlm.predict(emp_tst_x)
   rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("MLM RMSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, emp_tst_y, "MLM")
+  print("MLM RMSE: {:.2f}".format(rms))
+  print_model_perf(predictions, emp_tst_x, emp_tst_y, "MLM")
 
   ##### Polynomial linear regression
-  poly = PolynomialFeatures(degree=2)
+  poly = PolynomialFeatures(degree=4)
   training_x = poly.fit_transform(emp_tr_x)
   testing_x = poly.fit_transform(emp_tst_x)
   lg = linear_model.LinearRegression()
   lg.fit(training_x, emp_tr_y)
   predictions = lg.predict(testing_x)
   rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("MPM RMSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, emp_tst_y, "MPM")
-  '''
-
-
-
-  ### linear regression one by one
-  for i in range(4):
-    X = emp_tr_x[:,i]
-    y = emp_tr_y[:,i]
-    # Note the difference in argument order
-    model = sm.OLS(y, X).fit()
-
-    # Print out the statistics
-    print(model.summary())
-    xfit = np.linspace(min(X), max(X), 1000)
-    yfit = model.predict(xfit)
-
-    plt.scatter(X, y)
-    plt.plot(xfit, yfit)
-    plt.show()
+  print("MPM RMSE: {:.2f}".format(rms))
+  print_model_perf(predictions, emp_tst_x, emp_tst_y, "MPM")
   '''

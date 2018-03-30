@@ -29,7 +29,7 @@ def score_normalization(x, range):
     elif 7 <= x <= 10: return 3
     else: return 0
 
-SCALE = 3
+SCALE = 10
 DATASIZE = 100000
 print("SCALE:",SCALE,", SIZE:",DATASIZE)
 # delay, wpm, similarity, number of errors
@@ -79,9 +79,8 @@ c = np.column_stack((c, pf_factors))
 
 np.random.shuffle(c) # shuffle the order in rows
 
-#plt.hist(r_sentence_sim, bins='auto')  
-#plt.show()
-
+plt.hist(r_sentence_sim, bins='auto')  
+plt.show()
 
 
 ###### Simulated scores based on the fact generated from previous. ######
@@ -135,6 +134,16 @@ for i in c:
   else:
     sge_score = randint(0,1)
 
+  # mw_score: mean=4.26, sd=2.32
+  if missing_words == 0:
+    missing_words_score = 10
+  elif 0 < missing_words <= 5:
+    missing_words_score = randint(5,9)
+  elif 5 < missing_words <= 10:
+    missing_words_score = randint(3,4)
+  else:
+    missing_words_score = randint(0,2)
+
   # verbatim_score: mean=4.20, sd=2.51
   # Paraphrasing (verbatimness) score which audiences subjectively feel
   if sentence_sim == 1.0:
@@ -157,19 +166,8 @@ for i in c:
       missing_words_score = randint(3,4)
     else:
       missing_words_score = randint(0,2)
-
   else:
     verbatim_score = randint(0,2)
-
-  # mw_score: mean=4.26, sd=2.32
-  if missing_words == 0:
-    missing_words_score = 10
-  elif 0 < missing_words <= 5:
-    missing_words_score = randint(5,9)
-  elif 5 < missing_words <= 10:
-    missing_words_score = randint(3,4)
-  else:
-    missing_words_score = randint(0,2)
 
   delay_score = score_normalization(delay_score, SCALE)
   speed_score = score_normalization(speed_score, SCALE)
@@ -189,26 +187,48 @@ for i in p:
   c = np.column_stack((c, i))
 
 #np.set_printoptions(precision=4, suppress=True)
-
+'''
 print("====== SCORES =====")
-print("delay score:", min(c[:,6]), max(c[:,6]), np.mean(c[:,6]), np.std(c[:,6]))
-print("speed score:", min(c[:,7]), max(c[:,7]), np.mean(c[:,7]), np.std(c[:,7]))
-print("sge score:", min(c[:,8]), max(c[:,8]), np.mean(c[:,8]), np.std(c[:,8]))
-print("missing words scores:", min(c[:,9]), max(c[:,9]), np.mean(c[:,9]), np.std(c[:,9]))
-print("verbatim score:", min(c[:,10]), max(c[:,10]), np.mean(c[:,10]), np.std(c[:,10]))
-
+print("delay score:", np.mean(c[:,6]), np.std(c[:,6]))
+print("speed score:", np.mean(c[:,7]), np.std(c[:,7]))
+print("sge score:", np.mean(c[:,8]), np.std(c[:,8]))
+print("missing words scores:", np.mean(c[:,9]), np.std(c[:,9]))
+print("verbatim score:", np.mean(c[:,10]), np.std(c[:,10]))
+'''
 
 print("====== Actual Values =====")
-print("delay:", min(c[:,0]), max(c[:,0]))
-print("speed:", min(c[:,1]), max(c[:,1]))
-print("sge:", min(c[:,2]), max(c[:,2]))
-print("missing words:", min(c[:,3]), max(c[:,3]))
-print("verbatim:", min(c[:,4]), max(c[:,4]))
-print("PF factor:", min(c[:,5]), max(c[:,5]))
+print("delay:", #min(c[:,0]), max(c[:,0]), 
+      # [4075 4669.5 5775]
+      np.mean(c[:,0]), np.std(c[:,0]),
+      np.percentile(c[:,0], [25,50,75]))
 
+print("speed:", #min(c[:,1]), max(c[:,1]),
+      # [118.56 143.21 313.46]
+      np.mean(c[:,1]), np.std(c[:,1]),
+      np.percentile(c[:,1], [25,50,75]))
+
+print("sge:", #min(c[:,2]), max(c[:,2]),
+      np.mean(c[:,2]), np.std(c[:,2]),
+      np.percentile(c[:,2], [25,50,75]))
+
+print("missing words:", #min(c[:,3]), max(c[:,3]),
+      # [0.75  1.5  7]
+      np.mean(c[:,3]), np.std(c[:,3]),
+      np.percentile(c[:,3], [25,50,75])),
+
+print("verbatim:", #min(c[:,4]), max(c[:,4]), 
+      # [0.7770  0.8416  0.9467]
+      np.mean(c[:,4]), np.std(c[:,4]),
+      np.percentile(c[:,4], [25,50,75]))
+#print("PF factor:", min(c[:,5]), max(c[:,5]),
+#      np.mean(c[:,5]), np.std(c[:,5]),
+#      np.percentile(c[:,5], [25,50,75]))
+
+'''
 print(c.shape) # For a matrix with n rows and m columns, shape will be (n,m)
 filename = str(SCALE) + '_nd_dt_' + str(DATASIZE) + '.csv'
 with open(filename, 'w') as mf:
   wr = csv.writer(mf)
   for i in c:
     wr.writerow(i)
+'''

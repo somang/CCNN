@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-#DATAFILE = "10_gen_dt_100000.csv"
+#DATAFILE = "5_gen_dt_100000.csv"
 DATAFILE = "5_nd_dt_100000.csv"
 MODEL_FILE = "ver_model.h5" 
 
@@ -79,16 +79,15 @@ def draw_graphs(hist):
   plt.show()
   
 
-def print_model_perf(tst_y, predictions, name):
-  category_set = ["Delay", "Speed", "Spelling and Grammar", "Missing Words"]
-  col_set = ['g','b','y','c']
-  for i in range(4):
-    color = col_set[i]
-    category = category_set[i]
-    x,y = tst_y[:,i], predictions[:,i]
-    rms = sqrt(mean_squared_error(x, y))
-    print(name + " RMSE on " + category_set[i] + ": {:.2f}%".format(rms))
+def print_model_perf(tst_x, tst_y, predictions, name):
+  rms = sqrt(mean_squared_error(predictions, tst_y))
+  print(name + " RMSE : {:.2f}".format(rms))
   print()
+  # plot the graph prediction vs real value
+  scatter2 = plt.scatter(tst_y, predictions)
+  plt.ylabel('predictions')
+  plt.xlabel('Real values')
+  plt.show()
 
 def baseline_model(output_unit, loss, output_activation):
   # create model
@@ -118,58 +117,30 @@ if __name__ == '__main__':
   #draw_graphs(reg_hist)
   predictions = regression_model.predict(ver_tst_x, batch_size=10)
   rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("NN RMSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, ver_tst_y, "NN")
+  print("NN RMSE: {:.2f}".format(rms))
+  print_model_perf(ver_tst_x, ver_tst_y, predictions, "NN")
 
   #save the model
   regression_model.save('reg_ver_model.h5') #creates a hdf5 file
 
-  '''
-  #plt.plot(ver_tst_y, predictions, c='r')
-  plt.scatter(ver_tst_y, predictions)
-  plt.xlabel('real values')
-  plt.ylabel('predictions')
-  plt.title('Neural Networks Score predictions')
-  plt.show()
-  '''
 
   ############################## multivariate linear regression
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(ver_tr_x, ver_tr_y[:,-1:])
   predictions = mlm.predict(ver_tst_x)
   rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("MLM RMSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, ver_tst_y, "MLM")
-
-  '''
-  # plot the mlm
-  #plt.plot(ver_tst_y, predictions, c='c')
-  plt.scatter(ver_tst_y, predictions, c='r')
-  plt.title('Linear Regression Score predictions')
-  plt.xlabel("Real Values")
-  plt.ylabel("Predictions")
-  plt.show()
-  '''
+  print("MLM RMSE: {:.2f}".format(rms))
+  print_model_perf(ver_tst_x, ver_tst_y, predictions, "MLM")
 
   ############################## Polynomial linear regression
-  poly = PolynomialFeatures(degree=2)
+  poly = PolynomialFeatures(degree=4)
   training_x = poly.fit_transform(ver_tr_x)
   testing_x = poly.fit_transform(ver_tst_x)
   lg = linear_model.LinearRegression()
   lg.fit(training_x, ver_tr_y)
   predictions = lg.predict(testing_x)
   rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("MPM RMSE: {:.2f}%".format(rms))
-  print_model_perf(predictions, ver_tst_y, "MPM")
+  print("MPM RMSE: {:.2f}".format(rms))
+  print_model_perf(ver_tst_x, ver_tst_y, predictions, "MPM")
 
-  '''
-  ## plot the lg
-  #plt.plot(ver_tst_y[:,-1:], predictions, c='b')
-  plt.scatter(ver_tst_y, predictions, c='b')
-  plt.title('Polynomial Regression Score predictions')
-  plt.xlabel("Real Values")
-  plt.ylabel("Predictions")
-  plt.show()
-  '''
-  
   ############################## Support Vector Machine?
