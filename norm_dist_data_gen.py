@@ -7,10 +7,7 @@ import math
 
 #https://crtc.gc.ca/eng/archive/2012/2012-362.htm
 def get_truncated_normal(mean=0, sd=0, low=0, high=10):
-  value = truncnorm(
-    (low - mean) / sd, 
-    (high - mean) / sd, 
-    loc=mean, scale=sd)
+  value = truncnorm((low - mean) / sd, (high - mean) / sd, loc=mean, scale=sd)
   return value
 
 def score_normalization(x, range):
@@ -197,28 +194,29 @@ print("verbatim score:", np.mean(c[:,10]), np.std(c[:,10]))
 '''
 
 print("====== Actual Values =====")
+'''
 print("delay:", #min(c[:,0]), max(c[:,0]), 
-      # [4075 4669.5 5775]
-      np.mean(c[:,0]), np.std(c[:,0]),
+      "[4075 4669.5 5775]",
+      #np.mean(c[:,0]), np.std(c[:,0]),
       np.percentile(c[:,0], [25,50,75]))
-
+'''
 print("speed:", #min(c[:,1]), max(c[:,1]),
-      # [118.56 143.21 313.46]
-      np.mean(c[:,1]), np.std(c[:,1]),
+      "[118.56 143.21 313.46]",
+      #np.mean(c[:,1]), np.std(c[:,1]),
       np.percentile(c[:,1], [25,50,75]))
-
+'''
 print("sge:", #min(c[:,2]), max(c[:,2]),
-      np.mean(c[:,2]), np.std(c[:,2]),
+      #np.mean(c[:,2]), np.std(c[:,2]),
       np.percentile(c[:,2], [25,50,75]))
-
+''' 
 print("missing words:", #min(c[:,3]), max(c[:,3]),
-      # [0.75  1.5  7]
-      np.mean(c[:,3]), np.std(c[:,3]),
-      np.percentile(c[:,3], [25,50,75])),
+      "[0.75  1.5  7]",
+      #np.mean(c[:,3]), np.std(c[:,3]),
+      np.percentile(c[:,3], [25,50,75]))
 
 print("verbatim:", #min(c[:,4]), max(c[:,4]), 
-      # [0.7770  0.8416  0.9467]
-      np.mean(c[:,4]), np.std(c[:,4]),
+      "[0.7770  0.8416  0.9467]",
+      #np.mean(c[:,4]), np.std(c[:,4]),
       np.percentile(c[:,4], [25,50,75]))
 #print("PF factor:", min(c[:,5]), max(c[:,5]),
 #      np.mean(c[:,5]), np.std(c[:,5]),
