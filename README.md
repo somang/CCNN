@@ -2,6 +2,19 @@
 
 Weekly Log
 
+Week 12. Update on April 2
+- Generating data based on median and quartiles can only be done using maximum likelihood function: and it wouldn't give the proper quartiles...
+- Another method is to fit the existing data points to a curve fit. (i.e. polynomial)
+- https://stats.stackexchange.com/questions/143353/generate-data-with-skewed-distribution-and-known-percentiles-mean-and-median
+- https://stackoverflow.com/questions/18767523/fitting-data-with-numpy
+
+
+
+
+
+
+
+
 Week 11. On March 29th: todo by April 3rd.
 - 
 

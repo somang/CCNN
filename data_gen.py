@@ -30,8 +30,8 @@ def score_normalization(x, range):
     else: return 0
 
 SCALE = 10
-DATASIZE = 100000
-print("SCALE:",SCALE,", SIZE:",DATASIZE)
+DATASIZE = 100
+#print("SCALE:",SCALE,", SIZE:",DATASIZE)
 # delay, wpm, similarity, number of errors
 ### normal distribution using the mean and sd from existing data.
 trn = get_truncated_normal(mean=4895.75, sd=1477.94, low=0, high=12000)
@@ -162,27 +162,27 @@ for i in c:
   sge_score = score_normalization(sge_score, SCALE)
   missing_words_score = score_normalization(missing_words_score, SCALE)
   verbatim_score = score_normalization(verbatim_score, SCALE)
-
-  rating_list[0].append(delay_score)
-  rating_list[1].append(speed_score)
-  rating_list[2].append(sge_score)
-  rating_list[3].append(missing_words_score)
-  rating_list[4].append(verbatim_score)
+  scores = [delay_score, speed_score, sge_score, missing_words_score, verbatim_score]
+  
+  for i in range(5):
+    rating_list[i].append(scores[i])
+    
 
 p = np.asarray(rating_list)
 
 for i in p:
   c = np.column_stack((c, i))
 
-#np.set_printoptions(precision=4, suppress=True)
 
+
+#np.set_printoptions(precision=4, suppress=True)
+'''
 print("====== SCORES =====")
 print("delay score:", min(c[:,6]), max(c[:,6]), np.mean(c[:,6]), np.std(c[:,6]))
 print("speed score:", min(c[:,7]), max(c[:,7]), np.mean(c[:,7]), np.std(c[:,7]))
 print("sge score:", min(c[:,8]), max(c[:,8]), np.mean(c[:,8]), np.std(c[:,8]))
 print("missing words scores:", min(c[:,9]), max(c[:,9]), np.mean(c[:,9]), np.std(c[:,9]))
 print("verbatim score:", min(c[:,10]), max(c[:,10]), np.mean(c[:,10]), np.std(c[:,10]))
-
 
 print("====== Actual Values =====")
 print("delay:", min(c[:,0]), max(c[:,0]))
@@ -198,3 +198,4 @@ with open(filename, 'w') as mf:
   wr = csv.writer(mf)
   for i in c:
     wr.writerow(i)
+'''

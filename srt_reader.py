@@ -428,10 +428,6 @@ if __name__ == '__main__':
       c_index += 1
       t_index = last_match_index-1
   
-  #print(len(cps), len(tps))
-  
-  #print(left_sentences)
-  
   input_arr = []
   for i in input_matrix:
     tmp_arr = []
@@ -447,34 +443,35 @@ if __name__ == '__main__':
   input_arr = np.asarray(input_arr)
 
   print("Citytv news: delay, wpm, sim_value, spelling, mw, wd,")
-  print(np.mean(input_arr[:,0]), np.std(input_arr[:,0]),
-        np.percentile(input_arr[:,0], [25,50,75]))
+  print(input_arr[:,0],
+        np.mean(input_arr[:,0]), np.std(input_arr[:,0]),
+        np.percentile(input_arr[:,0], [0,25,50,75,100]))
   print(np.mean(input_arr[:,1]), np.std(input_arr[:,1]),
-        np.percentile(input_arr[:,1], [25,50,75]))
+        np.percentile(input_arr[:,1], [0,25,50,75,100]))
   print(np.mean(input_arr[:,2]), np.std(input_arr[:,2]),
-        np.percentile(input_arr[:,2], [25,50,75]))
+        np.percentile(input_arr[:,2], [0,25,50,75,100]))
   print(np.mean(input_arr[:,3]), np.std(input_arr[:,3]),
-        np.percentile(input_arr[:,3], [25,50,75]))
+        np.percentile(input_arr[:,3], [0,25,50,75,100]))
   print(np.mean(input_arr[:,4]), np.std(input_arr[:,4]),
-        np.percentile(input_arr[:,4], [25,50,75]))
+        np.percentile(input_arr[:,4], [0,25,50,75,100]))
   print(np.mean(input_arr[:,5]), np.std(input_arr[:,5]),
-        np.percentile(input_arr[:,5], [25,50,75]))
+        np.percentile(input_arr[:,5], [0,25,50,75,100]))
 
 
 """
-Citytv news: delay, wpm, sim_value, spelling, mw, wd,
-4895.75 1477.93 [7271 2669] [4075 4669.5 5775]
-232.03 200.48 [814.159 57.143] [118.56 143.21 313.46]
-0.854 0.1045 [1 0.689] [0.7770  0.8416  0.9467]
+CTV news: delay, wpm, sim_value, spelling, mw, wd,
+4895.75 1477.93 [7271, 2669] [2669, 4075, 4669.5, 5775, 7271]
+232.03 200.48 [814.159, 57.143] [57.143, 118.56, 143.21, 313.46, 814.15929]
+0.854 0.1045 [1, 0.689] [0.6899, 0.7770, 0.8416, 0.9467, 1.0]
 0.0 0.0 [ 0.] [ 0.]
-4.833 6.243 [20 0] [0.75  1.5   7]
-12.333 11.2496 [39 0] [1.75 11 20]
+4.833 6.243 [20, 0] [0, 0.75, 1.5, 7, 20]
+12.333 11.2496 [39, 0] [0, 1.75, 11, 20, 39]
 
 Citytv news: delay, wpm, sim_value, spelling, mw, wd,
-7992.78947368 1888.85787209 [ 11910.] [ 3319.]
-132.197394492 77.1592149465 [ 355.16664522] [ 48.37409299]
-0.816991536733 0.289766435418 [ 1.00000002] [ 0.]
+7992.79 1888.86 [11910, 3319] [3319, 6745, 7690, 9070.5, 11910]
+132.20 77.16 [355.17, 48.37] [48.374, 67.891, 131.165, 161.672, 355.167]
+0.817 0.290 [1, 0] [0, 0.8292, 0.9366, 0.9724, 1]
 0.0 0.0 [ 0.] [ 0.]
-5.21052631579 7.35261462531 [ 24.] [ 0.]
-8.84210526316 11.0132129157 [ 34.] [ 0.]
+5.21052631579 7.35261462531 [ 24.] [ 0.] [0, 0.5, 2, 6.5, 24]
+8.84210526316 11.0132129157 [ 34.] [ 0.] [0, 0.5, 2, 14, 34]
 """
