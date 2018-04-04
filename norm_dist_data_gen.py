@@ -5,7 +5,7 @@ from random import randint
 from scipy.stats import truncnorm
 import math
 
-SCALE = 10
+SCALE = 3
 DATASIZE = 100000
 print("SCALE:",SCALE,", SIZE:",DATASIZE)
 
@@ -47,7 +47,7 @@ r_wpm = trn.rvs(DATASIZE)
 trn = get_truncated_normal(mean=1, sd=2, low=0.0, high=10)
 r_spell_grammar_errors = np.rint(trn.rvs(DATASIZE))
 
-trn = get_truncated_normal(mean=0.85, sd=0.2, low=0.0, high=1.01)
+trn = get_truncated_normal(mean=0.85, sd=0.2, low=0.0, high=1.1)
 r_sentence_sim = trn.rvs(DATASIZE)
 
 trn = get_truncated_normal(mean=5.02, sd=6.79, low=0.0, high=25)
@@ -114,7 +114,8 @@ rating_list_3 = [
 ]
 bins = {10:rating_list_10, 5:rating_list_5, 3:rating_list_3}
 RATING_LIST = bins[SCALE]
-len(RATING_LIST)
+print(len(RATING_LIST))
+mw_trn = get_truncated_normal(mean=4.26, sd=2.32, low=0.0, high=10)
 # [delay], [speed], [verbatim factor score], [spelling and grammar error score], [missing words score] 
 for i in c:
   delay_score, speed_score, verbatim_score, sge_score, missing_words_score = 0,0,0,0,0
@@ -126,9 +127,9 @@ for i in c:
   sentence_sim = i[4]
   
   #  delay_score: mean=4.66, sd=2.53
-  if delay <= 2300:
+  if delay <= 2600:
     delay_score = randint(9, 10)
-  elif 2300 < delay <= 4000:
+  elif 2600 < delay <= 4000:
     delay_score = randint(6, 8)
   elif 4000 < delay <= 5000:
     delay_score = randint(4, 6)
@@ -137,18 +138,22 @@ for i in c:
 
   # wpm_score: mean=4.33, sd=2.57
   # calculate speed_rating
-  if wpm <= 90:
-    speed_score = randint(0,6) # when its too slow to read
+  if wpm <= 45:
+    speed_score = randint(0,4)
+  elif 45 < wpm <= 90:
+    speed_score = randint(5,8) # when its too slow to read
   elif 90 < wpm <= 100:
-    speed_score = randint(5,8)
+    speed_score = randint(9,10)
   elif 100 < wpm <= 120:
-    speed_score = randint(8,10)
+    speed_score = randint(9,10)
   elif 120 < wpm <= 140:
-    speed_score = randint(8,10)
+    speed_score = randint(9,10)
   elif 140 < wpm <= 220:
-    speed_score = randint(5,8)
+    speed_score = randint(7,10)
+  elif 220 < wpm <= 290:
+    speed_score = randint(3,8)
   else:
-    speed_score = randint(0,6)
+    speed_score = randint(0,2)
 
   # sge_score = mean=4.53, sd=2.19
   if spell_grammar_errors == 0:
@@ -167,35 +172,22 @@ for i in c:
   # mw_score: mean=4.26, sd=2.32
   if missing_words == 0:
     missing_words_score = 10
-  elif 0 < missing_words <= 5:
-    missing_words_score = randint(5,9)
-  elif 5 < missing_words <= 10:
-    missing_words_score = randint(3,4)
+  elif 0 < missing_words <= 7:
+    missing_words_score = np.rint(mw_trn.rvs())
   else:
     missing_words_score = randint(0,2)
-
+  
   # verbatim_score: mean=4.20, sd=2.51
   # Paraphrasing (verbatimness) score which audiences subjectively feel
   if sentence_sim == 1.0:
     verbatim_score = 10
-  elif 0.96 <= sentence_sim < 1.0:
+  elif 0.80 <= sentence_sim < 1.0:
     if missing_words == 0:
-      missing_words_score = 10
-    elif 0 < missing_words <= 5:
-      missing_words_score = randint(5,9)
-    elif 5 < missing_words <= 10:
-      missing_words_score = randint(3,4)
+      verbatim_score = 10
+    elif 0 < missing_words <= 10:
+      verbatim_score = randint(7,9)
     else:
-      missing_words_score = randint(0,2)
-  elif 0.9 <= sentence_sim < 0.96: # over 95%
-    if missing_words == 0:
-      missing_words_score = 10
-    elif 0 < missing_words <= 5:
-      missing_words_score = randint(5,9)
-    elif 5 < missing_words <= 10:
-      missing_words_score = randint(3,4)
-    else:
-      missing_words_score = randint(0,2)
+      missing_words_score = randint(0,10)
   else:
     verbatim_score = randint(0,2)
 
@@ -310,7 +302,7 @@ for i in c:
    0  1  2  3  4 |  5  6  7  8  9 | 10
 """
 
-'''
+
 print("====== SCORES =====")
 print("delay score:", np.mean(c[:,6]), np.std(c[:,6]))
 print("speed score:", np.mean(c[:,7]), np.std(c[:,7]))
@@ -318,7 +310,7 @@ print("sge score:", np.mean(c[:,8]), np.std(c[:,8]))
 print("missing words scores:", np.mean(c[:,9]), np.std(c[:,9]))
 print("verbatim score:", np.mean(c[:,10]), np.std(c[:,10]))
 
-
+'''
 print("====== Actual Values =====")
 print("delay:", #min(c[:,0]), max(c[:,0]), 
       "[4075 4669.5 5775]",

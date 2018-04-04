@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 import statsmodels.api as sm
+from scipy.stats.stats import pearsonr
 
 import numpy as np
 import matplotlib as mpl
@@ -16,24 +17,24 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-#DATAFILE = "10_gen_dt_100000.csv"
-SCALE = 10
-DATAFILE = "10_nd_dt_100000.csv"
+SCALE = 5 # for categorical filtering
+DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
+#DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 TRAINING = 1
-EPOCHS = 50
+EPOCHS = 80
 
 def data_prep():
   ######################## data prep ###########################################
   dataset = np.loadtxt(DATAFILE, delimiter=",")
-  t_index = round(len(dataset)*0.01) # 80% to train
+  t_index = round(len(dataset)*0.8) # 80% to train
   # normalization and prep the data for train and validation
   # values: delay, wpm, sge, mw, ss, pf
   # score:  delay, speed, sge, mw, verbatim
   np.set_printoptions(precision=4, suppress=True)
   sc = StandardScaler()
   x = sc.fit_transform(dataset[:, :6])
-  
+  #x = dataset[:,:6]
   x_emp_tr = x[:t_index, :4]
   x_emp_ts = x[t_index:, :4]
   
@@ -56,9 +57,9 @@ def data_prep():
   y_ver_nn_tr = dataset[:t_index, flag:] # categorical for training
   y_ver_nn_ts = dataset[t_index:, flag:] # categorical for test
 
-  return x_emp_tr, x_emp_ts, x_ver_tr, x_ver_ts, 
+  return (x_emp_tr, x_emp_ts, x_ver_tr, x_ver_ts, 
          y_emp_lm_tr, y_emp_lm_ts, y_ver_lm_tr, y_ver_lm_ts, 
-         y_emp_nn_tr, y_emp_nn_ts, y_ver_nn_tr, y_ver_nn_ts
+         y_emp_nn_tr, y_emp_nn_ts, y_ver_nn_tr, y_ver_nn_ts)
   
 def train_nn_regression(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   # create model using sequential
@@ -73,7 +74,7 @@ def train_nn_regression(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   # fit the empirical value model
   emp_hist = emp_model.fit(emp_tr_x, emp_tr_y, 
                 epochs=EPOCHS, batch_size=500,
-                verbose=1, validation_data=(emp_tst_x, emp_tst_y)
+                verbose=2, validation_data=(emp_tst_x, emp_tst_y)
                 )
   #save the model
   emp_model.save(MODEL_FILE) #creates a hdf5 file
@@ -86,9 +87,9 @@ def train_nn_categorical(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   output_size = 44 if SCALE == 10 else SCALE*4
   # create model using sequential
   emp_model = Sequential()
-  emp_model.add(Dense(units=64, input_dim=4, activation='relu'))
-  emp_model.add(Dense(units=32, activation='relu'))
-  emp_model.add(Dense(units=output_size))
+  emp_model.add(Dense(units=64, input_dim=4, activation='sigmoid'))
+  emp_model.add(Dense(units=32, activation='sigmoid'))
+  emp_model.add(Dense(units=output_size, activation='sigmoid'))
   # compile
   emp_model.compile(loss='categorical_crossentropy',
                 optimizer='adam', 
@@ -101,8 +102,8 @@ def train_nn_categorical(emp_tr_x, emp_tr_y, emp_tst_x, emp_tst_y):
   #save the model
   emp_model.save(MODEL_FILE) #creates a hdf5 file
   # evaluate the empirical value model
-  loss_and_metrics = emp_model.evaluate(emp_tst_x, emp_tst_y, batch_size=50)
-  print("\n%s: %.2f%%" % (emp_model.metrics_names[1], loss_and_metrics[1]*100))
+  #loss_and_metrics = emp_model.evaluate(emp_tst_x, emp_tst_y, batch_size=50)
+  #print("\n%s: %.2f%%" % (emp_model.metrics_names[1], loss_and_metrics[1]*100))
   return emp_model, emp_hist
 
 def draw_graphs(hist):
@@ -137,44 +138,139 @@ def print_model_perf(predictions, tst_x, tst_y, name):
     color = col_set[i]
     category = category_set[i]
     rms = sqrt(mean_squared_error(tst_y[:,i], predictions[:,i]))
-    print(name + category_set[i] + ": {:.2f}".format(rms))
+    print(name + " " + category_set[i] + "\nRMSE: {:.2f}".format(rms))
+    correct = 0
+    rounded_p = np.rint(predictions)
+    for j in range(len(rounded_p)):
+      if rounded_p[j,i] == tst_y[j,i]:
+        correct += 1
+    print(correct,"correct answers out of",len(rounded_p))
+    print("acc: {:.2f}%".format(correct/len(rounded_p[:,i])*100.0))
+    
     # plot the graph prediction vs real value
     #plot_pred(tst_x[:,i], tst_y[:,i], predictions[:,i], color, category)
   print()
 
 if __name__ == '__main__':
+  print(DATAFILE)
   if TRAINING:
-    x_emp_tr, x_emp_ts, x_ver_tr, x_ver_ts, y_emp_lm_tr, y_emp_lm_ts, y_ver_lm_tr, y_ver_lm_ts, y_emp_nn_tr, y_emp_nn_ts, y_ver_nn_tr, y_ver_nn_ts = data_prep()
-    emp_model, hist = train_nn(x_emp_tr, y_emp_nn_tr, x_emp_ts, y_emp_nn_ts)
-    draw_graphs(hist)
+    (x_emp_tr, x_emp_ts, x_ver_tr, x_ver_ts, 
+        y_emp_lm_tr, y_emp_lm_ts, y_ver_lm_tr, 
+        y_ver_lm_ts, y_emp_nn_tr, y_emp_nn_ts, 
+        y_ver_nn_tr, y_ver_nn_ts) = data_prep()
+    #emp_model, hist = train_nn_categorical(x_emp_tr, y_emp_nn_tr, x_emp_ts, y_emp_nn_ts)
+    emp_model, hist = train_nn_regression(x_emp_tr, y_emp_lm_tr, x_emp_ts, y_emp_lm_ts)
 
-  
+    #draw_graphs(hist)
 
+  # Graph the comparison between prediction vs real
+  predictions = emp_model.predict(x_emp_ts)
+  print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "NN")
 
+  ###### testing correlation among the variables
+  delay_x, speed_x, sge_x, mw_x, ss_x, pf_x = x_emp_tr[:,0], x_emp_tr[:,1], x_emp_tr[:,2], x_emp_tr[:,3], x_ver_tr[:,1], x_ver_tr[:,2]
+  delay_score, speed_score, sge_score, mw_score, verbatim_score = y_emp_lm_tr[:,0], y_emp_lm_tr[:,1], y_emp_lm_tr[:,2], y_emp_lm_tr[:,3], y_ver_lm_tr[:,0]
+  '''
+  # pearson's r and 2 tailed p value
+  print(pearsonr(delay_x, speed_x)) # 0.005, 0.199
+  print(pearsonr(delay_x, sge_x)) # -0.0054, 0.157
+  print(pearsonr(delay_x, mw_x)) # 0.004, 0.344
+  print(pearsonr(delay_x, ss_x)) # -0.002, 0.559
+  print()
+  print(pearsonr(speed_x, sge_x)) # 0.001, 0.73
+  print(pearsonr(speed_x, mw_x)) # 0.004, 0.297
+  print(pearsonr(speed_x, ss_x)) # 0.002, 0.534
+  print()
+  print(pearsonr(sge_x, mw_x)) # -0.008, 0.027          [V]
+  print(pearsonr(sge_x, ss_x)) # 0.012, 0.002           [V]
+  print()
+  print(pearsonr(mw_x, ss_x)) # -0.243, 0.0             [V]
+  print()
+  print(pearsonr(delay_x, delay_score)) # -0.812, 0     [V]
+  print(pearsonr(speed_x, speed_score)) # -0.647, 0     [V]
+  print(pearsonr(sge_x, sge_score)) # -0.823, 0         [V]
+  print(pearsonr(mw_x, mw_score)) # -0.544, 0           [V]
+  print(pearsonr(ss_x, verbatim_score)) # 0.668, 0      [V]
+  print()
+  print(pearsonr(delay_x, speed_score)) # -0.004, 0.266
+  print(pearsonr(delay_x, sge_score)) # 0.002, 0.588
+  print(pearsonr(delay_x, mw_score)) # -0.007, 0.063
+  print(pearsonr(delay_x, verbatim_score)) # -0.006, 0.109
+  print()
+  print(pearsonr(speed_x, delay_score)) # -0.007, 0.066 [V] ?
+  print(pearsonr(speed_x, sge_score)) # 0.001, 0.745
+  print(pearsonr(speed_x, mw_score)) # -0.002, 0.628
+  print(pearsonr(speed_x, verbatim_score)) # -0.002, 0.594
+  print()
+  print(pearsonr(sge_x, delay_score)) # 0.004, 0.283
+  print(pearsonr(sge_x, speed_score)) # -0.000719, 0.979
+  print(pearsonr(sge_x, mw_score)) # 0.011, 0.005       [V]
+  print(pearsonr(sge_x, verbatim_score)) # 0.011, 0.003 [V]
+  print()
+  print(pearsonr(mw_x, delay_score)) # -0.004, 0.288
+  print(pearsonr(mw_x, speed_score)) # 0.001, 0.879
+  print(pearsonr(mw_x, sge_score)) # 0.009, 0.013
+  print(pearsonr(mw_x, verbatim_score)) # -0.564, 0     [V]
+  '''
+  #####
+  # It can be concluded that there exists no linear correlation between factors
+  # However, it showed that each of the factor-score relation is linearly correlated.
+  # Therefore, there should be a linear regression model for each factor-score relationship.
+  ##### 
 
   '''
-  # Graph the comparison between prediction vs real
-  predictions = emp_model.predict(emp_tst_x, batch_size=10)
-  rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("NN RMSE: {:.2f}".format(rms))
-  print_model_perf(predictions, emp_tst_x, emp_tst_y, "NN")
-  
+  # Simple linear regression model for delay factor-score
+  mlm = linear_model.LinearRegression()
+  delay_x = [delay_x]
+  delay_x = np.array(delay_x).reshape(-1, 1)
+  delay_score = [delay_score]
+  delay_score = np.array(delay_score).reshape(-1, 1)
+  delay_x_tst = [x_emp_ts[:,0]]
+  delay_x_tst = np.array(delay_x_tst).reshape(-1, 1)
+
+  stat_model = mlm.fit(delay_x, delay_score)
+  predictions = mlm.predict(delay_x_tst)
+  rms = sqrt(mean_squared_error(y_emp_lm_ts[:,0], predictions))
+  print("Delay linear model RMSE: {:.2f}".format(rms))
+  correct = 0
+  rounded_p = np.rint(predictions)
+  for j in range(len(rounded_p)):
+    if rounded_p[j,0] == y_emp_lm_ts[j,0]:
+      correct += 1
+  print("Delay linear model acc: {:.2f}%".format(correct/len(rounded_p[:,0])*100.0))
+
+  # Simple linear regression model for speed factor-score
+  mlm = linear_model.LinearRegression()
+  speed_x = [speed_x]
+  speed_x = np.array(speed_x).reshape(-1, 1)
+  speed_score = [speed_score]
+  speed_score = np.array(speed_score).reshape(-1, 1)
+  speed_x_tst = [x_emp_ts[:,1]]
+  speed_x_tst = np.array(speed_x_tst).reshape(-1, 1)
+
+  stat_model = mlm.fit(speed_x, speed_score)
+  predictions = mlm.predict(speed_x_tst)
+  rms = sqrt(mean_squared_error(y_emp_lm_ts[:,1], predictions))
+  print("Speed linear model RMSE: {:.2f}".format(rms))
+  correct = 0
+  rounded_p = np.rint(predictions)
+  for j in range(len(rounded_p)):
+    if rounded_p[j,0] == y_emp_lm_ts[j,1]:
+      correct += 1
+  print("Speed linear model acc: {:.2f}%".format(correct/len(rounded_p[:,0])*100.0))
+  '''
+
   ##### Multivariate linear regression
   mlm = linear_model.LinearRegression()
-  stat_model = mlm.fit(emp_tr_x, emp_tr_y)
-  predictions = mlm.predict(emp_tst_x)
-  rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("MLM RMSE: {:.2f}".format(rms))
-  print_model_perf(predictions, emp_tst_x, emp_tst_y, "MLM")
-
+  stat_model = mlm.fit(x_emp_tr, y_emp_lm_tr)
+  predictions = mlm.predict(x_emp_ts)
+  #print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "MLM")
+  
   ##### Polynomial linear regression
-  poly = PolynomialFeatures(degree=4)
-  training_x = poly.fit_transform(emp_tr_x)
-  testing_x = poly.fit_transform(emp_tst_x)
+  poly = PolynomialFeatures(degree=3)
+  training_x = poly.fit_transform(x_emp_tr)
+  testing_x = poly.fit_transform(x_emp_ts)
   lg = linear_model.LinearRegression()
-  lg.fit(training_x, emp_tr_y)
+  lg.fit(training_x, y_emp_lm_tr)
   predictions = lg.predict(testing_x)
-  rms = sqrt(mean_squared_error(emp_tst_y, predictions))
-  print("MPM RMSE: {:.2f}".format(rms))
-  print_model_perf(predictions, emp_tst_x, emp_tst_y, "MPM")
-  '''
+  print_model_perf(predictions, testing_x, y_emp_lm_ts, "MPM")
