@@ -164,7 +164,7 @@ if __name__ == '__main__':
     #draw_graphs(hist)
 
   # Graph the comparison between prediction vs real
-  predictions = emp_model.predict(x_emp_ts)
+  predictions = emp_model.predict(x_emp_ts, batch_size=10))
   print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "NN")
 
   ###### testing correlation among the variables
