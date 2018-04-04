@@ -144,7 +144,7 @@ def print_model_perf(predictions, tst_x, tst_y, name):
     for j in range(len(rounded_p)):
       if rounded_p[j,i] == tst_y[j,i]:
         correct += 1
-    print(correct,"correct answers out of",len(rounded_p))
+    #print(correct,"correct answers out of",len(rounded_p))
     print("acc: {:.2f}%".format(correct/len(rounded_p[:,i])*100.0))
     
     # plot the graph prediction vs real value
@@ -164,8 +164,8 @@ if __name__ == '__main__':
     #draw_graphs(hist)
 
   # Graph the comparison between prediction vs real
-  predictions = emp_model.predict(x_emp_ts, batch_size=10))
-  print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "NN")
+  predictions = emp_model.predict(x_emp_ts, batch_size=10)
+  print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "Multilayer Perceptron:")
 
   ###### testing correlation among the variables
   delay_x, speed_x, sge_x, mw_x, ss_x, pf_x = x_emp_tr[:,0], x_emp_tr[:,1], x_emp_tr[:,2], x_emp_tr[:,3], x_ver_tr[:,1], x_ver_tr[:,2]
@@ -209,7 +209,7 @@ if __name__ == '__main__':
   print()
   print(pearsonr(mw_x, delay_score)) # -0.004, 0.288
   print(pearsonr(mw_x, speed_score)) # 0.001, 0.879
-  print(pearsonr(mw_x, sge_score)) # 0.009, 0.013
+  print(pearsonr(mw_x, sge_score)) # 0.009, 0.013       [V]
   print(pearsonr(mw_x, verbatim_score)) # -0.564, 0     [V]
   '''
   #####
@@ -273,4 +273,4 @@ if __name__ == '__main__':
   lg = linear_model.LinearRegression()
   lg.fit(training_x, y_emp_lm_tr)
   predictions = lg.predict(testing_x)
-  print_model_perf(predictions, testing_x, y_emp_lm_ts, "MPM")
+  print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "Polynomial Regression:")

@@ -5,7 +5,7 @@ from random import randint
 from scipy.stats import truncnorm
 import math
 
-SCALE = 3
+SCALE = 10
 DATASIZE = 100000
 print("SCALE:",SCALE,", SIZE:",DATASIZE)
 
@@ -185,10 +185,10 @@ for i in c:
     if missing_words == 0:
       verbatim_score = 10
     elif 0 < missing_words <= 10:
-      verbatim_score = randint(7,9)
+      verbatim_score = randint(5,9)
     else:
       missing_words_score = randint(0,10)
-  else:
+  else: #when sentence similarity is under 80%, we give low scores
     verbatim_score = randint(0,2)
 
   delay_score = score_normalization(delay_score, SCALE)

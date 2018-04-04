@@ -17,8 +17,8 @@ import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
 SCALE = 5 # for categorical filtering
-DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
-#DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
+#DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
+DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 
 def data_prep():
@@ -93,15 +93,22 @@ def draw_graphs(hist):
   plt.show()
   
 
-def print_model_perf(tst_x, tst_y, predictions, name):
+def print_model_perf(predictions, tst_x, tst_y, name):
   rms = sqrt(mean_squared_error(predictions, tst_y))
-  print(name + " RMSE : {:.2f}".format(rms))
+  print(name + " \nRMSE: {:.2f}".format(rms))
+  correct = 0
+  rounded_p = np.rint(predictions)
+  for j in range(len(rounded_p)):
+    if rounded_p[j] == tst_y[j]:
+      correct += 1
+  #print(correct,"correct answers out of",len(rounded_p))
+  print("acc: {:.2f}%".format(correct/len(rounded_p)*100.0))
   print()
   # plot the graph prediction vs real value
-  scatter2 = plt.scatter(tst_y, predictions)
-  plt.ylabel('predictions')
+  scatter2 = plt.scatter(tst_y, rounded_p)
+  plt.ylabel('Predictions')
   plt.xlabel('Real values')
-  plt.show()
+  #plt.show()
 
 def baseline_model(output_unit, loss, output_activation):
   # create model
@@ -110,7 +117,7 @@ def baseline_model(output_unit, loss, output_activation):
   model.add(Dense(8, kernel_initializer='glorot_uniform', activation='relu'))
   model.add(Dense(output_unit, kernel_initializer='glorot_uniform', activation=output_activation))
   # Compile model
-  sgd = SGD(lr=0.01, decay=1e-6, momentum=0.8, nesterov=True)
+  #sgd = SGD(lr=0.01, decay=1e-6, momentum=0.8, nesterov=True)
   model.compile(loss=loss, optimizer='adam', metrics=['accuracy'])
   #model.compile(loss='categorical_crossentropy', optimizer='adamax', metrics=['categorical_accuracy'])
   #model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
@@ -121,42 +128,34 @@ if __name__ == '__main__':
   (x_emp_tr, x_emp_ts, x_ver_tr, x_ver_ts, 
   y_emp_lm_tr, y_emp_lm_ts, y_ver_lm_tr, y_ver_lm_ts, 
   y_emp_nn_tr, y_emp_nn_ts, y_ver_nn_tr, y_ver_nn_ts) = data_prep()
-  # create model
-  regression_model = baseline_model(1, 'mse', 'relu')
 
+  # Create NN model
+  regression_model = baseline_model(1, 'mse', 'relu')
   print("TRAINING: Regression model")
   reg_hist = regression_model.fit(x_ver_tr, y_ver_lm_tr, 
-              epochs=30, batch_size=500,
-              verbose=1, validation_data=(x_ver_ts, y_ver_lm_ts)
+              epochs=50, batch_size=500,
+              verbose=2, validation_data=(x_ver_ts, y_ver_lm_ts)
               )
   # evaluate the regression value model
   #draw_graphs(reg_hist)
   predictions = regression_model.predict(x_ver_ts, batch_size=10)
-  rms = sqrt(mean_squared_error(y_ver_lm_ts, predictions))
-  print("NN RMSE: {:.2f}".format(rms))
-  print_model_perf(x_ver_ts, y_ver_lm_ts, predictions, "NN")
-
+  print_model_perf(predictions, x_ver_ts, y_ver_lm_ts, "Multilayer Perceptron")
   #save the model
   regression_model.save('reg_ver_model.h5') #creates a hdf5 file
 
-
+  
   ############################## multivariate linear regression
   mlm = linear_model.LinearRegression()
-  stat_model = mlm.fit(ver_tr_x, ver_tr_y[:,-1:])
-  predictions = mlm.predict(ver_tst_x)
-  rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("MLM RMSE: {:.2f}".format(rms))
-  print_model_perf(ver_tst_x, ver_tst_y, predictions, "MLM")
+  stat_model = mlm.fit(x_ver_tr, y_ver_lm_tr)
+  predictions = mlm.predict(x_ver_ts)
+  print_model_perf(predictions, x_ver_ts, y_ver_lm_ts, "LM")
 
   ############################## Polynomial linear regression
   poly = PolynomialFeatures(degree=4)
-  training_x = poly.fit_transform(ver_tr_x)
-  testing_x = poly.fit_transform(ver_tst_x)
+  training_x = poly.fit_transform(x_ver_tr)
+  testing_x = poly.fit_transform(x_ver_ts)
   lg = linear_model.LinearRegression()
-  lg.fit(training_x, ver_tr_y)
+  lg.fit(training_x, y_ver_lm_tr)
   predictions = lg.predict(testing_x)
-  rms = sqrt(mean_squared_error(ver_tst_y, predictions))
-  print("MPM RMSE: {:.2f}".format(rms))
-  print_model_perf(ver_tst_x, ver_tst_y, predictions, "MPM")
-
+  print_model_perf(predictions, x_ver_ts, y_ver_lm_ts, "MPM")
   ############################## Support Vector Machine?
