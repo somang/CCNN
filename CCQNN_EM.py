@@ -10,6 +10,8 @@ from sklearn.metrics import mean_squared_error
 from math import sqrt
 import statsmodels.api as sm
 from scipy.stats.stats import pearsonr
+from scipy.stats import kendalltau
+from scipy.stats.mstats import spearmanr
 
 import numpy as np
 import matplotlib as mpl
@@ -17,7 +19,7 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-SCALE = 5 # for categorical filtering
+SCALE = 10 # for categorical filtering
 DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
 #DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
@@ -172,46 +174,30 @@ if __name__ == '__main__':
   delay_score, speed_score, sge_score, mw_score, verbatim_score = y_emp_lm_tr[:,0], y_emp_lm_tr[:,1], y_emp_lm_tr[:,2], y_emp_lm_tr[:,3], y_ver_lm_tr[:,0]
   '''
   # pearson's r and 2 tailed p value
-  print(pearsonr(delay_x, speed_x)) # 0.005, 0.199
-  print(pearsonr(delay_x, sge_x)) # -0.0054, 0.157
-  print(pearsonr(delay_x, mw_x)) # 0.004, 0.344
-  print(pearsonr(delay_x, ss_x)) # -0.002, 0.559
-  print()
-  print(pearsonr(speed_x, sge_x)) # 0.001, 0.73
-  print(pearsonr(speed_x, mw_x)) # 0.004, 0.297
-  print(pearsonr(speed_x, ss_x)) # 0.002, 0.534
-  print()
-  print(pearsonr(sge_x, mw_x)) # -0.008, 0.027          [V]
-  print(pearsonr(sge_x, ss_x)) # 0.012, 0.002           [V]
-  print()
   print(pearsonr(mw_x, ss_x)) # -0.243, 0.0             [V]
-  print()
   print(pearsonr(delay_x, delay_score)) # -0.812, 0     [V]
   print(pearsonr(speed_x, speed_score)) # -0.647, 0     [V]
   print(pearsonr(sge_x, sge_score)) # -0.823, 0         [V]
   print(pearsonr(mw_x, mw_score)) # -0.544, 0           [V]
   print(pearsonr(ss_x, verbatim_score)) # 0.668, 0      [V]
-  print()
-  print(pearsonr(delay_x, speed_score)) # -0.004, 0.266
-  print(pearsonr(delay_x, sge_score)) # 0.002, 0.588
-  print(pearsonr(delay_x, mw_score)) # -0.007, 0.063
-  print(pearsonr(delay_x, verbatim_score)) # -0.006, 0.109
-  print()
-  print(pearsonr(speed_x, delay_score)) # -0.007, 0.066 [V] ?
-  print(pearsonr(speed_x, sge_score)) # 0.001, 0.745
-  print(pearsonr(speed_x, mw_score)) # -0.002, 0.628
-  print(pearsonr(speed_x, verbatim_score)) # -0.002, 0.594
-  print()
-  print(pearsonr(sge_x, delay_score)) # 0.004, 0.283
-  print(pearsonr(sge_x, speed_score)) # -0.000719, 0.979
-  print(pearsonr(sge_x, mw_score)) # 0.011, 0.005       [V]
-  print(pearsonr(sge_x, verbatim_score)) # 0.011, 0.003 [V]
-  print()
-  print(pearsonr(mw_x, delay_score)) # -0.004, 0.288
-  print(pearsonr(mw_x, speed_score)) # 0.001, 0.879
-  print(pearsonr(mw_x, sge_score)) # 0.009, 0.013       [V]
   print(pearsonr(mw_x, verbatim_score)) # -0.564, 0     [V]
+  # Spearman's rho and 2 tailed p value
+  print(spearmanr(delay_x, delay_score)) # -0.557, 0
+  print(spearmanr(speed_x, speed_score)) # -0.393, 0
+  print(spearmanr(sge_x, sge_score)) # -0.699, 0
+  print(spearmanr(mw_x, mw_score)) # -0.699, 0
+  print(spearmanr(ss_x, verbatim_score)) # 0.401, 0
+  print(spearmanr(mw_x, verbatim_score)) # -0.152, 0
   '''
+  # Kendall tau
+  print(kendalltau(delay_x, delay_score)) # -0.420, 0
+  print(kendalltau(speed_x, speed_score)) # -0.294, 0     [V]
+  print(kendalltau(sge_x, sge_score)) # -0.599, 0         [V]
+  print(kendalltau(mw_x, mw_score)) # -0.546, 0           [V]
+  print(kendalltau(ss_x, verbatim_score)) # 0.302, 0      [V]
+  print(kendalltau(mw_x, verbatim_score)) # -0.119, 0     [V]
+  
+  
   #####
   # It can be concluded that there exists no linear correlation between factors
   # However, it showed that each of the factor-score relation is linearly correlated.
