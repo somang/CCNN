@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-SCALE = 5 # for categorical filtering
+SCALE = 10 # for categorical filtering
 #DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
 DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 

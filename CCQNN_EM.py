@@ -20,8 +20,8 @@ import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
 SCALE = 10 # for categorical filtering
-DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
-#DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
+#DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
+DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 TRAINING = 1
 EPOCHS = 80
@@ -188,7 +188,7 @@ if __name__ == '__main__':
   print(spearmanr(mw_x, mw_score)) # -0.699, 0
   print(spearmanr(ss_x, verbatim_score)) # 0.401, 0
   print(spearmanr(mw_x, verbatim_score)) # -0.152, 0
-  '''
+  
   # Kendall tau
   print(kendalltau(delay_x, delay_score)) # -0.420, 0
   print(kendalltau(speed_x, speed_score)) # -0.294, 0     [V]
@@ -196,7 +196,7 @@ if __name__ == '__main__':
   print(kendalltau(mw_x, mw_score)) # -0.546, 0           [V]
   print(kendalltau(ss_x, verbatim_score)) # 0.302, 0      [V]
   print(kendalltau(mw_x, verbatim_score)) # -0.119, 0     [V]
-  
+  '''
   
   #####
   # It can be concluded that there exists no linear correlation between factors
@@ -250,7 +250,7 @@ if __name__ == '__main__':
   mlm = linear_model.LinearRegression()
   stat_model = mlm.fit(x_emp_tr, y_emp_lm_tr)
   predictions = mlm.predict(x_emp_ts)
-  #print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "MLM")
+  print_model_perf(predictions, x_emp_ts, y_emp_lm_ts, "MLM")
   
   ##### Polynomial linear regression
   poly = PolynomialFeatures(degree=3)
