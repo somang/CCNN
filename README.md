@@ -1,22 +1,34 @@
 # CCNN project
 
-Weekly Log
+Weekly Development Log
+
+Week 14. Update on April 11
+- Will it be possible to feed the 'features' to be natural?
+  - i.e. such that, instead of feeding generated values,
+  natural values will be 
+    1. vectorized_caption_sentence
+    2. vectorized_transcript_sentence
+    3. caption_start_time
+    4. caption_end_time
+    5. transcript_start_time
+    6. transcript_end_time
+    7. genre (maybe?)
+    8. viewer (0=Deaf, 1=HOH, 2=ESL, 3=Others)
+  - How to vectorize the sentences?
+    1) Skip gram method: paper here and the tool that uses it, google word2vec
+    2) Using LSTM-RNN to form semantic representations of 
+    sentences.
+
+- DATA prep: new data is here. from BAF. create caption and transcript.
+
+
+
 
 Week 12. Update on April 2
 - Generating data based on median and quartiles can only be done using maximum likelihood function: and it wouldn't give the proper quartiles...
 - Another method is to fit the existing data points to a curve fit. (i.e. polynomial)
-- https://stats.stackexchange.com/questions/143353/generate-data-with-skewed-distribution-and-known-percentiles-mean-and-median
-- https://stackoverflow.com/questions/18767523/fitting-data-with-numpy
-
-
-
-
-
-
-
 
 Week 11. On March 29th: todo by April 3rd.
-- 
 
 - Next week, presentation for the BAF group.
   - talk about the motivation (why this framework?)
@@ -28,8 +40,6 @@ Week 11. On March 29th: todo by April 3rd.
   - ANN?
 - Finish writing data, architecture part.
 - What to write in the discussion??
-
-
 
 Week 9. March 14th
 1. Paraphrasing Factor:
