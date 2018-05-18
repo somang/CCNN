@@ -1,26 +1,17 @@
 #srt file reader-parser
 import re, sys, string
 from caption import Caption
+import language_check
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords as sw
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
 
 import spacy
-from spacy.lemmatizer import Lemmatizer
-
 import numpy as np
 
-#import enchant
-#from enchant.checker import SpellChecker
-'''
-from keras.models import Sequential
-from keras.layers import Dense
-
-from sklearn import preprocessing
-from sklearn import linear_model
-from sklearn.preprocessing import StandardScaler
-'''
+import enchant
+from enchant.checker import SpellChecker
 
 class CaptionCollection:
   def __init__(self, lines):
@@ -100,7 +91,6 @@ class ParseSentence:
 
     -> then the sentences will be used to compare the meaning/paraphrasing...
   '''
-
   def __init__(self,cf):
     self.parseSentence = []
     self.parse(cf)
@@ -193,6 +183,12 @@ def getSpellErr(s):
       counter+=1
   return counter
 
+def getSpellGrammarErr(s):
+  spellerror = getSpellErr(s)
+  tool = language_check.LanguageTool('en-US')
+  print(len(tool.check(s)))
+  return 0
+
 def handleOmissions(sentence):
   s_list = sentence.split()
   i = 0
@@ -233,9 +229,6 @@ def handleOmissions(sentence):
 def getSimilarity(s1, s2):
   c1_spacy = nlp(str(s1))
   c2_spacy = nlp(str(s2))
-
-  #print(c1_spacy)
-  #print(c2_spacy)
 
   c1_words, c2_words = {}, {}
   c1_ants, c2_ants = {}, {}
@@ -338,8 +331,8 @@ def addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp):
   wpm = len(c_txt.split())/duration
   # similarity (paraphrasing)
   sim_value = getSimilarity(c_sentence[1], t_txt)
-  # spelling errors
-  #spelling = getSpellErr(c_sentence[1])
+  # spelling and grammar errors
+  spelling = getSpellGrammarErr(c_sentence[1])
   # missing words?
   mw, wd = getMissingWords(nlp, c_sentence[1], t_txt)
   # append them all
@@ -518,3 +511,38 @@ wd [[0],[1],[0],[1],[29],[29],[1],[13],[0],[0],[19],[15],[34],[0],[10],[8],[5],[
 
 
 """
+
+
+
+'''
+#Add these lines:
+import nltk
+from nltk.corpus import wordnet as WN
+from nltk.corpus import stopwords
+stop_words_en = set(stopwords.words('english'))
+
+def tokens(sent):
+        return nltk.word_tokenize(sent)
+
+def SpellChecker(line):
+    for i in tokens(line):
+        strip = i.rstrip()
+        if not WN.synsets(strip):
+            if strip in stop_words_en:    # <--- Check whether it's in stopword list
+                print("No mistakes :" + i)
+            else:
+                print("Wrong spellings : " +i)
+        else: 
+            print("No mistakes :" + i)
+
+
+def removePunct(str):
+        return  "".join(c for c in str if c not in ('!','.',':',','))
+
+l = "Attempting artiness With black & white and clever camera angles, the movie disappointed - became even more ridiculous - as the acting was poor and the plot and lines almost non-existent. "
+
+noPunct = removePunct(l.lower())
+if(SpellChecker(noPunct)):
+        print(l)
+        print(noPunct)
+'''

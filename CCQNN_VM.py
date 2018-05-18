@@ -16,9 +16,9 @@ import matplotlib.pyplot as plt
 import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
-SCALE = 10 # for categorical filtering
-#DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
-DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
+SCALE = 3 # for categorical filtering
+DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
+#DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 
 def data_prep():
@@ -56,17 +56,17 @@ def data_prep():
 
   '''
   # draw data
-  plt.plot(ver_tr_x[:,0], ver_tr_y[:,0], c='r')
+  plt.plot(x_ver_tr[:,0], y_ver_lm_tr[:,0], c='r')
   plt.xlabel('sentence similarity')
   plt.ylabel('verbatimness')
   plt.show()
 
-  plt.scatter(ver_tr_x[:,1], ver_tr_y[:,0], c='g')
+  plt.scatter(x_ver_tr[:,1], y_ver_lm_tr[:,0], c='g')
   plt.xlabel('number of missing words')
   plt.ylabel('verbatimness')
   plt.show()
 
-  plt.scatter(ver_tr_x[:,2], ver_tr_y[:,0], c='b')
+  plt.scatter(x_ver_tr[:,2], y_ver_lm_tr[:,0], c='b')
   plt.xlabel('pf factors')
   plt.ylabel('verbatimness')
   plt.show()
@@ -91,7 +91,6 @@ def draw_graphs(hist):
   plt.plot(val_acc)
   plt.legend(['acc', 'val_acc'])
   plt.show()
-  
 
 def print_model_perf(predictions, tst_x, tst_y, name):
   rms = sqrt(mean_squared_error(predictions, tst_y))
@@ -105,17 +104,36 @@ def print_model_perf(predictions, tst_x, tst_y, name):
   print("acc: {:.2f}%".format(correct/len(rounded_p)*100.0))
   print()
   # plot the graph prediction vs real value
-  scatter2 = plt.scatter(tst_y, rounded_p)
+  scatter2 = plt.scatter(tst_x[:,0], tst_y, c='g', alpha=0.2, label="real values")
+  plt.ylabel('output Y values')
+  plt.xlabel('input X values')
+  plt.title('verbatimness score real values')
+  plt.show()
+
+  scatter1 = plt.scatter(tst_x[:,0], predictions, c='r', alpha=0.2, label="predictions")
+  plt.ylabel('output Y values')
+  plt.xlabel('input X values')
+  plt.title('verbatimness score predictions')
+  plt.show()
+  
+  scatter1 = plt.scatter(tst_x[:,0], rounded_p, c='r', alpha=0.2, label="predictions")
+  plt.ylabel('output Y values')
+  plt.xlabel('input X values')
+  plt.title('verbatimness score predictions-rounded')
+  plt.show()
+  
+  scatter2 = plt.scatter(tst_y, rounded_p, alpha=0.2)
   plt.ylabel('Predictions')
   plt.xlabel('Real values')
-  #plt.show()
+  plt.title('verbatimness score predictions vs real values')
+  plt.show()
 
 def baseline_model(output_unit, loss, output_activation):
   # create model
   model = Sequential()
-  model.add(Dense(4, input_dim=3, kernel_initializer='glorot_uniform', activation='relu'))
-  model.add(Dense(8, kernel_initializer='glorot_uniform', activation='relu'))
-  model.add(Dense(output_unit, kernel_initializer='glorot_uniform', activation=output_activation))
+  model.add(Dense(12, input_dim=3, kernel_initializer='glorot_uniform', activation='relu'))
+  model.add(Dense(9, activation='relu'))
+  model.add(Dense(output_unit, activation=output_activation))
   # Compile model
   #sgd = SGD(lr=0.01, decay=1e-6, momentum=0.8, nesterov=True)
   model.compile(loss=loss, optimizer='adam', metrics=['accuracy'])

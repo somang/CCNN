@@ -20,11 +20,11 @@ import time
 mpl.rcParams['agg.path.chunksize'] = 10000
 
 SCALE = 10 # for categorical filtering
-#DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
-DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
+DATAFILE = str(SCALE) + "_gen_dt_100000.csv"
+#DATAFILE = str(SCALE) + "_nd_dt_100000.csv"
 MODEL_FILE = "emp_model.h5" 
 TRAINING = 1
-EPOCHS = 80
+EPOCHS = 25
 
 def data_prep():
   ######################## data prep ###########################################
@@ -125,12 +125,16 @@ def draw_graphs(hist):
   plt.show()
 
 def plot_pred(x, y, pred, color, category):
-  scatter1 = plt.scatter(x, pred, c='r', label="predictions")
-  scatter2 = plt.scatter(x, y, c=color, label="real values")
+  scatter2 = plt.scatter(x, y, c=color, alpha=0.2, label="real values")
+  plt.ylabel('output Y values')
+  plt.xlabel('input X values')
+  plt.title(category + ' Score real values')
+  plt.show()
+
+  scatter1 = plt.scatter(x, pred, c='r', alpha=0.2, label="predictions")
   plt.ylabel('output Y values')
   plt.xlabel('input X values')
   plt.title(category + ' Score predictions')
-  plt.legend(handles=[scatter1, scatter2], loc = 0)
   plt.show()
 
 def print_model_perf(predictions, tst_x, tst_y, name):
@@ -150,7 +154,8 @@ def print_model_perf(predictions, tst_x, tst_y, name):
     print("acc: {:.2f}%".format(correct/len(rounded_p[:,i])*100.0))
     
     # plot the graph prediction vs real value
-    #plot_pred(tst_x[:,i], tst_y[:,i], predictions[:,i], color, category)
+    plot_pred(tst_x[:,i], tst_y[:,i], predictions[:,i], color, category)
+    plot_pred(tst_x[:,i], tst_y[:,i], rounded_p[:,i], color, category)
   print()
 
 if __name__ == '__main__':
@@ -162,7 +167,6 @@ if __name__ == '__main__':
         y_ver_nn_tr, y_ver_nn_ts) = data_prep()
     #emp_model, hist = train_nn_categorical(x_emp_tr, y_emp_nn_tr, x_emp_ts, y_emp_nn_ts)
     emp_model, hist = train_nn_regression(x_emp_tr, y_emp_lm_tr, x_emp_ts, y_emp_lm_ts)
-
     #draw_graphs(hist)
 
   # Graph the comparison between prediction vs real
@@ -172,6 +176,7 @@ if __name__ == '__main__':
   ###### testing correlation among the variables
   delay_x, speed_x, sge_x, mw_x, ss_x, pf_x = x_emp_tr[:,0], x_emp_tr[:,1], x_emp_tr[:,2], x_emp_tr[:,3], x_ver_tr[:,1], x_ver_tr[:,2]
   delay_score, speed_score, sge_score, mw_score, verbatim_score = y_emp_lm_tr[:,0], y_emp_lm_tr[:,1], y_emp_lm_tr[:,2], y_emp_lm_tr[:,3], y_ver_lm_tr[:,0]
+
   '''
   # pearson's r and 2 tailed p value
   print(pearsonr(mw_x, ss_x)) # -0.243, 0.0             [V]
@@ -181,12 +186,14 @@ if __name__ == '__main__':
   print(pearsonr(mw_x, mw_score)) # -0.544, 0           [V]
   print(pearsonr(ss_x, verbatim_score)) # 0.668, 0      [V]
   print(pearsonr(mw_x, verbatim_score)) # -0.564, 0     [V]
+
   # Spearman's rho and 2 tailed p value
   print(spearmanr(delay_x, delay_score)) # -0.557, 0
   print(spearmanr(speed_x, speed_score)) # -0.393, 0
   print(spearmanr(sge_x, sge_score)) # -0.699, 0
   print(spearmanr(mw_x, mw_score)) # -0.699, 0
   print(spearmanr(ss_x, verbatim_score)) # 0.401, 0
+  
   print(spearmanr(mw_x, verbatim_score)) # -0.152, 0
   
   # Kendall tau
@@ -196,8 +203,35 @@ if __name__ == '__main__':
   print(kendalltau(mw_x, mw_score)) # -0.546, 0           [V]
   print(kendalltau(ss_x, verbatim_score)) # 0.302, 0      [V]
   print(kendalltau(mw_x, verbatim_score)) # -0.119, 0     [V]
-  '''
   
+  # normality testing.
+  # hen the sample size is sufficiently large (>200), 
+  # the normality assumption is not needed at all as the 
+  # Central Limit Theorem ensures that the 
+  # distribution of disturbance term will approximate normality.
+  # This function tests the null hypothesis that
+  # a sample comes from a normal distribution.
+  # Kolmogorov-Smirnov
+  print(stats.kstest(delay_x, 'norm'))
+  print(stats.kstest(speed_x, 'norm'))
+  print(stats.kstest(sge_x, 'norm'))
+  print(stats.kstest(mw_x, 'norm'))
+  print(stats.kstest(ss_x, 'norm'))
+  # normal test combines skew and kurtosis to produce an omnibus test of normality
+  print(stats.normaltest(delay_x))
+  print(stats.normaltest(speed_x))
+  print(stats.normaltest(sge_x))
+  print(stats.normaltest(mw_x))
+  print(stats.normaltest(ss_x))
+  # p < .05 , then null hypothesis can be rejected,
+  # shapiro wilk
+  print(stats.shapiro(delay_x))
+  print(stats.shapiro(speed_x))
+  print(stats.shapiro(sge_x))
+  print(stats.shapiro(mw_x))
+  print(stats.shapiro(ss_x))
+  '''
+
   #####
   # It can be concluded that there exists no linear correlation between factors
   # However, it showed that each of the factor-score relation is linearly correlated.
