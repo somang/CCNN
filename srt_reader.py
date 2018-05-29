@@ -2,6 +2,7 @@
 import re, sys, string
 from caption import Caption
 import language_check
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords as sw
 from nltk.stem import WordNetLemmatizer
@@ -186,8 +187,7 @@ def getSpellErr(s):
 def getSpellGrammarErr(s):
   spellerror = getSpellErr(s)
   tool = language_check.LanguageTool('en-US')
-  print(len(tool.check(s)))
-  return 0
+  return len(tool.check(s))
 
 def handleOmissions(sentence):
   s_list = sentence.split()
@@ -346,6 +346,8 @@ if __name__ == '__main__':
   #transcript_file = 'captions/CTVnews_transcript.srt'
   nlp = spacy.load('en_core_web_lg')
 
+  
+
   with open(caption_file) as cf:
       lines = cf.readlines()
       ccf = CaptionCollection(lines)
@@ -402,11 +404,17 @@ if __name__ == '__main__':
 
     if t_txt_ngram == c_txt_ngram:
       v_list = addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp)
+      print('t:', t_txt)
+      print('c:', c_txt)
+
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
     elif t_txt_end_ngram == c_txt_end_ngram:
       v_list = addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp)
+      print('t:', t_txt)
+      print('c:', c_txt)
+
       input_matrix.append(v_list)
       c_index += 1
       last_match_index = t_index
@@ -420,7 +428,10 @@ if __name__ == '__main__':
       #print("no match, move the Caption on...")
       c_index += 1
       t_index = last_match_index-1
-  
+
+
+
+  '''
   input_arr = []
   for i in input_matrix:
     tmp_arr = []
@@ -454,7 +465,7 @@ if __name__ == '__main__':
   print('wd',input_arr[:,5],
         'mean:' + str(np.mean(input_arr[:,5])), 'std:'+str(np.std(input_arr[:,5])),
         np.percentile(input_arr[:,5], [0,25,50,75,100]))
-
+  '''
 
 """
 CTV news: delay, wpm, sim_value, spelling, mw, wd,
