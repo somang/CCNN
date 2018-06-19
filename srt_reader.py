@@ -345,14 +345,14 @@ if __name__ == '__main__':
   #caption_file = 'captions/CTVnews_caption.srt'
   #transcript_file = 'captions/CTVnews_transcript.srt'
   nlp = spacy.load('en_core_web_lg')
-
   
-
+  print("parsing", caption_file)
   with open(caption_file) as cf:
       lines = cf.readlines()
       ccf = CaptionCollection(lines)
       cps = ParseSentence(ccf).get_sentences()
 
+  print("parsing", transcript_file)
   with open(transcript_file) as tf:
     lines = tf.readlines()
     tcf = CaptionCollection(lines)
@@ -364,6 +364,7 @@ if __name__ == '__main__':
   sync_delay = 0
   c_index, t_index = 0, 0
 
+  print("finding block delay...")
   #typically cps would have less sentences
   while c_index < len(cps):
     c_sentence = cps[c_index]
@@ -429,9 +430,6 @@ if __name__ == '__main__':
       c_index += 1
       t_index = last_match_index-1
 
-
-
-  '''
   input_arr = []
   for i in input_matrix:
     tmp_arr = []
@@ -445,27 +443,28 @@ if __name__ == '__main__':
     input_arr.append(tmp_arr)
 
   input_arr = np.asarray(input_arr)
-
+  print()
+  print("Collected total {0:d} sentence pairs.".format(input_arr.shape[0]))
+  print()
   print("Citytv news: delay, wpm, sim_value, spelling, mw, wd,")
-  print('delay',input_arr[:,0],
-        'mean:' + str(np.mean(input_arr[:,0])), 'std:'+str(np.std(input_arr[:,0])),
-        np.percentile(input_arr[:,0], [0,25,50,75,100]))
-  print('wpm',input_arr[:,1],
-        'mean:' + str(np.mean(input_arr[:,1])), 'std:'+str(np.std(input_arr[:,1])),
-        np.percentile(input_arr[:,1], [0,25,50,75,100]))
-  print('similarity',input_arr[:,2],
-        'mean:' + str(np.mean(input_arr[:,2])), 'std:'+str(np.std(input_arr[:,2])),
-        np.percentile(input_arr[:,2], [0,25,50,75,100]))
-  print('spelling',input_arr[:,3],
-        'mean:' + str(np.mean(input_arr[:,3])), 'std:'+str(np.std(input_arr[:,3])),
-        np.percentile(input_arr[:,3], [0,25,50,75,100]))
-  print('mw',input_arr[:,4],
-        'mean:' + str(np.mean(input_arr[:,4])), 'std:'+str(np.std(input_arr[:,4])),
-        np.percentile(input_arr[:,4], [0,25,50,75,100]))
-  print('wd',input_arr[:,5],
-        'mean:' + str(np.mean(input_arr[:,5])), 'std:'+str(np.std(input_arr[:,5])),
-        np.percentile(input_arr[:,5], [0,25,50,75,100]))
-  '''
+  print('delay', #input_arr[:,0],
+        'mean:' + str(np.mean(input_arr[:,0])), 'std:'+str(np.std(input_arr[:,0])))
+        #np.percentile(input_arr[:,0], [0,25,50,75,100]))
+  print('word per minute:', #input_arr[:,1],
+        'mean:' + str(np.mean(input_arr[:,1])), 'std:'+str(np.std(input_arr[:,1])))
+        #np.percentile(input_arr[:,1], [0,25,50,75,100]))
+  print('cosine similarity:', #input_arr[:,2],
+        'mean:' + str(np.mean(input_arr[:,2])), 'std:'+str(np.std(input_arr[:,2])))
+        #np.percentile(input_arr[:,2], [0,25,50,75,100]))
+  print('spelling and grammar errors:', #input_arr[:,3],
+        'mean:' + str(np.mean(input_arr[:,3])), 'std:'+str(np.std(input_arr[:,3])))
+        #np.percentile(input_arr[:,3], [0,25,50,75,100]))
+  print('number of missing words:', #input_arr[:,4],
+        'mean:' + str(np.mean(input_arr[:,4])), 'std:'+str(np.std(input_arr[:,4])))
+        #np.percentile(input_arr[:,4], [0,25,50,75,100]))
+  print('word difference:', #input_arr[:,5],
+        'mean:' + str(np.mean(input_arr[:,5])), 'std:'+str(np.std(input_arr[:,5])))
+        #np.percentile(input_arr[:,5], [0,25,50,75,100]))
 
 """
 CTV news: delay, wpm, sim_value, spelling, mw, wd,
