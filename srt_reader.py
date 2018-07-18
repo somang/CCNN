@@ -340,10 +340,10 @@ def addValues(t_time,c_time,c_txt,t_txt,c_sentence,nlp):
 
 
 if __name__ == '__main__':
-  caption_file = 'captions/citynews_caption.srt'
-  transcript_file = 'captions/citynews_transcript.srt'
-  #caption_file = 'captions/CTVnews_caption.srt'
-  #transcript_file = 'captions/CTVnews_transcript.srt'
+  #caption_file = 'captions/citynews_caption.srt'
+  #transcript_file = 'captions/citynews_transcript.srt'
+  caption_file = 'captions/CTVnews_caption.srt'
+  transcript_file = 'captions/CTVnews_transcript.srt'
   nlp = spacy.load('en_core_web_lg')
   
   print("parsing", caption_file)
