@@ -1,9 +1,14 @@
 .video-js .vjs-captions {
   color: #FFFFFF;
   font-family: 'times new roman';
-  font-size: 16px;
+  font-size: 12pt;
 }
 
 .video-js .vjs-text-track {
   background-color: black;
+}
+
+#my-video {
+  width : 840; 
+  height : 528; 
 }
