@@ -76,3 +76,28 @@ C
  [P2]SR (1): aggressive, changes meaning.
 ------------------------------------------------------------------------------------------
 V6
+T
+00:01:55:13	00:01:56:18	00:00:01:05	The wrist shot, Bernier to
+00:01:56:18	00:01:59:15	00:00:02:27	save, rebound and cleared away.
+C 
+00:02:00:17 		[P3] BERNIER
+00:02:02:03         	WITH THE SAVE, THE REBOUND,
+00:02:03:11         	CLEARED AWAY BY PETAN[P4] ,
+ [P3]MinE (0.25): “The wrist shot” is lost.
+ [P4]SE (1): not cleared away by Petan, so misleading information.
+------------------------------------------------------------------------------------------
+V7
+T
+00:02:10:01	00:02:12:02	00:00:02:01	Lowry is up with it for Wheeler
+00:02:12:02	00:02:14:18	00:00:02:16	in front, trying to go backside.
+00:02:14:18	00:02:16:05	00:00:01:17	That got tipped away and it will
+00:02:16:05	00:02:19:13	00:00:03:08	slip out to centre ice.
+
+C
+00:02:16:08         	IS UP FOR WHEELER. TRYING TO
+00:02:19:13         	GO BACK SIDE[P9] , THAT GOT HIT
+00:02:21:14         	AWAY.[P10]  
+
+ [P9]MinR (0.25)
+ [P10]StE (0.5): and it will slip out to centre ice”, full independent idea unit lost.
+------------------------------------------------------------------------------------------
