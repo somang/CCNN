@@ -1,4 +1,4 @@
-$( document ).ready(function() {
+$(document).ready(function() {
     var sourcename = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 
