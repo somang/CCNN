@@ -2,8 +2,7 @@
 #   cd /path/to/mydir
 #   python -m http.server  # with python3
 # open up a browser, then open
-# http://localhost:8000/myfile.html
-
+# http://localhost:8000/index.html?s=0&d=0&m=0&p=0
 
 # User study 1 plan:
 # Preferably start on Sept - Oct , aiming 30 participants (Deaf or HoH).

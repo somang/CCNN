@@ -1,0 +1,103 @@
+Hockey voice (B)
+V1
+T
+00:00:10:13	00:00:11:20	00:00:01:07	Andrew Copp finds a lane and
+00:00:11:20	00:00:14:18	00:00:02:28	blows one by Jonathan Bernier.
+00:00:14:18	00:00:16:21	00:00:02:03	Jets have the 1-nothing lead.
+
+C
+00:00:13:25	ANDREW COPP
+00:00:14:25	FINDS A LAME AND GOES BY
+00:00:19:00	JONATHAN BERNIER, THE JETS
+00:00:20:29	HAVE A 1-0 LEAD. 
+
+MinR (0.25): lane
+SR (1): change of meaning, misleading info.
+------------------------------------------------------------------------------------------
+V2
+T
+00:00:53:09	00:00:54:08	00:00:00:29	Yeah, probably
+00:00:54:08	00:00:55:13	00:00:01:05	Corey Perry's penalty because
+00:00:55:13	00:00:57:03	00:00:01:20	they'll saw off Kesler and
+00:00:57:03	00:00:59:02	00:00:01:29	Scheifele, the original
+00:00:59:02	00:01:01:18	00:00:02:14	combatants, and then, as you
+00:01:01:18	00:01:02:29	00:00:01:11	mentioned, it was Corey
+00:01:02:29	00:01:04:01	00:00:01:02	Perry that came in and grabbed
+00:01:04:01	00:01:06:28	00:00:02:27	Blake Wheeler.
+
+C
+00:00:57:29	>> PROBABLY COREY PERRY'S
+00:01:01:01	PENALTY. THERE WERE THE
+00:01:06:13	ORIGINAL COMBATANTS AND COREY
+00:01:09:09	PERRY GRABBED BLAKE WHEELER.
+
+MinR (0.25): they
+StE (0.5): omission of “because they'll saw off Kesler and Scheifele”
+------------------------------------------------------------------------------------------
+V3
+T
+00:01:14:29	00:01:18:14	00:00:03:15	Fowler, and he'll dig it free,
+00:01:18:14	00:01:19:18	00:00:01:04	clear it to the line.
+00:01:19:18	00:01:21:07	00:00:01:19	Kept in, knocked down by Blake
+00:01:21:07	00:01:23:07	00:00:02:00	Wheeler, for Dustin Byfuglien.
+00:01:23:07	00:01:25:17	00:00:02:10	Into the swat. Brian Little,
+00:01:25:17	00:01:27:03	00:00:01:16	a shot, and Cam Fowler got
+00:01:27:03	00:01:28:04	00:00:01:01	in front of that.
+
+C
+00:01:21:15         	HE WILL DIG IT THREE AND
+00:01:22:21         	CLEARS TO THE LINE, KEPT IN,
+00:01:24:18         	NOT DOWN BY BLAKE WHEELER.
+00:01:26:00         	BATTLING. INTO THE SLOT. --
+00:01:31:08         	BYFUGLIEN.[P4] 
+
+ [P1]StR (0.5): knocked
+ [P2]StE (0.5): for Dustin Byfuglien
+ [P3]SR (1): into the swat, change of meaning
+ [P4]StE x 2 (0.5 x 2): Brian Little, a shot, and Cam Fowler got in front of that.
+------------------------------------------------------------------------------------------
+V4
+T
+00:01:42:27	00:01:44:25	00:00:01:28	After it is Nick Petan for
+00:01:44:25	00:01:47:09	00:00:02:14	Adam Lowry, back for Petan.
+C
+00:01:47:11         	STICK ON IT. NIC PETAN FOR
+00:01:50:27         	ADAM LOWRY, BACK TO THE TIME[P1] .
+
+ [P1]StR (0.5): back for Petan
+------------------------------------------------------------------------------------------
+V5
+T
+00:01:47:09	00:01:49:08	00:00:01:29	The Ducks very aggressive on
+00:01:49:08	00:01:51:18	00:00:02:10	the penalty kill.
+C
+00:01:53:06         	THE DUCKS VERY IMPRESSIVE [P2] ON
+00:01:54:09         	THE PENALTY KILL.
+ [P2]SR (1): aggressive, changes meaning.
+------------------------------------------------------------------------------------------
+V6
+T
+00:01:55:13	00:01:56:18	00:00:01:05	The wrist shot, Bernier to
+00:01:56:18	00:01:59:15	00:00:02:27	save, rebound and cleared away.
+C 
+00:02:00:17 		[P3] BERNIER
+00:02:02:03         	WITH THE SAVE, THE REBOUND,
+00:02:03:11         	CLEARED AWAY BY PETAN[P4] ,
+ [P3]MinE (0.25): “The wrist shot” is lost.
+ [P4]SE (1): not cleared away by Petan, so misleading information.
+------------------------------------------------------------------------------------------
+V7
+T
+00:02:10:01	00:02:12:02	00:00:02:01	Lowry is up with it for Wheeler
+00:02:12:02	00:02:14:18	00:00:02:16	in front, trying to go backside.
+00:02:14:18	00:02:16:05	00:00:01:17	That got tipped away and it will
+00:02:16:05	00:02:19:13	00:00:03:08	slip out to centre ice.
+
+C
+00:02:16:08         	IS UP FOR WHEELER. TRYING TO
+00:02:19:13         	GO BACK SIDE[P9] , THAT GOT HIT
+00:02:21:14         	AWAY.[P10]  
+
+ [P9]MinR (0.25)
+ [P10]StE (0.5): and it will slip out to centre ice”, full independent idea unit lost.
+------------------------------------------------------------------------------------------
