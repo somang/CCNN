@@ -21,6 +21,13 @@ def get_truncated_normal(mean=0, sd=0, low=0, high=10):
   value = truncnorm((low - mean) / sd, (high - mean) / sd, loc=mean, scale=sd)
   return value
 
+# delay, wpm, similarity, number of errors
+### normal distribution using the mean and sd from existing data.
+trn = get_truncated_normal(mean=4895.75, sd=1477.94, low=0, high=12000)
+r_delay = trn.rvs(100000)
+
+
+
 def score_normalization(x, range):
   if range == 10:
     return x
