@@ -1,5 +1,50 @@
 # CCNN project
 
+
+
+
+What are my contributions?
+
+- I have designed and developed a “subjective” Closed Captioning quality assessment method.
+- I have devised an “automated” assessment system using the subjective quality assessment.
+- It is possible to predict subjective assessment of D/HoH viewers using the automated system.
+
+Lit review:
+- Why do you need the subjective CCQ method?
+    - > current models are primarily empirical, even though some sections allow the subjectivity of assessments to be included.
+    - The NER model subjectivity could be more accurate, but it doesn’t include D/HoH viewer perspective
+    - Costly to include human
+        - > Why automation? 
+        - > to reduce HR
+How does an AI predict ‘subjective assessment’? isn’t that self-contradictory? -> 
+
+CCQNN
+Design constraints
+	-> lack of data
+		-> user model for the probabilities in decision
+		-> generated for ANN training / statistical regression fitting.
+
+Study 1:
+	User model generation
+	
+	Research question: What is the probabilities in assessment decisions when D/HoH viewers find errors in CC?
+		
+	
+Study 2:
+	Training ANN by using active learning
+
+
+
+
+
+
+
+
+
+
+
+
+
 Weekly Development Log
 
 Week 14. Update on April 11

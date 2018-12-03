@@ -20,30 +20,7 @@ def setCategoryScore(index, p, score):
 def get_truncated_normal(mean=0, sd=0, low=0, high=10):
   value = truncnorm((low - mean) / sd, (high - mean) / sd, loc=mean, scale=sd)
   return value
-
-# delay, wpm, similarity, number of errors
-### normal distribution using the mean and sd from existing data.
-trn = get_truncated_normal(mean=4895.75, sd=1477.94, low=0, high=12000)
-r_delay = trn.rvs(100000)
-
-
-
-def score_normalization(x, range):
-  if range == 10:
-    return x
-  elif range == 5:
-    if 0 <= x <= 2: return 1
-    elif 3 <= x <= 4: return 2
-    elif 5 <= x <= 6: return 3
-    elif 7 <= x <= 8: return 4
-    elif 8 <= x <= 10: return 5
-    else: return 0
-  elif range == 3:
-    if 0 <= x <= 3: return 1
-    elif 4 <= x <= 6: return 2
-    elif 7 <= x <= 10: return 3
-    else: return 0
-
+  
 # delay, wpm, similarity, number of errors
 ### normal distribution using the mean and sd from existing data.
 trn = get_truncated_normal(mean=4895.75, sd=1477.94, low=0, high=12000)
@@ -186,6 +163,25 @@ for i in c:
       verbatim_score = round(gauss(4.50,0.3))  
   else:
     verbatim_score = round(gauss(1.0,0.6))
+
+
+
+
+  def score_normalization(x, range):
+    if range == 10:
+      return x
+    elif range == 5:
+      if 0 <= x <= 2: return 1
+      elif 3 <= x <= 4: return 2
+      elif 5 <= x <= 6: return 3
+      elif 7 <= x <= 8: return 4
+      elif 8 <= x <= 10: return 5
+      else: return 0
+    elif range == 3:
+      if 0 <= x <= 3: return 1
+      elif 4 <= x <= 6: return 2
+      elif 7 <= x <= 10: return 3
+      else: return 0
 
   delay_score = score_normalization(delay_score, SCALE)
   speed_score = score_normalization(speed_score, SCALE)
